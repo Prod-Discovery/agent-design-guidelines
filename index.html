@@ -1309,6 +1309,18 @@ function guideHtml(id){const x=GUIDE[id];if(!x)return '';return `<div class="gui
   <div class="da"><div class="dobox"><span class="glbl">Do</span><p>${esc(x.d)}</p></div><div class="avbox"><span class="glbl">Avoid</span><p>${esc(x.a)}</p></div></div></div>
   `;}
 
+const DEMOS=[
+ ['demo/front-door.html','Front door','Lena, the accountant, starts her Monday here. The agents bring her the work that needs her, with links to payroll and the October close.'],
+ ['demo/payroll.html','Payroll','Maria runs the October payroll. The agent collects, checks and prepares the payments, and Maria approves them.'],
+ ['demo/accounting.html','Accounting','Lena closes October. The agent books and reconciles, and hands her only the cases that need her judgement.']
+];
+function demoPage(){return `
+  <h1>Demo</h1>
+  <div class="lede">
+    <p>Three interactive prototypes show the patterns working together in one fictional company, Berg Bygg AB, a construction company with 64 employees. In each demo, turn on Show design patterns to see which pattern is behind each part of the screen.</p>
+  </div>
+  <div class="ovgrid">${DEMOS.map((d,i)=>`<a class="ovc" href="${d[0]}" target="_blank" rel="noopener"><span class="mono">${String(i+1).padStart(2,'0')}</span><b>${esc(d[1])} ${EXT}</b><span>${esc(d[2])}</span></a>`).join('')}</div>`;}
+
 function route(){
   let h=(location.hash||'').slice(1);
   if(!h)h='patterns';
@@ -1324,6 +1336,8 @@ function route(){
   } else if(top==='principles'){
     const x=PRIN.find(p=>'principles-'+p[0]===h);
     pg.innerHTML=`<div class="with-side">${sideP(x?x[0]:'')}<main class="main" id="main">${x?prinPage(x):prinOverview()}</main></div>`;
+  } else if(top==='demo'){
+    pg.innerHTML=`<main class="blank" id="main">${demoPage()}</main>`;
   } else {
     const names={principles:'Principles',demo:'Demo',assess:'Assess your agent'};
     const n=names[top]||'Principles';
