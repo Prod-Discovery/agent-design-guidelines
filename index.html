@@ -429,23 +429,20 @@ footer div{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:24px
 <footer><div>© Visma 2026 All Rights Reserved</div></footer>
 
 <script>
-(function(){
+async function loadPatterns(){
+  try{const r=await fetch('patterns.json',{cache:'no-cache'});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+  catch(e){document.getElementById('page').innerHTML='<main class="blank" id="main"><h1>Could not load the patterns</h1><div class="soon">patterns.json did not load. Open the page through a web server, not as a file (see README).</div></main>';throw e;}
+}
+(async function(){
+const D=await loadPatterns();
 const EXT='<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const DEMO_URL='demo/payroll.html';
 const PLUGIN_URL='https://prod-discovery.github.io/discovery-engine-guide/';
 const NAV=[
- ['Before the agent acts',[['say-its-an-agent','Agent disclosure'],['autonomy-levels','Autonomy levels'],['triggers','Triggers'],['suggestions','Suggestions']]],
- ['While the agent acts',[['live-progress','Live progress'],['failure-disclosure','Failure disclosure'],['exceptions','Exceptions'],['actions','Review and approve'],['uncertainty','Clarifying questions'],['hand-over','Escalation'],['undo','Undo']]],
- ['After the agent acts',[['activity-log','Audit trail'],['recap','Recap']]],
- ['Over time',[['autonomy-evolution','Earned autonomy']]],
+ ...D.groups.map(g=>[g.name,D.patterns.filter(p=>p.group===g.id).map(p=>[p.id,p.name])]),
  ['Resources',[['claude-plugin','Claude plug-in','ext'],['contact','Contact']]],
 ];
 const DEFAULT='say-its-an-agent';
-const EXAMPLES=[
- {id:'propose',marker:'Proposals by agents',what:'Every proposal names the agent that made it, right next to the decision buttons. Try accepting or rejecting it.'},
- {id:'client',marker:'Drafted by agent, sent by you',what:'Messages that reach clients say they were drafted by an agent, and which person sent them.'},
- {id:'feed',marker:'Work in progress',what:'Ongoing work is listed per agent, with a spinner while it runs, so it is always clear what the agents are doing.',narrow:true},
-];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function find(id){for(const g of NAV)for(const it of g[1])if(it[0]===id)return {group:g[0],id,label:it[1],ext:it[2]};return null;}
@@ -454,255 +451,21 @@ function side(cur){return `<aside class="side" aria-label="Patterns">${NAV.map(g
   const href=it[0]==='claude-plugin'?PLUGIN_URL:'#patterns-'+it[0];
   return ` <a href="${href}" ${it[2]&&href.startsWith('http')?'target="_blank" rel="noopener"':''} ${cur===it[0]?'aria-current="page"':''}><span>${esc(it[1])}</span>${it[2]?EXT:''}</a>`;}).join('')}</div>`).join('')}</aside>`;}
 
-function sayItsAnAgent(p){return `
-  
-  <h1>Agent disclosure</h1>
+/* One template for every pattern page, filled from patterns.json */
+const PD=id=>D.patterns.find(x=>x.id===id);
+function patternPage(p){const x=PD(p.id);return `
+  <h1>${esc(x.name)}</h1>
   <div class="lede">
-    <p class="law">We are required by law (AI Act, article 50) to clearly show when something is done by AI and agents. This needs to be done at the very first interaction, and not only in e.g. terms and conditions.</p>
-    <p>This can be done in many different ways depending on the context. Keep the marker consistent, and avoid human names and faces for agents.</p>
+    ${x.intro.map((t,i)=>`<p${i===0?' class="law"':''}>${esc(t)}</p>`).join('\n    ')}
   </div>
   <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
   <section class="sec" aria-labelledby="exH">
     <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including suggestions, answers and work status.</p>
-    ${examplesHtml(EXAMPLES)}
+    <p>${esc(x.examples.intro)}</p>
+    ${examplesHtml(x.examples.items)}
   </section>`;}
-
 function examplesHtml(list){return `<div class="examples">${list.map(e=>`<figure class="ex ${e.wide?'wide':''}"><div class="shot"><button class="pp" type="button" data-pp="${e.id}"></button><div class="lv ${e.narrow?'narrow':''}" id="lv-${e.id}"></div></div><figcaption><span class="marker"><code>${esc(e.marker)}</code></span><p class="what">${esc(e.what)}</p></figcaption></figure>`).join('')}</div>`;}
-const TRIG_EX=[
- {id:'sched',marker:'Running on its own',what:'Each trigger is written in plain words, with what it did last and when it runs next. A switch pauses a trigger without deleting it.'},
- {id:'cal',marker:'Agents in the calendar',what:'Scheduled agents sit next to the meetings they belong to. Agents that start on an event, like a new invoice, have no time slot, so they are listed beside the calendar.'},
- {id:'start',marker:'Says what started it',what:'When the agent starts on its own, the work opens with what started it and when, and ends with the next run date.'},
-];
-function triggers(p){return `
-  <h1>Triggers</h1>
-  <div class="lede">
-    <p class="law">The agent starts on its own when a date arrives or something happens, such as a client replying, and reports what it did.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including schedules, events and the start of a run.</p>
-    ${examplesHtml(TRIG_EX)}
-  </section>`;}
-
-const AUTO_EX=[
- {id:'lvl',marker:'Agent level per task',what:'Each task has its own level, chosen by the person responsible. Change a level and see what the agent would do with the same work.'},
- {id:'perm',marker:'Permissions per area',what:'Within one agent, each area has its own permission. The agent acts where it is allowed, asks where it must, and stays out of the rest. Click a permission to change it.'},
- {id:'levlog',marker:'Level shown on every action',what:'Every action carries the level it ran at, so it is clear afterwards what the agent did alone and what a person approved.'},
-];
-function autonomy(p){return `
-  <h1>Autonomy levels</h1>
-  <div class="lede">
-    <p class="law">A named setting, such as Assistant, Copilot or Autopilot, chosen separately for each task, so low-risk work can run alone while high-risk work waits for approval.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including levels per task, permissions per area and the level behind each action.</p>
-    ${examplesHtml(AUTO_EX)}
-  </section>`;}
-
-const SUG_EX=[
- {id:'offer',marker:'One clear confirm action',what:'The offer says what will happen and who checks the result. Nothing is matched until the person taps.'},
- {id:'versus',marker:'Offered, not done to you',what:'The same change, offered as a button or made without asking. Switch between them to compare.'},
- {id:'next',marker:'Next step from the books',what:'The agent suggests the next step where the work already is, with a preview of exactly what will be sent.'},
-];
-function suggestions(p){return `
-  <h1>Suggestions</h1>
-  <div class="lede">
-    <p class="law">The agent prepares the change, or suggests the next step from what is in the books, and offers it as a button. It carries it out only when the person taps, instead of acting on their behalf unasked.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including offers, a side-by-side comparison and next steps.</p>
-    ${examplesHtml(SUG_EX)}
-  </section>`;}
-
-const LP_EX=[
- {id:'rec',marker:'Running feed with reasons',what:'A count of the work, and a feed of finished checks, each with the rule or confidence behind it. Click a tag to see the reason.'},
- {id:'src',marker:'Every claim points to its source',what:'Answers link each number to the document it came from. Click a source marker to see it.'},
- {id:'states',marker:'Named states, also announced',what:'Each step has a number and a named state. Every change is also sent to screen readers as a status message, and the run can be paused from the keyboard.'},
-];
-function liveProgress(p){return `
-  <h1>Live progress</h1>
-  <div class="lede">
-    <p class="law">A progress indicator and running feed while the agent works, with the rule or confidence behind each step.</p>
-    <p>Announcing each step lets people who use a screen reader follow the run, pause it and take over.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a running feed, sources for every claim and announced steps.</p>
-    ${examplesHtml(LP_EX)}
-  </section>`;}
-
-const ACT_EX=[
- {id:'vat',marker:'Before and after, with the reason',what:'The change is shown as a diff, with the reason and the rule beside it. Accept, edit or reject it. Edit lets you pick another account before anything is booked.'},
- {id:'chg',marker:'One decision per change',what:'Each field the agent wants to change gets its own decision, with high-stakes fields like the bank account marked. Nothing is saved until every change is decided and you press Save.'},
- {id:'draft',marker:'Edit the draft, then send',what:'Taking over is one tap away. Edit the drafted reminder in place, go back to the agent draft, or send it as it is.'},
-];
-function actions(p){return `
-  <h1>Review and approve</h1>
-  <div class="lede">
-    <p class="law">Each suggested change is shown as a before-and-after with its reason and three actions: accept, edit or reject. Taking over is always one tap away.</p>
-    <p>Show the reason and the rule with each change, and keep changes pending until a person saves. In our first sprint, “Accept all” hid what the agent changed.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a diff with its reason, decisions per field and editing a draft.</p>
-    ${examplesHtml(ACT_EX)}
-  </section>`;}
-
-const EXC_EX=[
- {id:'queue',marker:'Only what needs you',what:'Routine invoices are summed up in one line. The two that need judgement are listed with the reason they were flagged. Open one to see the problem, the proposal and the reason.'},
- {id:'bulk',marker:'Bulk actions only for the easy ones',what:'Easy exceptions with the same fix can be handled together. The risky one, a new bank account, is left out of the bulk action and must be checked on its own.'},
- {id:'inbox',marker:'One inbox for all agents',what:'Each agent posts what it needs from you, newest first, like email. The count goes down as you finish items, and an empty state says when nothing needs you.',narrow:true},
-];
-function exceptions(p){return `
-  <h1>Exceptions</h1>
-  <div class="lede">
-    <p class="law">Routine items are handled automatically and summarised in one line. Only the items that need judgement are listed, each with the reason it was flagged.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a queue with reasons, bulk actions and an agent inbox.</p>
-    ${examplesHtml(EXC_EX)}
-  </section>`;}
-
-const HO_EX=[
- {id:'case',marker:'Handed to a named person',what:'The agent prepares the case, stops, and hands it to Anders with what it checked and why it is his call. Open what was checked, or take the case.'},
- {id:'fail',marker:'Stops when something fails',what:'When the agent can’t read the attachment, it says what failed and offers the ways forward: enter it yourself, ask a colleague or upload a readable copy.'},
- {id:'owner',marker:'An owner, not a suspense account',what:'The same case, handed to a person or parked in a suspense account. Switch between them to compare.'},
-];
-function handOver(p){return `
-  <h1>Escalation</h1>
-  <div class="lede">
-    <p class="law">When the agent reaches the edge of the rules, or something fails, it prepares what it can, stops, and hands the case to a named person with what it checked, what failed and why it’s theirs.</p>
-    <p>Show the edge of the rules that started the escalation. For judgement calls, such as asset or repair, the case goes to the accountant.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a hand-over with context, a failure with ways forward and a comparison with a suspense account.</p>
-    ${examplesHtml(HO_EX)}
-  </section>`;}
-
-const UNDO_EX=[
- {id:'sent',marker:'Undo right on the result',what:'The undo sits on the reminder itself, with how long it is still possible. The undo is logged like the send.'},
- {id:'warn',marker:'Says first what can’t be undone',what:'Before the payments go, the agent says what can’t be reversed and until when they can still be stopped.'},
- {id:'ulog',marker:'The undo is logged, like the action',what:'Every change has its undo where it is listed. A reminder is held for a few seconds before it sends, what can’t be unsent offers a correction instead, and each undo becomes a row of its own.'},
-];
-function undo(p){return `
-  <h1>Undo</h1>
-  <div class="lede">
-    <p class="law">Anything the agent did can be reversed right where it shows up, for as long as that is still possible, and the agent says before it acts what can’t be undone. An undo is logged like the action.</p>
-    <p>Payments, for example, can’t be undone once they leave the bank, so the agent says so before they go.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including undo on the result, a warning before what can’t be undone and a log of changes.</p>
-    ${examplesHtml(UNDO_EX)}
-  </section>`;}
-
-const LOG_EX=[
- {id:'run',marker:'Every step of the run',what:'Each run is logged step by step: what the agent read, what it changed, which rules it used and who reviewed the result. Click an entry to see the details.'},
- {id:'event',marker:'Who did each step',what:'Agent steps and your own steps sit in one timeline, newest at the bottom. Your own actions carry your initials. Filter by who did it, and undo straight from the log.'},
- {id:'plain',marker:'Plain sentences, not system logs',what:'The same three steps written for people, or as a raw system log. Switch between them to compare.'},
-];
-function activityLog(p){return `
-  <h1>Audit trail</h1>
-  <div class="lede">
-    <p class="law">A time-stamped record of every run: what the agent read, what it changed, which rules it used and who reviewed the result.</p>
-    <p>It should be a log an auditor or the tax authority could follow.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a run step by step, a shared timeline with undo and a comparison with a raw log.</p>
-    ${examplesHtml(LOG_EX)}
-  </section>`;}
-
-const REC_EX=[
- {id:'week',marker:'This week with your agent',what:'A weekly card with concrete numbers: time saved, issues caught and how much was accepted without edits, and where the agent was weaker. Switch week, or click a number to see what is behind it.'},
- {id:'thread',marker:'Summary before the thread',what:'A long thread opens with a short summary, and each point links to the message it came from. Click a number to see the message.'},
- {id:'back',marker:'Brief me when I’m back',what:'After a weekend away, the first thing you see is one line about what happened and what needs you. The details are one click away.'},
-];
-function recap(p){return `
-  <h1>Recap</h1>
-  <div class="lede">
-    <p class="law">A regular summary with concrete numbers, such as time saved, issues caught and items handled without edits. When someone comes back to a long-running job, the agent first tells them what happened while they were away and what needs them now.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a weekly recap, a thread summary and a brief when you come back.</p>
-    ${examplesHtml(REC_EX)}
-  </section>`;}
-
-const EVO_EX=[
- {id:'earn',marker:'Offers more at a threshold',what:'Each approval is tracked. After 10 approvals with at least 85% unchanged, the agent offers to send reminders on its own, and says how to switch it back.'},
- {id:'stepback',marker:'Steps back after corrections',what:'When you correct the agent twice, it moves itself back a level and says why, and what it takes to earn the level again.'},
- {id:'ladder',marker:'Levels you can step through',what:'Everyone starts with no automation. Step up when the agent has earned it, or step down at any time. Pay, filings and salary changes never graduate.'},
-];
-function evolution(p){return `
-  <h1>Earned autonomy</h1>
-  <div class="lede">
-    <p class="law">After several approvals without changes, the agent offers to do that action on its own. After corrections or reversals, it steps back and asks again.</p>
-    <p>Reminders, matching and coding can earn their way to Autopilot. Pay, filings and salary changes never do.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including an offer at a threshold, a step back after corrections and levels that can be stepped through.</p>
-    ${examplesHtml(EVO_EX)}
-  </section>`;}
-
-const FD_EX=[
- {id:'bfile',marker:'Named, explained and bounded',what:'The failure is named in the title, with the concrete cause and what did not happen, and the ways forward. The outcome is recorded either way.'},
- {id:'empty',marker:'Empty results, said as empty',what:'When the agent finds nothing, it says so, and lists where it looked and where it couldn’t look.'},
- {id:'cover',marker:'Not covered by a confident summary',what:'The same failed payroll run, disclosed or covered up. Switch between them to compare.'},
-];
-function failureDisclosure(p){return `
-  <h1>Failure disclosure</h1>
-  <div class="lede">
-    <p class="law">When the agent can’t finish, it says so plainly: what failed, why, what did not happen and what you can do next. It never covers a failure with a confident summary.</p>
-    <p>Record the outcome in the log, whichever way forward is chosen.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a rejected bank file, an empty search and a comparison with a cover-up.</p>
-    ${examplesHtml(FD_EX)}
-  </section>`;}
-
-const UNC_EX=[
- {id:'q',marker:'One question, with a best guess',what:'The agent asks about the one thing it doesn’t know, leads with its best guess and why, and shows what each answer will do before you choose.'},
- {id:'part',marker:'Ask about the part, not the whole',what:'Payroll keeps running for everyone else while one question waits. Answer it, and the last payslip is finished.'},
- {id:'guess',marker:'Asked, not guessed',what:'The same missing absence reason, asked about or guessed. Switch between them to compare.'},
-];
-function uncertainty(p){return `
-  <h1>Clarifying questions</h1>
-  <div class="lede">
-    <p class="law">The agent recognises when it’s uncertain and asks a specific question instead of guessing or flagging the whole item. The question comes with its best guess, the alternatives and what it will do with your answer.</p>
-  </div>
-  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
-    <h2 id="exH">Examples</h2>
-    <p>How the pattern can be applied in practice, including a question with a best guess, a question that doesn’t hold up the rest and a comparison with guessing.</p>
-    ${examplesHtml(UNC_EX)}
-  </section>`;}
-
-const OV=[
- ['Before the agent acts','Agree on what the agent may do, and when.',[['say-its-an-agent','Always clear what an agent did, from the very first interaction.'],['autonomy-levels','A level per task, from Assistant to Autopilot, chosen by the person responsible.'],['triggers','Starts on its own when a date arrives or something happens, and says what started it.'],['suggestions','Prepares the change and offers it as a button. Nothing happens before the tap.']]],
- ['While the agent acts','Show the work, and keep people in control of every decision.',[['live-progress','A count of the work and a running feed, with the rule behind each step.'],['failure-disclosure','What failed, why, what did not happen and what to do next.'],['exceptions','Routine work in one line. Only what needs judgement is listed, with the reason.'],['actions','A before-and-after for every change, with accept, edit or reject.'],['uncertainty','One specific question with a best guess, instead of guessing.'],['hand-over','Stops at the edge of the rules and hands the case to a named person.'],['undo','Undo right where the result shows up, and a warning before what can’t be undone.']]],
- ['After the agent acts','Say honestly what happened, and keep a record anyone can follow.',[['activity-log','A plain-language record of every run: what was read, changed and reviewed.'],['recap','A short summary with real numbers, and a brief when you come back.']]],
- ['Over time','Let trust grow with a track record.',[['autonomy-evolution','Offers to do more after approvals without changes, and steps back after corrections.']]],
-];
+const OV=D.groups.map(g=>[g.name,g.summary,D.patterns.filter(p=>p.group===g.id).map(p=>[p.id,p.rule])]);
 function overview(){let n=0;const total=OV.reduce((a,g)=>a+g[2].length,0);return `
   <h1>Patterns</h1>
   <div class="lede">
@@ -1244,38 +1007,7 @@ function initLive(){Object.keys(T).forEach(stop);Object.keys(PLAY).forEach(k=>PL
 function bindCopy(){document.querySelectorAll('[data-copy]').forEach(b=>{b.onclick=async()=>{const t=document.getElementById('protoPrompt').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){b.textContent='Select and copy';}setTimeout(()=>{b.textContent='Copy';},1800);};});}
 function bindPP(){bindCopy();document.querySelectorAll('[data-pp]').forEach(b=>{b.onclick=()=>toggle(b.dataset.pp);ctl(b.dataset.pp);});}
 
-const PRIN=[
- ['lead-with-the-work','Lead with the work, not a prompt','The agent brings what needs attention. Nobody should have to know what to ask.',[
-   ['Netflix','The home screen is the recommendation. Most viewing starts there, not in search.','Gomez-Uribe and Hunt, 2015'],
-   ['Spotify Discover Weekly','A new playlist for you every Monday. Nobody has to ask.','Music Business Worldwide'],
-   ['Skatteverket','The tax return arrives pre-filled. If it’s right, you approve it by text message.','Skatteverket',1],
-   ['Sage Accounting','Nudges well ahead of VAT deadlines, and lists what still needs doing.','Sage product tour',1]],['triggers','exceptions','recap']],
- ['higher-stakes-tighter-control','The higher the stakes, the tighter the control','Routine work runs alone. Money, pay and filings wait for a person.',[
-   ['Contactless payments','Tap freely for small amounts. Above €50, or after a few taps in a row, the PIN is required.','Bird & Bird'],
-   ['ChatGPT','You choose: always ask, ask before changes, or only before important changes. Bank transfers are refused.','OpenAI'],
-   ['Xero','Automatic reconciliation is switched on per bank account, and acts only when highly confident.','Xero',1],
-   ['Sage Accounting','Copilot drafts the payment reminder; you stay in control of sending it.','Sage product tour',1]],['autonomy-levels','suggestions','actions','undo','hand-over']],
- ['never-hide-the-agent','Never hide the agent, never hide the reason','Always labelled as an agent, and always showing why.',[
-   ['Gmail','Every message in spam says why it’s there.','Spam Resource'],
-   ['ChatGPT','On longer tasks, you can follow its progress step by step as it works.','OpenAI'],
-   ['Xero','Each auto-reconciled line says how: rule, match, memory or prediction.','Insightful Accountant',1],
-   ['QuickBooks','A RULE badge shows when a bank rule categorised a transaction.','Intuit',1]],['say-its-an-agent','live-progress','failure-disclosure']],
- ['control-one-step-away','Control is always one step away','Accept, edit, undo or take over, in one tap.',[
-   ['Gmail Undo send','Every email waits 5 seconds by default, up to 30, with Undo right there.','Google'],
-   ['ChatGPT agent','Interrupt, take over the browser, or stop the task at any point.','OpenAI'],
-   ['Xero','Change an account code or tax rate right on the Reconciled page, or remove and redo a match.','Xero',1]],['actions','undo','hand-over']],
- ['flag-whats-new','Flag what’s new, not just what’s wrong','The unusual case is the one that matters.',[
-   ['Outlook','“You don’t often get email from…” appears when someone new writes.','Cornell IT'],
-   ['Gmail','“Be careful with this message” appears when a sender can’t be verified.','Spam Resource'],
-   ['UK banks: Confirmation of Payee','Adding a new payee triggers a name check, and shows the real name if it doesn’t match.','Pay.UK'],
-   ['Sage Accounting','Checks your data and flags common mistakes HMRC would care about, before you file.','Sage product tour',1],
-   ['QuickBooks','Bank transactions that match nothing are marked “Need your review” instead of being booked.','Intuit',1]],['exceptions','uncertainty']],
- ['autonomy-is-earned','Autonomy is earned, not granted','The agent proves itself run by run, and steps back when it’s wrong.',[
-   ['Gmail','Mark a message “Not spam” and the filter learns from it.','University of Michigan'],
-   ['Claude Code','“Yes, don’t ask again” turns one approval into a standing permission for that action. Everything else still asks.','Spendesk MCP guide'],
-   ['QuickBooks','Bank rules suggest first. Booking automatically is a separate opt-in, per rule.','Intuit',1],
-   ['Xero','Off by default and switched on per account; “memory” decisions learn from how you reconciled before.','Insightful Accountant',1]],['autonomy-evolution','activity-log','recap']],
-];
+const PRIN=D.principles.map(x=>[x.id,x.name,x.statement,x.in_practice.map(c=>c.pita?[c.product,c.text,c.source,1]:[c.product,c.text,c.source]),x.patterns]);
 function sideP(cur){return `<aside class="side pr" aria-label="Principles"><div class="grp">${PRIN.map(x=>`<a href="#principles-${x[0]}" ${cur===x[0]?'aria-current="page"':''}><span>${esc(x[1])}</span></a>`).join('')}</div></aside>`;}
 function prinOverview(){return `
   <h1>Principles</h1>
@@ -1289,22 +1021,7 @@ function prinPage(x){return `
   <section class="sec" aria-labelledby="rpH"><h2 id="rpH">Patterns to use</h2><p>Patterns that put this principle into practice.</p>
    <div class="ovgrid" style="margin-top:14px">${x[4].map(id=>{const f=find(id);const o=OV.flatMap(g=>g[2]).find(it=>it[0]===id);return `<a class="ovc" href="#patterns-${id}"><b>${esc(f.label)}</b><span>${esc(o?o[1]:'')}</span></a>`;}).join('')}</div></section>`;}
 
-const GUIDE={
- 'failure-disclosure':{l:['The failure named in the title, like “Bank file rejected”','The concrete cause, in the customer’s terms','What did not happen: “No payments were sent.”','A way forward: fix it, retry once, or hand it to a person','Empty results and low confidence said as such, not hidden'],d:'“Bank file rejected. The payment to Hamburg Stahl GmbH has no BIC code. No payments were sent.” Then: add the BIC and resend, send the other 2, or hand it to Anders.',a:'“Something went wrong.” A failure styled like a normal result, or a run that keeps retrying forever.'},
- 'uncertainty':{l:['One specific question, about the part the agent doesn’t know','Its best guess, and why','The alternatives, each with what it will do','The rest of the work carrying on while the question waits'],d:'“Anna was off on Monday, but there’s no absence reason. Sick leave, vacation or unpaid leave? It affects her sick pay.” With sick leave marked as the best guess.',a:'Booking unpaid leave straight away, or flagging the whole payslip for review.'},
- 'triggers':{l:['The trigger in words: “when time reporting closes”','What it did, reported where people already look','A way to pause the trigger','The next run date'],d:'It starts when time reporting closes, and says so: “Started on its own at 06:00.”',a:'A “Run agent” button. Nothing happens until someone remembers.'},
- 'autonomy-levels':{l:['The current level, visible per task'],d:'Reconciliation on Autopilot, payroll on Copilot, salary changes by a person only, each visible on screen.',a:'One on/off switch for the whole product.'},
- 'suggestions':{l:['One clear confirm action','The offer says what it will do, and nothing happens until the tap'],d:'The agent prepares the change and offers it as a button. Nothing is sent until the person taps.',a:'The agent acts first and tells you after.'},
- 'say-its-an-agent':{l:['A plain “Agent” label on every action','A marker that stays on each field it filled','A role name, never a person’s name or face','The same label in the log'],d:'The marker stays on the field, and the log says “Payroll agent”.',a:'A one-time “AI filled this” banner.'},
- 'live-progress':{l:['A progress count: “48 of 64”','The rule or source behind each step','Named states: working, waiting, paused, done','A status message for every state change, and pause reachable by keyboard'],d:'“Collecting for 48 of 64 employees”, each finished check listed with the rule it used, and announced as “Step 3 of 5. Calculate depreciation. Agent working.”',a:'A spinner, then a result. Or a bare 94%. Or progress shown only on screen.'},
- 'exceptions':{l:['A count: “3 need you”','A card per item: problem, proposal, reason','Bulk actions only for the easy ones','An empty state when nothing needs you'],d:'One card per exception: the problem, the proposal and the reason.',a:'Alerts for everything, and no proposal.'},
- 'actions':{l:['Before and after, as a diff, with Accept, Edit and Reject'],d:'Accept or reject per change, with a diff on high-stakes fields.',a:'“Accept all” on the whole form.'},
- 'hand-over':{l:['A named person, not a queue, with what was checked and why it’s theirs'],d:'The excavator case handed to Anders with what was checked.',a:'The case lands in a suspense account, or the agent guesses.'},
- 'undo':{l:['Undo where the result shows up, and how long it’s possible','What can’t be undone, said before it acts'],d:'“Sent 09:12. Undo for 10 minutes.”',a:'Undo only inside the log.'},
- 'activity-log':{l:['A timeline of steps','Who did each step: agent or person','Entries written as plain sentences','Undo from the log'],d:'Plain sentences, who approved what, and undo from the log.',a:'Raw system logs, and no undo.'},
- 'recap':{l:['What it handled without asking, and what it caught','Your decision time, and where it was weaker','What needs you now, first','The details, one click later'],d:'How much was accepted without checking, how long decisions took, and what was caught. “Since Friday, 38 of 41 clients reconciled on their own. 3 need you.”',a:'A count of messages sent. A list of every notification since Friday.'},
- 'autonomy-evolution':{l:['A track of approvals without changes','An offer to do more at a threshold','A step back after corrections','Things that never graduate: pay, filings, salary changes'],d:'After 10 approvals at 85% unchanged it offers more, and it steps back after two corrections.',a:'It always asks, or it runs fully automatic from day one.'},
-};
+const GUIDE=Object.fromEntries(D.patterns.map(p=>[p.id,{l:p.look_for,d:p.do,a:p.avoid}]));
 function guideHtml(id){const x=GUIDE[id];if(!x)return '';return `<div class="guide"><div class="look"><h2 class="glbl">What to look for</h2><ul>${x.l.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>
   <div class="da"><div class="dobox"><span class="glbl">Do</span><p>${esc(x.d)}</p></div><div class="avbox"><span class="glbl">Avoid</span><p>${esc(x.a)}</p></div></div></div>
   `;}
@@ -1330,7 +1047,7 @@ function route(){
   if(top==='patterns'){
     if(h==='patterns'){pg.innerHTML=`<div class="with-side">${side('overview')}<main class="main" id="main">${overview()}</main></div>`;return;}
     const p=find(h.slice(9))||find(DEFAULT);
-    let body=`${p.id===DEFAULT?sayItsAnAgent(p):p.id==='triggers'?triggers(p):p.id==='autonomy-levels'?autonomy(p):p.id==='suggestions'?suggestions(p):p.id==='live-progress'?liveProgress(p):p.id==='actions'?actions(p):p.id==='exceptions'?exceptions(p):p.id==='uncertainty'?uncertainty(p):p.id==='hand-over'?handOver(p):p.id==='undo'?undo(p):p.id==='activity-log'?activityLog(p):p.id==='recap'?recap(p):p.id==='failure-disclosure'?failureDisclosure(p):p.id==='autonomy-evolution'?evolution(p):placeholder(p)}`;
+    let body=`${PD(p.id)?patternPage(p):placeholder(p)}`;
     body=body.replace('<a class="demo"',guideHtml(p.id)+'<a class="demo"');
     pg.innerHTML=`<div class="with-side">${side(p.id)}<main class="main" id="main">${body}</main></div>`;
   } else if(top==='principles'){
