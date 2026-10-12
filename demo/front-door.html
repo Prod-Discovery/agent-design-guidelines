@@ -1,0 +1,489 @@
+<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Berg Bygg Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: header; five-step run tracker; one step's work at a time in the main column; right rail with agent levels and the run log. */
+:root{
+  /* Visma brand: Visma Purple #7F56FA, White #FEFEFE, Black #131313; secondary Cool Grey Light, Cool Grey, Burgundy, Olive. Visma Text with Inter as web fallback. */
+  --bg:#fefefe; --stage:#fefefe; --surface:#fefefe; --phone:#fefefe; --paper:#fefefe; --raise:#f3f5f6; --card:#e7ebec; --soft:#e7ebec; --ink:#131313; --navy:#131313; --muted:#5c6469; --line:#dce1e3; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#4c0c32; --blue:#4a4608; --ok:#2b7a4b; --okbg:#e2f0e6; --warn:#4c0c32; --warnbg:#f3e6ec; --link:#131313; --pat:#4a4608; --patbg:#ecebdd;
+  --display:"Visma Text","Inter","Segoe UI",system-ui,sans-serif; --body:"Visma Text","Inter","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){ --bg:#131313; --stage:#131313; --surface:#1c1c1e; --phone:#1c1c1e; --paper:#1c1c1e; --raise:#232326; --card:#2a2b2e; --soft:#2a2b2e; --ink:#ededed; --navy:#fefefe; --muted:#a7b0b4; --line:#36393c; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#e7b8cf; --blue:#d6d08f; --ok:#63c58e; --okbg:#16301f; --warn:#eba9c9; --warnbg:#3a1628; --link:#fefefe; --pat:#d6d08f; --patbg:#34321a; color-scheme:dark; }}
+:root[data-theme="dark"]{ --bg:#131313; --stage:#131313; --surface:#1c1c1e; --phone:#1c1c1e; --paper:#1c1c1e; --raise:#232326; --card:#2a2b2e; --soft:#2a2b2e; --ink:#ededed; --navy:#fefefe; --muted:#a7b0b4; --line:#36393c; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#e7b8cf; --blue:#d6d08f; --ok:#63c58e; --okbg:#16301f; --warn:#eba9c9; --warnbg:#3a1628; --link:#fefefe; --pat:#d6d08f; --patbg:#34321a; color-scheme:dark; }
+.eyebrow::before{content:"";display:inline-block;width:.75em;height:.65em;margin-right:.5em;background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%)}
+
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:18px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);color:var(--navy);margin:0;text-wrap:balance}
+h1{font-size:24px;font-weight:800}
+h2{font-size:16px;font-weight:800}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+
+/* header */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.title{display:flex;flex-direction:column;gap:2px}
+.title .sub{font-size:13.5px;color:var(--muted)}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 16px;font-family:var(--display);font-weight:700;font-size:13px;color:var(--navy)}
+.btn:hover{border-color:var(--navy)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{padding:4px 11px;font-size:12px}
+.btn.lg{padding:11px 22px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn[aria-pressed="true"]{background:var(--patbg);border-color:var(--pat);color:var(--pat)}
+.profile{display:flex;align-items:center;gap:10px;padding-left:14px;border-left:1px solid var(--line)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:13px;flex:none}
+.who-txt{display:flex;flex-direction:column;line-height:1.2}
+.who-txt b{font-family:var(--display);font-size:14px;color:var(--navy)}
+.who-txt span{font-size:12.5px;color:var(--muted)}
+.pat{display:none;font-family:var(--display);font-weight:700;font-size:11px;color:var(--pat);background:var(--patbg);border-radius:6px;padding:2px 7px;white-space:nowrap;vertical-align:middle}
+.show-pat .pat{display:inline-block}
+
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+.steps li{min-width:0}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;text-align:left;width:100%;min-width:0}
+.step .n{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px;background:var(--soft);color:var(--muted)}
+.step .lbl{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.step .lbl b{font-family:var(--display);font-size:14px;color:var(--navy)}
+.step .lbl span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step.done .n{background:var(--ok);color:var(--surface)}
+.step .n{position:relative}
+.step.done .n::after{content:"";position:absolute;left:10px;top:6px;width:5px;height:10px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.step.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.step.cur .n{background:var(--accent);color:var(--accent-ink)}
+.step.done.cur .n{background:var(--ok);color:var(--surface)}
+.step:disabled{cursor:default}
+
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lead{font-size:15px;color:var(--muted);max-width:70ch}
+.foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.foot .hint{margin-right:auto}
+.hint{font-size:13px;color:var(--muted)}
+.rail{display:flex;flex-direction:column;gap:18px;min-width:0}
+
+/* collect */
+.src-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.src-list li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.src-list li:first-child{border-top:0}
+.src-list .t b{font-weight:600}
+.src-list .t span{display:block;font-size:13px;color:var(--muted)}
+.ico{width:18px;height:18px;border-radius:50%;background:var(--line);position:relative;flex:none}
+.ico.ok{background:var(--ok)}
+.ico.ok::after{content:"";position:absolute;left:6px;top:3px;width:4px;height:8px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ico.wait{background:transparent;border:2.5px solid #e6defe;border-top-color:var(--accent);border-right-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ico.warn{background:var(--warn)}
+.ico.alert{background:var(--warn);display:grid;place-items:center}
+.ico.alert::after{content:"!";color:#fefefe;font-family:var(--display);font-weight:800;font-size:11px;line-height:1}
+.src-list li.miss{background:var(--warnbg);border-radius:10px;padding-inline:10px;margin-inline:-10px;border-top-color:transparent}
+.src-list li.miss+li{border-top-color:transparent}
+.src-list li.miss .t b{color:var(--warn)}
+.src-list li.miss .t span{color:var(--ink)}
+.tag.alert{background:var(--warn);color:#fefefe;font-weight:500}
+@keyframes pulse{50%{opacity:.3}}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:99px;background:var(--okbg);color:var(--ok);white-space:nowrap}
+.tag.w{background:var(--warnbg);color:var(--warn)}
+.tag.n{background:var(--soft);color:var(--muted)}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .35s}
+.offer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.offer>span:first-child{margin-right:auto}
+.pop-anchor{position:relative;display:inline-flex}
+.btn-ico{display:inline-flex;align-items:center;gap:6px}
+.btn-ico[aria-expanded="true"]{border-color:var(--accent);background:#e6defe;color:#131313}
+.btn-ico[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.cal{position:absolute;top:calc(100% + 10px);left:0;width:272px;z-index:30;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 32px rgba(19,19,19,.18)}
+.cal::before{content:"";position:absolute;top:-7px;left:34px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+@media (max-width:600px){.cal{left:auto;right:0}.cal::before{left:auto;right:34px}}
+.cal-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cal-h b{font-family:var(--display);font-size:13.5px;color:var(--navy)}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cal-g .dw{font-size:10.5px;color:var(--muted);font-weight:600;padding-bottom:2px}
+.cd{border:0;background:transparent;border-radius:8px;padding:5px 0;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cd:hover:not(:disabled){background:#e6defe}
+.cd:disabled{color:var(--line);cursor:default}
+.cd.dl{box-shadow:inset 0 0 0 1.5px var(--warn);font-weight:700}
+.cd.dl:disabled{color:var(--muted)}
+.cd.sel,.cd.sel:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn-pair{display:inline-flex;gap:8px;flex-wrap:nowrap}
+
+/* checks */
+.auto{display:flex;align-items:center;gap:8px;font-size:14px;background:var(--okbg);color:var(--ok);border-radius:8px;padding:9px 12px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--raise)}
+.item.decided{background:var(--surface)}
+.item-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.emp{font-family:var(--display);font-weight:700;color:var(--navy)}
+.type{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:1px 8px;background:var(--soft);color:var(--blue)}
+.rule{margin-left:auto;font-size:12px;color:var(--muted);text-align:right}
+.acts .mono{text-align:right}
+.why{font-size:14px}
+.why b{font-weight:700}
+.diff{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.diff div{padding:4px 10px}
+.diff .m{background:var(--warnbg);color:var(--warn)}
+.diff .p{background:var(--okbg);color:var(--ok)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acts .mono{margin-left:auto}
+.edit-row{display:flex;gap:6px;flex-wrap:wrap}
+.edit-row input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--surface)}
+.remember{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.remember input{margin-top:3px;accent-color:var(--accent)}
+.result{font-size:13.5px;display:flex;gap:8px;align-items:center}
+
+/* review */
+.totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tot{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tot span{font-size:12.5px;color:var(--muted)}
+.tot b{font-family:var(--display);font-size:20px;color:var(--navy)}
+.tot em{font-style:normal;font-size:12px;color:var(--muted)}
+.bridge{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.bridge li{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,1.4fr) 132px;gap:14px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.bridge li:first-child{border-top:0}
+.bridge .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bridge .track{height:14px;position:relative}
+.bridge .track::before{content:"";position:absolute;top:-8px;bottom:-8px;left:var(--zero);border-left:1px dashed var(--line)}
+.bridge .track i{position:absolute;top:0;bottom:0;border-radius:4px;min-width:2px}
+.bridge .track i.up{background:#7f56fa}.bridge .track i.down{background:#b8407a}.bridge .track i.tot{background:var(--ink)}
+.bridge li.axis{border-top:0;padding-top:0;font-size:11.5px;color:var(--muted)}
+.bridge li.axis .track{height:16px}.bridge li.axis .track span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.bridge li.axis .track::before{display:none}
+.bridge li:hover .track i{filter:brightness(1.12)}
+.wf-note{font-size:12.5px;color:var(--muted);margin:0}
+.bridge li.sum{font-family:var(--display);font-weight:800;color:var(--navy)}
+.ask{display:flex;gap:8px}
+.ask input{flex:1;min-width:0;border:1px solid var(--line);background:var(--raise);border-radius:10px;padding:9px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--raise);border-radius:99px;padding:3px 10px;font-size:13px}
+.chip:hover{border-color:var(--navy)}
+.answer{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.routed{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.agent{font-family:var(--display);font-weight:700;font-size:12px;background:var(--soft);color:var(--navy);border-radius:99px;padding:2px 9px}
+
+/* approve / report */
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.plan li>.ico{margin-top:calc((1.45em - 18px)/2)}
+.plan li:first-child{border-top:0}
+.plan li span:last-child b{font-weight:600}
+.plan li small{display:block;color:var(--muted);font-size:13px}
+.rep{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.rcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--raise)}
+.rcard h3{font-size:14.5px}
+.rcard .when{font-size:12.5px;color:var(--muted)}
+.rcard .acts{margin-top:auto}
+.recap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-family:var(--display);font-size:22px;color:var(--navy);line-height:1.15}
+.stat span{font-size:12.5px;color:var(--muted)}
+.banner{display:flex;gap:12px;align-items:center;background:var(--okbg);color:var(--ok);border-radius:10px;padding:12px 14px;font-size:15px}
+.banner b{color:var(--ink)}
+
+/* rail */
+.lvl{display:flex;flex-direction:column;gap:10px}
+.lvl-row{display:flex;flex-direction:column;gap:4px}
+.lvl-row label{font-size:13px;color:var(--muted)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 0;font-family:var(--display);font-weight:700;font-size:12px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#e6defe;color:#131313}
+.log{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;max-height:420px;overflow:auto}
+.log li{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.log li:first-child{border-top:0}
+.log .who{display:block;font-size:12px;color:var(--muted)}
+.new{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:var(--okbg)}to{background:transparent}}
+
+@media (max-width:1100px){.cols{grid-template-columns:1fr}.rep{grid-template-columns:1fr}}
+@media (max-width:760px){.steps{grid-template-columns:1fr 1fr}.totals,.recap{grid-template-columns:1fr 1fr}.bridge li{grid-template-columns:minmax(0,1fr) 100px}.bridge .track,.bridge li.axis{display:none}.profile{border-left:0;padding-left:0}}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+@media (prefers-reduced-motion:reduce){.ico.wait,.new{animation:none}.bar i{transition:none}}
+</style>
+<style>
+/* front door layout */
+.status{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.st{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:10px;row-gap:1px;align-items:center;background:var(--surface)}
+.st .ico,.st .ring{grid-row:1/4;align-self:start;margin-top:1px}
+.st .k{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.st b{font-family:var(--display);font-size:15px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st .s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-alert{background:var(--warnbg);border-color:transparent}
+.st-alert b{color:var(--warn)}
+.ring{width:18px;height:18px;border-radius:50%;background:conic-gradient(#7f56fa calc(var(--p)*1%),#e6defe 0);position:relative}
+.ring::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--surface)}
+.todo-dot{background:transparent;border:2px solid #7f56fa;border-radius:50%}
+@media (max-width:1100px){.status{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.status{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.brief{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.brief h1{font-size:24px}
+.brief .sum{font-size:16px;max-width:90ch}
+.brief .sum b{font-weight:700}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 14px;font-family:var(--display);font-weight:700;font-size:13px;color:var(--muted)}
+.fchip[aria-pressed="true"]{background:#e6defe;border-color:#e6defe;color:#131313}
+.fchip .c{font-weight:600;margin-left:4px;color:inherit;opacity:.75}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lbl{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.kpi b{font-family:var(--display);font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+.kpi .delta{font-size:12.5px;color:var(--muted)}
+.kpi svg{width:100%;height:34px;display:block}
+.grid2{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:18px;align-items:start}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.area{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:1px 8px;background:var(--soft);color:var(--blue)}
+.todo{display:flex;flex-direction:column}
+.todo li{list-style:none;display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.todo li:first-child{border-top:0;padding-top:4px}
+.todo .ico{margin-top:calc((1.45em - 18px)/2)}
+.todo .body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.todo .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.todo .hd b{font-family:var(--display);color:var(--navy);font-size:15px}
+.todo .why{font-size:14px;margin:0}
+.todo .due{font-size:12.5px;color:var(--muted);white-space:nowrap;text-align:right}
+.todo .acts{margin-top:4px}
+.todo ul{margin:0;padding:0}
+.done-note{font-size:13.5px;display:flex;gap:8px;align-items:center;color:var(--ink)}
+.ins{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--raise);display:flex;flex-direction:column;gap:10px}
+.ins h3{font-size:15px}
+.ins p{margin:0;font-size:14px}
+.chart{position:relative;overflow-x:clip}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--surface);font-size:12px;border-radius:6px;padding:5px 8px;white-space:nowrap;transform:translate(-50%,-120%);opacity:0;transition:opacity .1s}
+.chart .tip.on{opacity:1}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid #7f56fa}
+.legend i.b{border-top:2px dashed var(--muted)}
+.dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.dl li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;padding:9px 0;border-top:1px solid var(--line);align-items:center;font-size:14px}
+.dl li:first-child{border-top:0;padding-top:2px}
+.dl .d{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.areas{display:flex;flex-direction:column}
+.areas a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:11px 0;border-top:1px solid var(--line);color:inherit;text-decoration:none}
+.areas a:first-child{border-top:0;padding-top:2px}
+.areas a:hover b{text-decoration:underline;text-decoration-color:var(--accent)}
+.areas b{font-family:var(--display);color:var(--navy);font-size:14.5px}
+.areas .s{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.areas .mini{grid-column:1/-1;height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+.areas .mini i{display:block;height:100%;background:#7f56fa;border-radius:99px}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.feed li{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+.feed li:first-child{border-top:0;padding-top:2px}
+.feed .ico{margin-top:1px}
+.feed small{display:block;color:var(--muted);font-size:12px}
+.ext{font-size:12px;color:var(--muted)}
+@media (max-width:1100px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.kpis{grid-template-columns:1fr}.todo li{grid-template-columns:18px minmax(0,1fr)}.todo .due{grid-column:2;text-align:left}}
+</style>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="title"><h1 style="font-size:20px">Berg Bygg AB</h1><span class="sub">Construction · 64 employees · 4 active projects · Monday 2 November 2026</span></div>
+    <span class="spacer"></span>
+    <button class="btn" id="patToggle" type="button" aria-pressed="false">Show design patterns</button>
+    <div class="profile" aria-label="Signed in as Lena Ström, accountant"><span class="avatar" aria-hidden="true">LS</span><span class="who-txt"><b>Lena Ström</b><span>Accountant</span></span></div>
+  </header>
+
+  <section class="brief" aria-labelledby="hi">
+    <div class="ph"><h1 id="hi">Good morning, Lena</h1></div>
+    <div class="status" id="sum" role="list" aria-label="Status of each process"></div>
+    <form class="ask" id="askF"><input id="askI" type="text" placeholder="Ask anything about Berg Bygg, for example: what do I need to do this week?" aria-label="Ask about Berg Bygg" autocomplete="off"><button class="btn p" type="submit">Ask</button></form>
+    <div class="chips" id="chips"></div>
+    <div id="answer"></div>
+  </section>
+
+  <section class="kpis" aria-label="Key figures" id="kpis"></section>
+
+  <div class="grid2">
+    <div class="col">
+      <section class="panel" aria-labelledby="ndH">
+        <div class="ph"><h2 id="ndH">Needs you</h2><span class="tag w" id="ndCount"></span><span class="tag">214 handled by agents since Friday</span><span class="pat">P7 Exceptions queue</span><span class="pat">P6 Offer the action</span></div>
+        <div class="filters" role="group" aria-label="Filter by area" id="filters"></div>
+        <ul class="todo" id="todo"></ul>
+      </section>
+      <section class="panel" aria-labelledby="inH">
+        <div class="ph"><h2 id="inH">Insights</h2><span class="hint">Found by the agents in your payroll, accounting and project data</span><span class="pat">P9 Show the reasons</span></div>
+        <div id="insights" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
+    </div>
+    <div class="col">
+      <section class="panel" aria-labelledby="cuH">
+        <div class="ph"><h2 id="cuH">Coming up</h2><span class="pat">P1 Event and schedule triggers</span></div>
+        <ul class="dl" id="dl"></ul>
+      </section>
+      <section class="panel" aria-labelledby="arH">
+        <div class="ph"><h2 id="arH">Areas</h2><span class="pat">P3 One entry point to every flow</span></div>
+        <nav class="areas" id="areas"></nav>
+      </section>
+      <section class="panel" aria-labelledby="agH">
+        <div class="ph"><h2 id="agH">Agents right now</h2><span class="pat">P10 Activity log</span></div>
+        <ul class="feed" id="feed"></ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kr=n=>'SEK '+Math.round(n).toLocaleString('sv-SE');
+const mkr=n=>'SEK '+(n/1e6).toFixed(2)+'M';
+const P=t=>`<span class="pat">${t}</span>`;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function now(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+const PAYROLL_URL='payroll.html', CLOSE_URL='accounting.html';
+const S={filter:'all',moved:false,reminded:false,notified:false,chat:null};
+$('.brief .ph').innerHTML='<h1 id="hi">Good morning, Lena</h1>'+P('P11 Recap of what the agent did');
+
+/* ---------- cash forecast ---------- */
+const BASE=[6348200,6288200,6228200,6168200,6108200,6108200,6108200,6048200,5988200,5928200,4216846,4156846,4156846,4156846,3796846,3736846,3676846,3616846,4416846,4416846,4416846,4356846,4296846,2679798,2047948,1987948,1987948,1987948,2547948,2487948,2427948];
+function cash(){return BASE.map((v,i)=>S.moved&&i>=14&&i<28?v+300000:v);}
+const BUFFER=2000000;
+function low(){const c=cash();let m=0;c.forEach((v,i)=>{if(v<c[m])m=i;});return {i:m,v:c[m]};}
+function dayLabel(i){const d=new Date(2026,10,2+i);return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];}
+
+/* ---------- summary ---------- */
+function renderSummary(){
+  const open=todos.filter(t=>!t.done).length,l=low(),inv=todos.find(t=>t.id==='inv').done,ftax=todos.find(t=>t.id==='ftax').done;
+  const items=[
+   {k:'Payroll',v:'October paid',s:'Next run 18 Nov',st:'ok'},
+   {k:'Accounting',v:'Close 3 of 5',s:'5 cases need you',st:'ring',p:60},
+   {k:'Invoicing',v:inv?'All sent':'3 ready to send',s:inv?'Due 2 Dec':'SEK 1 240 000',st:inv?'ok':'todo'},
+   {k:'Tax',v:'AGI scheduled',s:ftax?'Tax payment scheduled':'Tax payment 12 Nov',st:ftax?'ok':'todo'},
+   {k:'Cash',v:l.v<BUFFER?'Dips below buffer':'Above buffer',s:mkr(l.v)+' on '+dayLabel(l.i),st:l.v<BUFFER?'alert':'ok'},
+   {k:'Result',v:'+13.6%',s:'SEK 1.34M in October',st:'ok'},
+  ];
+  $('#sum').innerHTML=items.map(i=>`<div class="st ${i.st==='alert'?'st-alert':''}" role="listitem">${i.st==='ring'?`<span class="ring" style="--p:${i.p}" aria-hidden="true"></span>`:i.st==='todo'?'<span class="ico todo-dot" aria-hidden="true"></span>':`<span class="ico ${i.st}"${i.st==='alert'?' role="img" aria-label="Needs attention"':''}></span>`}<span class="k">${esc(i.k)}</span><b>${esc(i.v)}</b><span class="s">${esc(i.s)}</span></div>`).join('');
+  $('.brief .ph').innerHTML='<h1 id="hi">Good morning, Lena</h1>'+(open?`<span class="tag w">${open} things need you</span>`:'<span class="tag">nothing needs you</span>')+P('P11 Recap of what the agent did');
+}
+
+/* ---------- ask ---------- */
+const QS=['What do I need to do this week?','How is Berg Bygg doing?','Can we afford the new excavator lease?'];
+const ANS=[
+ [/week|todo|need to do/i,['Close agent','Payroll agent'],()=>'Finish the 5 October close cases by 5 Nov, send the 3 progress invoices today, and fetch tax tables for the 2 new employees before 16 Nov. AGI is already scheduled for 5 Nov.'],
+ [/doing|how is|status/i,['Close agent'],()=>'October operating result is SEK 1.34M, up 13.6% on September, driven by progress invoicing at Kv. Tallen. 3 of 4 projects are on margin target. The warehouse roof is at 3.1% against an 8% target.'],
+ [/afford|lease|excavator|invest/i,['Cash agent'],()=>{const l=low();return `A lease of about SEK 45 000 a month is affordable over the year, but November is tight. Cash is lowest on ${dayLabel(l.i)} at ${mkr(l.v)}. I'd start the lease in December, after the progress invoices are paid.`;}],
+];
+function renderChips(){$('#chips').innerHTML=QS.map(q=>`<button class="chip" type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');}
+function ask(q){const m=ANS.find(x=>x[0].test(q));S.chat=m?{agents:m[1],a:m[2]()}:{agents:['Close agent'],a:'I looked across payroll, accounting and projects and found nothing unusual about that.'};renderAnswer();}
+function renderAnswer(){$('#answer').innerHTML=S.chat?`<div class="answer"><div class="routed"><span>Answered by</span>${S.chat.agents.map(a=>`<span class="agent">${esc(a)}</span>`).join('')}</div><p>${esc(S.chat.a)}</p></div>`:'';}
+$('#askF').onsubmit=e=>{e.preventDefault();const q=$('#askI').value.trim();if(q)ask(q);};
+$('#chips').onclick=e=>{const b=e.target.closest('.chip');if(b){$('#askI').value=b.dataset.q;ask(b.dataset.q);}};
+
+/* ---------- KPIs ---------- */
+function spark(vals,opts={}){const w=200,h=34,mn=Math.min(...vals),mx=Math.max(...vals),sp=(mx-mn)||1;const pts=vals.map((v,i)=>[i/(vals.length-1)*w,h-3-(v-mn)/sp*(h-8)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const last=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path d="${d} L${w} ${h} L0 ${h} Z" fill="#7f56fa" opacity=".10"/><path d="${d}" fill="none" stroke="#7f56fa" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3" fill="#7f56fa"/></svg>`;}
+function renderKpis(){const l=low();
+  const k=[
+   ['Cash in bank','Today',kr(6348200),`Lowest in 30 days: ${mkr(l.v)} on ${dayLabel(l.i)}`,[5.1,5.4,5.2,5.9,6.1,5.7,6.0,6.4,5.8,6.2,6.1,6.35]],
+   ['Operating result','October',kr(1339936),'+13.6% vs September',[0.94,1.02,0.88,1.10,1.05,1.18,1.34]],
+   ['Overdue receivables','4 customers',kr(912400),'Norrbygg SEK 860 000, 12 days late',[0.21,0.30,0.26,0.41,0.52,0.91]],
+   ['Payroll cost','October, incl. contributions',kr(2898402),'+3.7% vs September, mostly retro pay',[2.71,2.74,2.73,2.76,2.79,2.80,2.90]],
+  ];
+  $('#kpis').innerHTML=k.map(x=>`<div class="kpi"><span class="lbl"><span>${esc(x[0])}</span><span>${esc(x[1])}</span></span><b>${esc(x[2])}</b>${spark(x[4])}<span class="delta">${esc(x[3])}</span></div>`).join('');
+}
+
+/* ---------- needs you ---------- */
+const todos=[
+ {id:'close',area:'Accounting',title:'October close: 5 cases to decide',why:'<b>Reverse charge, ROT, accrual, work in progress and retention</b> need your judgment. 582 of 587 transactions are already booked.',due:'Target 5 Nov',acts:[['Open October close','link',CLOSE_URL]]},
+ {id:'inv',area:'Invoicing',title:'3 progress invoices ready to send',why:'<b>SEK 1 240 000 in total</b>, based on October completion at Kv. Tallen, Norrbygg school and the warehouse roof.',due:'Ready today',acts:[['Send all 3','do','Sent 3 progress invoices, SEK 1 240 000. Payment due 2 Dec.'],['Review first','do','Opened the 3 invoices for review.']]},
+ {id:'pay',area:'Payments',title:'Supplier payment on hold',why:'<b>Stålgruppen Nord AB changed bank account</b> since the last invoice. SEK 48 200 is held until they confirm by phone.',due:'Due today',alert:true,acts:[['Mark as confirmed','do','Confirmed new account, SEK 48 200 released for payment today.'],['Keep on hold','do','Payment stays on hold. I will remind you tomorrow.']]},
+ {id:'tax',area:'Payroll',title:'2 new employees start 16 Nov',why:'<b>Tax details missing</b> for Elin Sandberg and Omar Haddad. I can fetch their tax tables from Skatteverket.',due:'Before 16 Nov',acts:[['Fetch tax tables','do','Fetched tax tables for Elin S. (table 32) and Omar H. (table 33).'],['Later','do','Reminder set for 9 Nov.']]},
+ {id:'ftax',area:'Tax',title:'Tax payment on 12 Nov',why:'<b>SEK 1 651 354 in total</b>: SEK 1 341 354 for October\'s AGI and SEK 310 000 preliminary F-tax.',due:'Due 12 Nov',acts:[['Schedule for 11 Nov','do','Payment of SEK 1 651 354 scheduled for 11 Nov.'],['Pay now','do','Payment of SEK 1 651 354 sent to the tax account.']]},
+];
+const AREAS=['Accounting','Payroll','Invoicing','Payments','Tax'];
+function renderFilters(){const cnt=a=>todos.filter(t=>!t.done&&(a==='all'||t.area===a)).length;
+  $('#filters').innerHTML=[['all','All']].concat(AREAS.map(a=>[a,a])).map(f=>`<button class="fchip" type="button" data-f="${f[0]}" aria-pressed="${S.filter===f[0]}">${esc(f[1])}<span class="c">${cnt(f[0])}</span></button>`).join('');}
+function renderTodo(){
+  const open=todos.filter(t=>!t.done).length;$('#ndCount').textContent=open?open+' to do':'all done';$('#ndCount').className='tag'+(open?' w':'');
+  const list=todos.filter(t=>S.filter==='all'||t.area===S.filter);
+  $('#todo').innerHTML=list.length?list.map(t=>`<li class="${t.alert&&!t.done?'':''}"><span class="ico ${t.done?'ok':t.alert?'alert':''}"${t.alert&&!t.done?' role="img" aria-label="Needs attention"':''}></span>
+    <div class="body"><div class="hd"><b>${esc(t.title)}</b><span class="area">${esc(t.area)}</span></div>
+    ${t.done?`<p class="done-note">${esc(t.done)}</p>`:`<p class="why">${t.why}</p><div class="acts"><span class="btn-pair">${t.acts.map((a,i)=>a[1]==='link'?`<a class="btn sm ${i?'':'p'}" href="${a[2]}" target="_blank" rel="noopener" style="text-decoration:none">${esc(a[0])} ↗</a>`:`<button class="btn sm ${i?'':'p'}" type="button" data-t="${t.id}" data-i="${i}">${esc(a[0])}</button>`).join('')}</span></div>`}</div>
+    <span class="due">${esc(t.done?'Done':t.due)}</span></li>`).join(''):'<li style="grid-template-columns:1fr"><p class="hint" style="margin:0">Nothing in this area needs you.</p></li>';
+  renderFilters();renderSummary();
+}
+$('#filters').onclick=e=>{const b=e.target.closest('.fchip');if(!b)return;S.filter=b.dataset.f;renderTodo();};
+$('#todo').onclick=e=>{const b=e.target.closest('button[data-t]');if(!b)return;const t=todos.find(x=>x.id===b.dataset.t);const a=t.acts[+b.dataset.i];t.done=a[2];feedAdd(t.area+' agent',a[2],'done');renderTodo();};
+
+/* ---------- insights ---------- */
+function cashChart(){
+  const c=cash(),W=640,H=220,L=46,R=12,T=16,B=26,iw=W-L-R,ih=H-T-B,max=7e6,x=i=>L+i/(c.length-1)*iw,y=v=>T+ih-(v/max)*ih,l=low();
+  const d=c.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
+  const yt=[0,2e6,4e6,6e6].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${v?(v/1e6)+'M':'0'}</text>`).join('');
+  const xt=[0,7,14,21,28].map(i=>`<text x="${x(i)}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--muted)">${dayLabel(i)}</text>`).join('');
+  const ev=[[10,'Tax'],[18,'Norrbygg pays'],[23,'Payday'],[24,'VAT']].map(e=>`<circle cx="${x(e[0])}" cy="${y(c[e[0]])}" r="3.5" fill="var(--surface)" stroke="#7f56fa" stroke-width="2"/>`).join('');
+  const hits=c.map((v,i)=>`<rect x="${x(i)-iw/(c.length-1)/2}" y="${T}" width="${iw/(c.length-1)}" height="${ih}" fill="transparent" data-i="${i}"/>`).join('');
+  return `<div class="chart" id="cashChart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="30-day cash forecast, lowest ${mkr(l.v)} on ${dayLabel(l.i)}">
+    ${yt}
+    <line x1="${L}" x2="${W-R}" y1="${y(BUFFER)}" y2="${y(BUFFER)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="${L+6}" y="${y(BUFFER)-6}" text-anchor="start" font-size="11" fill="var(--muted)">Your buffer SEK 2M</text>
+    <path d="${d} L${x(c.length-1)} ${y(0)} L${L} ${y(0)} Z" fill="#7f56fa" opacity=".10"/>
+    <path d="${d}" fill="none" stroke="#7f56fa" stroke-width="2" stroke-linejoin="round"/>
+    ${ev}
+    <circle cx="${x(l.i)}" cy="${y(l.v)}" r="5" fill="${l.v<BUFFER?'#b8407a':'#7f56fa'}" stroke="var(--surface)" stroke-width="2"/>
+    <text x="${x(l.i)}" y="${y(l.v)+20}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">Lowest ${mkr(l.v)}</text>
+    ${xt}${hits}</svg><div class="tip" id="tip"></div></div>
+    <div class="legend"><span><i></i>Expected cash</span><span><i class="b"></i>Buffer</span><span>○ Tax 12 Nov · Norrbygg pays 20 Nov · Payday 25 Nov · VAT 26 Nov</span></div>`;
+}
+function renderInsights(){
+  const l=low(),under=l.v<BUFFER;
+  $('#insights').innerHTML=`
+  <article class="ins"><div class="ph"><h3>Cash dips ${under?'under':'close to'} your buffer in late November</h3><span class="area">Cash</span></div>
+    <p><b>${mkr(l.v)} on ${dayLabel(l.i)}</b>, after the tax payment, payday and VAT all fall within two weeks. This already assumes Norrbygg pays its SEK 860 000 on 20 Nov.</p>
+    ${cashChart()}
+    <div class="acts"><span class="btn-pair">
+      ${S.reminded?'':'<button class="btn sm p" type="button" id="remNorr">Remind Norrbygg now</button>'}
+      ${S.moved?'':'<button class="btn sm" type="button" id="moveBatch">Move supplier batch to 30 Nov</button>'}
+    </span>${S.reminded?'<span class="done-note"><span class="ico ok"></span>Reminder sent to Norrbygg\'s accounts payable.</span>':''}${S.moved?'<span class="done-note"><span class="ico ok"></span>SEK 300 000 supplier batch moved to 30 Nov. Terms still met.</span>':''}</div></article>
+  <article class="ins"><div class="ph"><h3>Warehouse roof margin is 3.1%, target 8%</h3><span class="area">Projects</span></div>
+    <p><b>Roofing sheet prices are up 14% since September.</b> SEK 212 000 of materials are still to be bought. Locking today's price with Stålgruppen would bring the margin back to about 5%.</p>
+    <div class="acts"><span class="btn-pair"><a class="btn sm p" href="${CLOSE_URL}" target="_blank" rel="noopener" style="text-decoration:none">See project in October close ↗</a><button class="btn sm" type="button" data-askq="Why is the warehouse roof margin low?">Ask why</button></span></div></article>
+  <article class="ins"><div class="ph"><h3>2 employees near the overtime limit at Kv. Tallen</h3><span class="area">Payroll</span></div>
+    <p><b>Johan Eriksson has 46 h and Ali Karimi 44 h of overtime this month.</b> The Working Hours Act allows 50 h per month. Overtime at the site is up 40% over 3 months.</p>
+    <div class="acts">${S.notified?'<span class="done-note"><span class="ico ok"></span>Site manager Per Lund notified with the overtime figures.</span>':'<span class="btn-pair"><button class="btn sm p" type="button" id="notify">Notify site manager</button><a class="btn sm" href="'+PAYROLL_URL+'" target="_blank" rel="noopener" style="text-decoration:none">See in payroll ↗</a></span>'}</div></article>`;
+  const r=$('#remNorr');if(r)r.onclick=()=>{S.reminded=true;feedAdd('Invoice agent','Payment reminder sent to Norrbygg Entreprenad AB, SEK 860 000','done');renderInsights();};
+  const m=$('#moveBatch');if(m)m.onclick=()=>{S.moved=true;feedAdd('Payment agent','Supplier batch of SEK 300 000 moved from 16 to 30 Nov','done');renderInsights();renderKpis();renderSummary();};
+  const n=$('#notify');if(n)n.onclick=()=>{S.notified=true;feedAdd('Payroll agent','Per Lund notified: 2 employees near 50 h overtime','done');renderInsights();};
+  document.querySelectorAll('[data-askq]').forEach(b=>b.onclick=()=>{const q=b.dataset.askq;$('#askI').value=q;S.chat={agents:['Project agent'],a:'Materials are 14% over budget, mostly roofing sheet price increases in September. Labour is on budget. Locking the price for the remaining SEK 212 000 would lift the margin to about 5%.'};renderAnswer();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});});
+  const ch=$('#cashChart'),tip=$('#tip');if(ch){const c=cash();ch.querySelectorAll('rect[data-i]').forEach(rc=>{rc.addEventListener('mouseenter',()=>{const i=+rc.dataset.i,box=ch.getBoundingClientRect(),rb=rc.getBoundingClientRect();tip.textContent=dayLabel(i)+': '+kr(c[i]);tip.style.left=(rb.left-box.left+rb.width/2)+'px';tip.style.top=(ch.querySelector('svg').getBoundingClientRect().height*((16+(220-42)-(c[i]/7e6)*(220-42))/220))+'px';tip.classList.add('on');});rc.addEventListener('mouseleave',()=>tip.classList.remove('on'));});}
+}
+
+/* ---------- coming up ---------- */
+function renderDl(){
+  const items=[['5 Nov','AGI for October to Skatteverket','<span class="tag">scheduled</span>'],['5 Nov','October close target','<span class="tag w">5 to decide</span>'],['12 Nov','Tax payment, SEK 1 651 354',todos.find(t=>t.id==='ftax').done?'<span class="tag">scheduled</span>':'<span class="tag n">to schedule</span>'],['16 Nov','Elin Sandberg and Omar Haddad start',todos.find(t=>t.id==='tax').done?'<span class="tag">ready</span>':'<span class="tag n">tax details</span>'],['18 Nov','November payroll run starts','<span class="tag n">automatic</span>'],['20 Nov','Norrbygg payment due, SEK 860 000',S.reminded?'<span class="tag">reminded</span>':'<span class="tag n">expected</span>'],['25 Nov','Payday','<span class="tag n">automatic</span>'],['26 Nov','VAT return for October','<span class="tag">draft ready</span>']];
+  $('#dl').innerHTML=items.map(i=>`<li><span class="d">${i[0]}</span><span>${esc(i[1])}</span>${i[2]}</li>`).join('');
+}
+/* ---------- areas ---------- */
+function renderAreas(){
+  const a=[['Payroll','October paid 23 Oct and reported','Next run starts 18 Nov',100,PAYROLL_URL],['Accounting','October close in progress','Step 3 of 5 · 5 cases need you',60,CLOSE_URL],['Invoicing','3 progress invoices ready','SEK 912 400 overdue across 4 customers',70,null],['Tax and reporting','AGI scheduled 5 Nov','VAT draft ready, due 26 Nov',80,null]];
+  $('#areas').innerHTML=a.map(x=>`<a href="${x[4]||'#areas'}" ${x[4]?'target="_blank" rel="noopener"':''}><b>${x[0]}${x[4]?' <span class="ext">↗</span>':''}</b><span class="tag ${x[3]===100?'':'n'}">${x[3]===100?'done':x[3]+'%'}</span><span class="s">${esc(x[1])} · ${esc(x[2])}</span><span class="mini"><i style="width:${x[3]}%"></i></span></a>`).join('');
+}
+/* ---------- agent feed ---------- */
+const feed=[['Close agent','Booking 12 supplier invoices from this morning','wait'],['Invoice agent','Matched 4 customer payments, SEK 318 000','done'],['Payroll agent','Checked November time reports so far, all on track','done'],['VAT agent','Drafted October VAT return, SEK 571 850 to pay','done']];
+function renderFeed(){$('#feed').innerHTML=feed.slice(0,6).map(f=>`<li><span class="ico ${f[2]==='wait'?'wait':'ok'}"></span><span><b>${esc(f[0])}</b> ${esc(f[1])}<small>${f[2]==='wait'?'Working…':(f[3]||'Earlier today')}</small></span></li>`).join('');}
+function feedAdd(a,t,s){feed.unshift([a,t,s,'Just now, by Lena S.']);renderFeed();renderDl();}
+setTimeout(()=>{feed[feed.findIndex(f=>f[2]==='wait')]=['Close agent','Booked 12 supplier invoices from this morning','done','Just now']; renderFeed();},reduce?500:4200);
+
+$('#patToggle').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);$('#app').classList.toggle('show-pat',on);});
+renderChips();renderKpis();renderTodo();renderInsights();renderDl();renderAreas();renderFeed();renderAnswer();
+})();
+</script>
+
+</body></html>

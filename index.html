@@ -1,0 +1,1338 @@
+<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Agent Design Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky top bar (logo, three page links, CTA button); Patterns page = left section nav + reading column with examples. Visma brand tokens. */
+:root{
+  --bg:#fefefe; --surface:#fefefe; --raise:#f3f5f6; --soft:#e7ebec; --ink:#131313; --muted:#5c6469; --line:#dce1e3;
+  --accent:#7f56fa; --accent-ink:#fefefe; --sel:#e6defe; --sel-ink:#131313; --accent-text:#5b33d6;
+  --ok:#2b7a4b; --okbg:#e2f0e6; --warn:#4c0c32; --warnbg:#f3e6ec; --olive:#4a4608; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --font:"Visma Text","Inter","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131313;--surface:#1c1c1e;--raise:#232326;--soft:#2a2b2e;--ink:#ededed;--muted:#a7b0b4;--line:#36393c;--accent:#8f6bff;--accent-ink:#fefefe;--sel:#3a2f63;--sel-ink:#fefefe;--accent-text:#b9a3ff;--ok:#63c58e;--okbg:#16301f;--warn:#eba9c9;--warnbg:#3a1628;--olive:#d6d08f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131313;--surface:#1c1c1e;--raise:#232326;--soft:#2a2b2e;--ink:#ededed;--muted:#a7b0b4;--line:#36393c;--accent:#8f6bff;--accent-ink:#fefefe;--sel:#3a2f63;--sel-ink:#fefefe;--accent-text:#b9a3ff;--ok:#63c58e;--okbg:#16301f;--warn:#eba9c9;--warnbg:#3a1628;--olive:#d6d08f;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1360px;margin:0 auto;padding-inline:24px;height:72px;display:flex;align-items:center;gap:24px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;flex:none}
+.logo .mark{display:block;width:73px;height:20px;background:var(--ink);-webkit-mask:url(data:image/png;base64,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) center/contain no-repeat;mask:url(data:image/png;base64,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) center/contain no-repeat}
+.logo .prod{font-size:14px;font-weight:600;color:var(--muted);border-left:1px solid var(--line);padding-left:12px}
+.nav{display:flex;gap:4px;align-items:stretch;justify-content:flex-end;flex:1;min-width:0;align-self:stretch}
+.nav a{position:relative;display:flex;align-items:center;text-decoration:none;font-weight:600;font-size:15px;padding-inline:14px;white-space:nowrap}
+.nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;background:transparent}
+.nav a:hover::after{background:var(--line)}
+.nav a[aria-current="page"]::after{background:var(--ink)}
+.cta{flex:none;text-decoration:none;background:transparent;color:var(--ink);border:1.5px solid var(--ink);font-weight:700;font-size:15px;padding:10px 22px;border-radius:99px;white-space:nowrap}
+.cta:hover{border:2.5px solid transparent;padding:9px 21px;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(90deg,#FFAB65,#7F56FA) border-box;color:var(--ink)}
+.cta[aria-current="page"]{background:var(--ink);color:var(--bg)}
+
+/* page shell */
+.page{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:0 64px}
+.with-side{display:grid;grid-template-columns:300px minmax(0,1fr);gap:56px;align-items:start}
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);height:calc(100vh - 72px);overflow:auto;margin-left:-24px;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.grp{display:flex;flex-direction:column;gap:2px;padding:22px 24px 24px;border-bottom:1px solid var(--line)}
+.grp:last-child{border-bottom:0}
+.grp h2{font-size:12.5px;font-weight:400;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);margin:0 0 8px}
+.grp a{position:relative;display:flex;align-items:center;justify-content:flex-start;gap:6px;text-decoration:none;font-size:17px;font-weight:500;padding:3px 0;transition:padding .15s}
+.grp a:hover span{text-decoration:underline;text-decoration-color:var(--muted);text-underline-offset:3px}
+.grp a[aria-current="page"]{color:var(--ink);font-weight:700;padding-left:16px}
+.grp a[aria-current="page"]::before{content:"";position:absolute;left:0;top:50%;width:7px;height:9px;margin-top:-4.5px;background:var(--ink);clip-path:polygon(0 0,100% 50%,0 100%)}
+.ext{width:14px;height:14px;flex:none;color:var(--muted)}
+.grp .ext{color:var(--ink)}
+
+/* content */
+.main{padding-block:40px 0;min-width:0;display:flex;flex-direction:column;gap:28px;max-width:880px}
+.crumb{font-size:14px;color:var(--muted);margin:0}
+.main h1{font-size:clamp(34px,4.6vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:800;margin:0;text-wrap:balance}
+.lede{display:flex;flex-direction:column;gap:14px;max-width:66ch}
+.lede p{margin:0;font-size:18px}
+.lede .law{font-weight:600}
+.demo{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;border:1.5px solid var(--ink);border-radius:99px;padding:10px 20px}
+.demo:hover{background:var(--ink);color:var(--bg)}
+.demo:hover .ext{color:var(--bg)}
+.demo .ext{color:var(--ink)}
+.sec{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:28px}
+.sec h2{font-size:24px;font-weight:800;letter-spacing:-.01em;margin:0}
+.sec>p{margin:0;color:var(--muted);max-width:66ch}
+.examples{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;margin-top:14px}
+.ex{margin:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ex.wide{grid-column:1/-1}
+.shot{background:var(--raise);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center}
+.shot img{display:block;max-width:100%;height:auto;border-radius:8px;box-shadow:0 1px 2px rgba(19,19,19,.06),0 6px 20px rgba(19,19,19,.08)}
+.ex figcaption{display:flex;flex-direction:column;gap:4px}
+.ex .marker{font-weight:700}
+.ex .marker code{font-family:inherit}
+.ex .where{font-size:13.5px;color:var(--muted)}
+.ex .what{font-size:15px;margin:0}
+.soon{border:1.5px dashed var(--line);border-radius:12px;padding:28px;color:var(--muted);max-width:66ch}
+.blank{padding-block:56px;display:flex;flex-direction:column;gap:16px;max-width:880px}
+.blank h1{font-size:clamp(34px,4.6vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:800;margin:0}
+footer{border-top:1px solid var(--line);margin-top:24px}
+footer div{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:24px;font-size:13px;color:var(--muted)}
+
+
+/* live examples (scoped copies of the prototype components) */
+.shot{position:relative}
+.pp{position:absolute;top:12px;right:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--surface);border:1.5px solid var(--ink);border-radius:99px;padding:5px 12px 5px 10px;cursor:pointer}
+.pp:hover{background:var(--ink);color:var(--bg)}
+.lv.paused .ico.wait,.lv.paused .typing i,.lv.paused .feed li.in{animation-play-state:paused}
+.shot:has(.pp){padding-top:56px}
+
+.lv{width:100%;max-width:820px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;font-size:14.5px;line-height:1.45;box-shadow:0 1px 2px rgba(19,19,19,.05),0 6px 20px rgba(19,19,19,.07)}
+.lv.narrow{max-width:460px}
+.lv .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lv .nm{font-weight:700}
+.lv .type{font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:1px 8px;background:var(--soft);color:var(--olive)}
+.lv .rule{margin-left:auto;font-size:12px;color:var(--muted);text-align:right}
+.lv .diff{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lv .diff div{padding:4px 10px}
+.lv .diff .m{background:var(--warnbg);color:var(--warn)}
+.lv .diff .p{background:var(--okbg);color:var(--ok)}
+.lv .acts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lv .by{margin-left:auto;display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 6px;font-size:12.5px;color:var(--muted)}
+.lv .b{font:inherit;font-weight:700;font-size:12.5px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:99px;padding:4px 12px;cursor:pointer}
+.lv .b:hover{background:var(--raise)}
+.lv .b.p:hover{background:var(--ink);opacity:.86}
+.lv .b.p{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.lv .res{display:flex;align-items:center;gap:8px}
+.lv .ico{display:inline-block;vertical-align:middle;width:18px;height:18px;border-radius:50%;flex:none;position:relative;background:var(--line)}
+.lv .ico.ok{background:var(--ok)}
+.lv .ico.ok::after{content:"";position:absolute;left:6px;top:3px;width:4px;height:8px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.lv .ico.wait{background:transparent;border:2.5px solid var(--sel);border-top-color:var(--accent);border-right-color:var(--accent);animation:lvspin .8s linear infinite}
+.lv .ico.rej{background:var(--warn)}
+.lv .ico.rej::before,.lv .ico.rej::after{content:"";position:absolute;left:8px;top:4px;width:2px;height:10px;background:var(--surface);border-radius:1px;transform:rotate(45deg)}
+.lv .ico.rej::after{transform:rotate(-45deg)}
+@keyframes lvspin{to{transform:rotate(360deg)}}
+.lv .ask{display:flex;gap:8px}
+.lv .ask input{flex:1;min-width:0;font:inherit;border:1px solid var(--line);background:var(--raise);color:var(--ink);border-radius:10px;padding:8px 12px}
+.lv .chips{display:flex;gap:6px;flex-wrap:wrap}
+.lv .chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--raise);color:var(--ink);border-radius:99px;padding:3px 10px;cursor:pointer}
+.lv .chip[aria-pressed="true"],.lv .chip:hover{border-color:var(--ink)}
+.lv .answer{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.lv .routed{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.lv .agent{display:inline-flex;align-items:center;gap:5px;font-family:var(--font);font-weight:700;font-size:12px;line-height:1.3;white-space:nowrap;background:var(--surface);color:var(--accent-text);border:1px solid var(--accent);border-radius:99px;padding:1px 8px 1px 6px;vertical-align:middle}
+.lv .agent::before{content:"";width:7px;height:7px;background:var(--accent);transform:rotate(45deg);border-radius:1px;flex:none}
+.lv .thinking{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13.5px}
+.lv .tag{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:99px;background:var(--okbg);color:var(--ok)}
+.lv .tag.w{background:var(--warnbg);color:var(--warn)}
+.lv .tag.n{background:var(--soft);color:var(--muted)}
+.lv .thread{display:flex;flex-direction:column;gap:6px}
+.lv .bub{max-width:88%;padding:8px 11px;border-radius:12px;font-size:14px}
+.lv .bub small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.lv .bub.me{align-self:flex-start;background:var(--sel);color:var(--sel-ink);border-bottom-left-radius:4px}
+.lv .bub.them{align-self:flex-end;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-bottom-right-radius:4px}
+.lv .bub.them small{color:inherit;opacity:.7}
+.lv .typing{align-self:flex-end;display:inline-flex;gap:4px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.lv .typing i{width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.4;animation:lvdot 1s infinite}
+.lv .typing i:nth-child(2){animation-delay:.15s}.lv .typing i:nth-child(3){animation-delay:.3s}
+@keyframes lvdot{50%{opacity:1}}
+.lv h4{margin:0;font-size:15px;font-weight:800}
+.lv .feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.lv .feed li{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+.lv .feed li:first-child{border-top:0}
+.lv .feed .ico{margin-top:1px}
+.lv .feed small{display:block;color:var(--muted);font-size:12px}
+.lv .feed li.in{animation:lvin .5s ease-out}
+@keyframes lvin{from{background:var(--okbg)}to{background:transparent}}
+.lv .hint{font-size:12.5px;color:var(--muted)}
+.lv .trg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.lv .trg li{display:grid;grid-template-columns:110px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.lv .trg li:first-child{border-top:0}
+.lv .trg .when{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lv .trg .tx{display:flex;flex-direction:column;min-width:0}
+.lv .trg small{font-size:12.5px;color:var(--muted)}
+.lv .trg .nx{color:var(--ink)}
+.lv .trg li.off .tx b,.lv .trg li.off .when{color:var(--muted)}
+.lv .sw{width:34px;height:20px;border-radius:99px;border:0;background:var(--line);position:relative;cursor:pointer;flex:none;padding:0}
+.lv .sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fefefe;box-shadow:0 1px 2px rgba(19,19,19,.25);transition:left .15s}
+.lv .sw[aria-checked="true"]{background:var(--ink)}
+.lv .sw[aria-checked="true"] i{left:16px}
+.lv .calwrap{overflow-x:auto}
+.lv .calg{display:grid;grid-template-columns:34px repeat(5,minmax(88px,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:480px}
+.lv .calg>span{border-left:1px solid var(--line);border-top:1px solid var(--line);padding:6px;min-height:52px;font-size:12.5px}
+.lv .calg .dh{min-height:0;text-align:center;font-weight:700;border-top:0;padding:8px 6px}
+.lv .calg>span:nth-child(6n+1){border-left:0}
+.lv .calg .hh{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+.lv .calg>span:first-child{border-top:0}
+.lv .mt{display:block;background:var(--soft);border-radius:6px;padding:4px 6px;line-height:1.3}
+.lv .ag{display:flex;align-items:flex-start;gap:5px;width:100%;text-align:left;font:inherit;font-size:12.5px;line-height:1.3;background:var(--sel);color:var(--sel-ink);border:0;border-left:3px solid var(--accent);border-radius:6px;padding:4px 6px;cursor:pointer}
+.lv .calg .cc{min-width:0}
+.lv .ag span{min-width:0;overflow-wrap:anywhere}
+.lv .ag.sel{box-shadow:0 0 0 1.5px var(--accent)}
+.lv .ag .ico{width:13px;height:13px;margin-top:1px}
+.lv .ag .ico.ok::after{left:4px;top:1.5px;width:3px;height:6px}
+.lv .ag .ico.wait{border-width:2px}
+.lv .dia{color:var(--accent);font-size:10px;line-height:1.6}
+.lv .calnote{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.lv .evts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:13px}
+.lv .evt{display:inline-flex;align-items:center;gap:6px}
+.lv .started{display:flex;gap:10px;align-items:flex-start;margin:0}
+.lv .started .ico{margin-top:2px}
+.lv .pbar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.lv .pbar i{display:block;height:100%;background:var(--accent);transition:width .35s}
+.lv .lvrow{display:flex;flex-direction:column;gap:6px;padding-top:4px}
+.lv .lvrow .lbl{font-size:13px;color:var(--muted)}
+.lv .seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.lv .seg button{font:inherit;font-weight:700;font-size:12.5px;border:0;background:var(--surface);color:var(--muted);padding:6px 0;cursor:pointer}
+.lv .seg button+button{border-left:1px solid var(--line)}
+.lv .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.lv .seg.sm button{padding:4px 12px}
+.lv .out{margin:0;font-size:13px;display:flex;gap:8px;align-items:center;min-height:20px}
+.lv .out .ico{width:14px;height:14px;border-width:2px}
+.lv .perm{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .perm li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-top:1px solid var(--line)}
+.lv .perm li:first-child{border-top:0}
+.lv .perm li>span{display:flex;flex-direction:column}
+.lv .perm small{font-size:12px;color:var(--muted)}
+.lv .perm .tag{border:0;cursor:pointer;font-family:var(--mono)}
+.lv .perm .tag:hover{outline:1.5px solid currentColor}
+.lv .askbox{display:flex;flex-direction:column;gap:8px;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.lv .b.ink{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.lv .feed .mono{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:2px}
+#lv-levlog .feed li{grid-template-columns:44px 1fr}
+.lv .lvtag{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-weight:700;font-size:11.5px;line-height:1.3;white-space:nowrap;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:1px 8px;vertical-align:middle}
+.lv .lvtag .lvm{display:inline-flex;gap:2px;align-items:flex-end}
+.lv .lvtag .lvm i{width:3px;border-radius:1px;background:var(--line)}
+.lv .lvtag .lvm i:nth-child(1){height:5px}.lv .lvtag .lvm i:nth-child(2){height:8px}.lv .lvtag .lvm i:nth-child(3){height:11px}
+.lv .lvtag .lvm i.on{background:var(--accent)}
+.lv .offerbox{display:flex;flex-direction:column;gap:8px;background:var(--sel);color:var(--sel-ink);border-radius:10px;padding:10px 12px;font-size:14px}
+.lv .offerbox .by{color:var(--sel-ink)}
+.lv .offerbox .b:not(.p){background:var(--surface)}
+.lv .cards{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .cards li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .cards li:first-child{border-top:0}
+.lv .cards .mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lv .cards .amt{font-variant-numeric:tabular-nums;font-weight:600}
+.lv .rc{display:block;font-size:12px;color:var(--ok)}
+.lv .seg.vs{grid-template-columns:1fr 1fr;max-width:360px}
+.lv .warnline{margin:0;font-size:13px;color:var(--warn);background:var(--warnbg);border-radius:8px;padding:6px 10px}
+.lv .mail{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.lv .mail small{color:var(--muted);font-size:12px}
+.lv .recf{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .recf li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px;padding:8px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .recf li:first-child{border-top:0}
+.lv .recf li.in{animation:lvin .6s ease-out}
+.lv .recf .tag{border:0;cursor:pointer}
+.lv .recf .tag:hover{outline:1.5px solid currentColor}
+.lv .recf small{flex-basis:100%;font-size:12.5px;color:var(--muted)}
+.lv .cite{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-size:11px;font-weight:700;line-height:1;padding:0;cursor:pointer;vertical-align:baseline;position:relative;top:-2px;margin:0 2px;font-variant-numeric:tabular-nums}
+.lv .cite[aria-expanded="true"]{box-shadow:0 0 0 2px var(--sel)}
+.lv .srcbox{display:flex;flex-direction:column;gap:2px;border-left:3px solid var(--accent);background:var(--raise);border-radius:0 8px 8px 0;padding:8px 12px;font-size:13.5px}
+.lv .stl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .stl li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .stl li:first-child{border-top:0}
+.lv .stl li.cur{background:var(--raise)}
+.lv .stl small{display:block;font-size:12.5px;color:var(--muted)}
+.lv .ico.num{display:inline-grid;place-items:center;background:var(--soft);font-size:11px;font-weight:700;line-height:1;padding:0;color:var(--muted);font-variant-numeric:tabular-nums}
+.lv .stl li.cur .ico.num{background:var(--sel);color:var(--sel-ink)}
+.lv .srbox{display:flex;flex-direction:column;gap:3px;border:1px dashed var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.lv .srbox .lbl{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lv .srbox .old{color:var(--muted)}
+.lv .chgl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .chgl li{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
+.lv .chgl li:first-child{border-top:0}
+.lv .chgl li.dec{background:var(--raise)}
+.lv .chgl li.rej small{text-decoration:none}
+.lv .chgl small{font-size:12.5px;color:var(--muted)}
+.lv .b:disabled{opacity:.45;cursor:not-allowed}
+.lv .sel{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 8px;max-width:100%}
+.lv .ta{font:inherit;font-size:13.5px;line-height:1.5;width:100%;border:1px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 8px;resize:vertical}
+.lv .pre{white-space:pre-line;line-height:1.5}
+.lv .lnk{font:inherit;font-size:13px;font-weight:600;background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer}
+.lv .dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.lv .dot.ok{background:var(--ok)}.lv .dot.ac{background:var(--ink)}
+.lv .exq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lv .exq>li{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:8px}
+.lv .excard{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.lv .excard p{margin:0}
+.lv .excard small{font-size:12.5px;color:var(--muted)}
+.lv .empty{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--okbg);border-radius:10px;padding:12px 14px}
+.lv .empty .b{margin-left:auto}
+.lv .cards small.hint{display:block;font-size:12px}
+.lv .cards li.risk{background:var(--warnbg)}
+.lv .cards li.risk .mono{color:var(--warn);font-weight:600}
+.lv .inb{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .inb li{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line)}
+.lv .inb li:first-child{border-top:0}
+.lv .inb small{display:block;font-size:12.5px;color:var(--muted)}
+.lv .inb .mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lv .adot{width:22px;height:22px;border-radius:6px;background:var(--sel);position:relative}
+.lv .adot::after{content:"";position:absolute;inset:7px;background:var(--accent);transform:rotate(45deg);border-radius:1px}
+.lv .kv{display:grid;grid-template-columns:96px minmax(0,1fr);margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lv .kv dt,.lv .kv dd{margin:0;padding:8px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .kv dt{font-weight:700;font-size:13px;color:var(--muted);background:var(--raise)}
+.lv .kv dt:first-of-type,.lv .kv dd:first-of-type{border-top:0}
+.lv .chk{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ok)}
+.lv .cardrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.lv .toast{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.lv .toast .b{background:var(--bg);color:var(--ink);border-color:var(--bg)}
+.lv .ulog{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .ulog li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .ulog li:first-child{border-top:0}
+.lv .ulog li.in{animation:lvin .6s ease-out}
+.lv .ulog li.gone>span:nth-child(2){color:var(--muted);text-decoration:line-through}
+.lv .ulog .mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lv .ulog .end{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:560px){.lv .ulog li{grid-template-columns:40px minmax(0,1fr)}.lv .ulog .end{grid-column:2;justify-content:flex-start}}
+.lv .tl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .tl li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;padding:8px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .tl li:first-child{border-top:0}
+.lv .tl li.in{animation:lvin .6s ease-out}
+.lv .tl li.per{background:var(--raise)}
+.lv .tl .mono,.lv .evl .mono{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:1px}
+.lv .tl small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.lv .lnk.plain{color:var(--ink);font-weight:500;font-size:14px;text-align:left;text-decoration-color:var(--line);text-underline-offset:3px}
+.lv .lnk.plain:hover{text-decoration-color:var(--ink)}
+.lv .evl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lv .evl li{display:grid;grid-template-columns:48px 26px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 12px;border-top:1px solid var(--line);font-size:13.5px}
+.lv .evl li:first-child{border-top:0}
+.lv .evl li.dh{display:block;background:var(--raise);font-size:12px;font-weight:700;color:var(--muted);padding:5px 12px}
+.lv .evl li.in{animation:lvin .6s ease-out}
+.lv .evl li.gone>span:nth-child(3){color:var(--muted);text-decoration:line-through}
+.lv .evl .who{display:flex;justify-content:center}
+.lv .ini{font-size:9.5px;font-weight:700;background:var(--soft);border-radius:99px;padding:2px 5px}
+.lv .dot.wr{background:#b4651f}
+.lv .evl .end{display:flex;justify-content:flex-end}
+.lv .raw{margin:0;font-family:var(--mono);font-size:11.5px;line-height:1.6;background:var(--raise);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.lv .tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.lv .tile{font:inherit;color:var(--ink);text-align:left;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.lv .tile b{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.lv .tile span{font-size:13px;color:var(--muted)}
+.lv .tile:hover,.lv .tile[aria-expanded="true"]{border-color:var(--ink)}
+.lv .sum{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.lv .msgs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .msgs li{display:flex;flex-direction:column;padding:8px 12px;border-top:1px solid var(--line);font-size:13.5px;transition:background .2s}
+.lv .msgs li:first-child{border-top:0}
+.lv .msgs li.hl{background:var(--sel);color:var(--sel-ink)}
+.lv .lbl.hint{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.lv .inb li.gone b{color:var(--muted);text-decoration:line-through}
+.lv .inb .tag{justify-self:start}
+.lv .inb:has(.tag) li{grid-template-columns:62px minmax(0,1fr) auto}
+@media (max-width:560px){.lv .tiles{grid-template-columns:1fr 1fr}.lv .tile b{font-size:20px}}
+.lv .track{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.lv .track span{height:10px;border-radius:3px;background:var(--line);position:relative}
+.lv .track span.on{background:var(--ok)}
+.lv .track span.th::after{content:"";position:absolute;right:-3px;top:-4px;bottom:-4px;width:2px;background:var(--ink);border-radius:1px}
+.lv .sbl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.lv .sbl li{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:14px}
+.lv .sbl li:first-child{border-top:0}
+.lv .sbl small{display:block;font-size:12px}
+.lv .sbl .mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lv .never{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
+.lv .never .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
+#lv-ladder .stl li.cur .ico.num{background:var(--ink);color:var(--bg)}
+.lv .fail{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-left:3px solid var(--warn);background:var(--warnbg);color:var(--ink);border-radius:0 10px 10px 0;padding:10px 12px;font-size:14px}
+.lv .fail h4{color:var(--warn)}
+.lv .chk2{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13.5px}
+.lv .chk2 .tag{margin-right:4px}
+.lv .opts{display:flex;flex-direction:column;gap:6px}
+.lv .opt{font:inherit;text-align:left;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.lv .opt small{font-size:12.5px;color:var(--muted)}
+.lv .opt[aria-checked="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.lv .cards li.q{background:var(--sel)}
+.lv .cards li.q .mono{color:var(--sel-ink);font-weight:600}
+.lv .cards li small{display:block;font-size:12px}
+.ovsec{gap:16px;border-top:0;padding-top:24px}
+.ovh{display:flex;gap:14px;align-items:flex-start}
+.ovh p{margin:2px 0 0;color:var(--muted)}
+.ovn{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);font-weight:700;font-size:13px;margin-top:2px}
+.ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.ovc{display:flex;flex-direction:column;gap:6px;text-decoration:none;background:var(--raise);border:1px solid transparent;border-radius:12px;padding:16px 18px 18px;transition:background .15s,color .15s}
+.ovc{min-height:180px}
+.ovgrid.tall .ovc{min-height:270px}
+.ovc:hover,.ovc:focus-visible{background:#7F56FA;border-color:transparent;color:#fefefe}
+.ovc:hover .mono,.ovc:hover span:last-child,.ovc:focus-visible .mono,.ovc:focus-visible span:last-child{color:#fefefe}
+.ovc .mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ovc b{font-size:17px}
+.ovc span:last-child{font-size:14.5px;color:var(--muted);line-height:1.45}
+.ovstart{margin:8px 0 0}
+.ovstart a{font-weight:700}
+.proto{margin-top:40px;border-radius:16px;padding:36px 36px 32px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--ink);background:var(--bg)}
+.proto .eyebrow{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+.proto h2{margin:0;font-size:clamp(28px,3.4vw,38px);line-height:1.1;letter-spacing:-.02em;font-weight:800}
+.proto .spark{width:1em;height:1em;margin-left:.04em;vertical-align:baseline;position:relative;top:-.22em;color:var(--ink)}
+.proto .pl{margin:0;font-size:18px;max-width:60ch}
+.psteps{list-style:none;margin:28px 0 28px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;counter-reset:ps}
+.psteps li{counter-increment:ps;display:flex;flex-direction:column;gap:4px}
+.psteps li::before{content:counter(ps);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#FFAB65,#7F56FA);color:#fefefe;font-weight:700;font-size:13px;line-height:1;margin-bottom:6px}
+.psteps span{font-size:14.5px;color:var(--muted)}
+.ptry{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.ptry .lbl{font-size:12.5px;color:var(--muted)}
+.ptry code{font-family:var(--mono);font-size:14px;flex:1;min-width:200px}
+.pcopy{font:inherit;font-size:13px;font-weight:700;border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:99px;padding:5px 14px;cursor:pointer}
+.pcopy:hover{background:var(--ink);color:var(--bg)}
+.pacts{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.pcta{display:inline-flex;align-items:center;gap:8px}
+.pcta .ext{color:var(--ink)}
+.pbtn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;background:var(--ink);color:var(--bg);border-radius:99px;padding:12px 24px}
+.pbtn .ext{color:var(--bg)}
+.pbtn:hover{opacity:.88}
+@media (max-width:720px){.proto{padding:24px 20px}.psteps{grid-template-columns:1fr}}
+.side.pr .grp a{padding:6px 0;line-height:1.35}
+.side.pr .grp a[aria-current="page"]{padding-left:16px}
+.side.pr .grp a[aria-current="page"]::before{top:calc(6px + .675em);margin-top:-4.5px}
+.pqs{display:flex;flex-direction:column;gap:16px;max-width:66ch}
+.pq{margin:0;border-left:3px solid var(--accent);padding:2px 0 2px 18px;font-size:16.5px;line-height:1.6}
+.ipgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+.ipc{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-height:204px}
+.ipc b{font-size:16.5px}
+.ipc .ipt{font-size:14.5px;color:var(--muted);line-height:1.45}
+.ipc .ips{margin-top:auto;padding-top:8px;font-size:12.5px;color:var(--muted)}
+.pita{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.04em;border:1px solid var(--ink);border-radius:99px;padding:1px 8px}
+.guide{display:flex;flex-direction:column;gap:36px;max-width:66ch;margin:8px 0 16px}
+.glbl{display:block;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}
+.look ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:16.5px}
+.da{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dobox,.avbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:3px solid var(--ok)}
+.avbox{border-top-color:var(--warn)}
+.dobox .glbl{color:var(--ok)}.avbox .glbl{color:var(--warn)}
+.dobox p,.avbox p{margin:0;font-size:15.5px}
+@media (max-width:720px){.da{grid-template-columns:1fr}}
+#lv-inbox .inb li{grid-template-columns:minmax(0,1fr) auto auto}
+.lv .evl li{grid-template-columns:48px auto minmax(0,1fr) auto}
+.lv .evl .who{justify-content:flex-start}
+.lv .cmp{display:grid;grid-template-columns:150px minmax(0,1fr);margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
+.lv .cmp dt,.lv .cmp dd{margin:0;padding:8px 12px}
+.lv .cmp dt{font-size:12.5px;font-weight:700}
+.lv .cmp .now{background:var(--warnbg);color:var(--warn)}
+.lv .cmp .new{background:var(--okbg);color:var(--ok);border-top:1px solid var(--line)}
+.lv .cmp dd.new{color:var(--ink)}
+@media (max-width:560px){.lv .cmp{grid-template-columns:1fr}.lv .cmp dd.now{padding-top:0}.lv .cmp dd.new{padding-top:0;border-top:0}}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:560px){.lv .trg li{grid-template-columns:minmax(0,1fr) auto auto}.lv .trg .when{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){.lv .sw i,.lv .pbar i{transition:none}.lv .ico.wait,.lv .typing i,.lv .feed li.in{animation:none}}
+@media (max-width:960px){.with-side{grid-template-columns:1fr;gap:0}.side{position:static;height:auto;margin-left:0;border-right:0;flex-direction:row;overflow-x:auto;border-bottom:1px solid var(--line)}.grp{flex:none;border-bottom:0;border-right:1px solid var(--line);padding:16px 20px}.grp:first-child{padding-left:0}.grp a{white-space:nowrap;font-size:15.5px}}
+@media (max-width:720px){.top-in{height:auto;flex-wrap:wrap;padding-block:12px;gap:10px 16px;padding-inline:16px}.logo{flex:1}.nav{order:3;flex-basis:100%;overflow-x:auto;justify-content:flex-start;height:44px;margin-bottom:-13px}.nav a{padding-inline:10px}.nav a::after{left:10px;right:10px}.page,footer div{padding-inline:16px}.examples{grid-template-columns:1fr}.side{top:auto}.shot{padding:12px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#patterns" aria-label="Agent design guidelines, home"><span class="mark" role="img" aria-label="Visma"></span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="#principles" data-top="principles">Principles</a>
+      <a href="#patterns" data-top="patterns">Patterns</a>
+      <a href="#demo" data-top="demo">Demo</a>
+    </nav>
+    <a class="cta" href="#assess" data-top="assess">Assess your agent</a>
+  </div>
+</header>
+
+<div class="page" id="page"></div>
+<footer><div>© Visma 2026 All Rights Reserved</div></footer>
+
+<script>
+(function(){
+const EXT='<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const DEMO_URL='demo/payroll.html';
+const PLUGIN_URL='https://prod-discovery.github.io/discovery-engine-guide/';
+const NAV=[
+ ['Before the agent acts',[['say-its-an-agent','Agent disclosure'],['autonomy-levels','Autonomy levels'],['triggers','Triggers'],['suggestions','Suggestions']]],
+ ['While the agent acts',[['live-progress','Live progress'],['failure-disclosure','Failure disclosure'],['exceptions','Exceptions'],['actions','Review and approve'],['uncertainty','Clarifying questions'],['hand-over','Escalation'],['undo','Undo']]],
+ ['After the agent acts',[['activity-log','Audit trail'],['recap','Recap']]],
+ ['Over time',[['autonomy-evolution','Earned autonomy']]],
+ ['Resources',[['claude-plugin','Claude plug-in','ext'],['contact','Contact']]],
+];
+const DEFAULT='say-its-an-agent';
+const EXAMPLES=[
+ {id:'propose',marker:'Proposals by agents',what:'Every proposal names the agent that made it, right next to the decision buttons. Try accepting or rejecting it.'},
+ {id:'client',marker:'Drafted by agent, sent by you',what:'Messages that reach clients say they were drafted by an agent, and which person sent them.'},
+ {id:'feed',marker:'Work in progress',what:'Ongoing work is listed per agent, with a spinner while it runs, so it is always clear what the agents are doing.',narrow:true},
+];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function find(id){for(const g of NAV)for(const it of g[1])if(it[0]===id)return {group:g[0],id,label:it[1],ext:it[2]};return null;}
+
+function side(cur){return `<aside class="side" aria-label="Patterns">${NAV.map(g=>`<div class="grp"><h2>${esc(g[0])}</h2>${g[1].map(it=>{
+  const href=it[0]==='claude-plugin'?PLUGIN_URL:'#patterns-'+it[0];
+  return ` <a href="${href}" ${it[2]&&href.startsWith('http')?'target="_blank" rel="noopener"':''} ${cur===it[0]?'aria-current="page"':''}><span>${esc(it[1])}</span>${it[2]?EXT:''}</a>`;}).join('')}</div>`).join('')}</aside>`;}
+
+function sayItsAnAgent(p){return `
+  
+  <h1>Agent disclosure</h1>
+  <div class="lede">
+    <p class="law">We are required by law (AI Act, article 50) to clearly show when something is done by AI and agents. This needs to be done at the very first interaction, and not only in e.g. terms and conditions.</p>
+    <p>This can be done in many different ways depending on the context. Keep the marker consistent, and avoid human names and faces for agents.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including suggestions, answers and work status.</p>
+    ${examplesHtml(EXAMPLES)}
+  </section>`;}
+
+function examplesHtml(list){return `<div class="examples">${list.map(e=>`<figure class="ex ${e.wide?'wide':''}"><div class="shot"><button class="pp" type="button" data-pp="${e.id}"></button><div class="lv ${e.narrow?'narrow':''}" id="lv-${e.id}"></div></div><figcaption><span class="marker"><code>${esc(e.marker)}</code></span><p class="what">${esc(e.what)}</p></figcaption></figure>`).join('')}</div>`;}
+const TRIG_EX=[
+ {id:'sched',marker:'Running on its own',what:'Each trigger is written in plain words, with what it did last and when it runs next. A switch pauses a trigger without deleting it.'},
+ {id:'cal',marker:'Agents in the calendar',what:'Scheduled agents sit next to the meetings they belong to. Agents that start on an event, like a new invoice, have no time slot, so they are listed beside the calendar.'},
+ {id:'start',marker:'Says what started it',what:'When the agent starts on its own, the work opens with what started it and when, and ends with the next run date.'},
+];
+function triggers(p){return `
+  <h1>Triggers</h1>
+  <div class="lede">
+    <p class="law">The agent starts on its own when a date arrives or something happens, such as a client replying, and reports what it did.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including schedules, events and the start of a run.</p>
+    ${examplesHtml(TRIG_EX)}
+  </section>`;}
+
+const AUTO_EX=[
+ {id:'lvl',marker:'Agent level per task',what:'Each task has its own level, chosen by the person responsible. Change a level and see what the agent would do with the same work.'},
+ {id:'perm',marker:'Permissions per area',what:'Within one agent, each area has its own permission. The agent acts where it is allowed, asks where it must, and stays out of the rest. Click a permission to change it.'},
+ {id:'levlog',marker:'Level shown on every action',what:'Every action carries the level it ran at, so it is clear afterwards what the agent did alone and what a person approved.'},
+];
+function autonomy(p){return `
+  <h1>Autonomy levels</h1>
+  <div class="lede">
+    <p class="law">A named setting, such as Assistant, Copilot or Autopilot, chosen separately for each task, so low-risk work can run alone while high-risk work waits for approval.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including levels per task, permissions per area and the level behind each action.</p>
+    ${examplesHtml(AUTO_EX)}
+  </section>`;}
+
+const SUG_EX=[
+ {id:'offer',marker:'One clear confirm action',what:'The offer says what will happen and who checks the result. Nothing is matched until the person taps.'},
+ {id:'versus',marker:'Offered, not done to you',what:'The same change, offered as a button or made without asking. Switch between them to compare.'},
+ {id:'next',marker:'Next step from the books',what:'The agent suggests the next step where the work already is, with a preview of exactly what will be sent.'},
+];
+function suggestions(p){return `
+  <h1>Suggestions</h1>
+  <div class="lede">
+    <p class="law">The agent prepares the change, or suggests the next step from what is in the books, and offers it as a button. It carries it out only when the person taps, instead of acting on their behalf unasked.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including offers, a side-by-side comparison and next steps.</p>
+    ${examplesHtml(SUG_EX)}
+  </section>`;}
+
+const LP_EX=[
+ {id:'rec',marker:'Running feed with reasons',what:'A count of the work, and a feed of finished checks, each with the rule or confidence behind it. Click a tag to see the reason.'},
+ {id:'src',marker:'Every claim points to its source',what:'Answers link each number to the document it came from. Click a source marker to see it.'},
+ {id:'states',marker:'Named states, also announced',what:'Each step has a number and a named state. Every change is also sent to screen readers as a status message, and the run can be paused from the keyboard.'},
+];
+function liveProgress(p){return `
+  <h1>Live progress</h1>
+  <div class="lede">
+    <p class="law">A progress indicator and running feed while the agent works, with the rule or confidence behind each step.</p>
+    <p>Announcing each step lets people who use a screen reader follow the run, pause it and take over.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a running feed, sources for every claim and announced steps.</p>
+    ${examplesHtml(LP_EX)}
+  </section>`;}
+
+const ACT_EX=[
+ {id:'vat',marker:'Before and after, with the reason',what:'The change is shown as a diff, with the reason and the rule beside it. Accept, edit or reject it. Edit lets you pick another account before anything is booked.'},
+ {id:'chg',marker:'One decision per change',what:'Each field the agent wants to change gets its own decision, with high-stakes fields like the bank account marked. Nothing is saved until every change is decided and you press Save.'},
+ {id:'draft',marker:'Edit the draft, then send',what:'Taking over is one tap away. Edit the drafted reminder in place, go back to the agent draft, or send it as it is.'},
+];
+function actions(p){return `
+  <h1>Review and approve</h1>
+  <div class="lede">
+    <p class="law">Each suggested change is shown as a before-and-after with its reason and three actions: accept, edit or reject. Taking over is always one tap away.</p>
+    <p>Show the reason and the rule with each change, and keep changes pending until a person saves. In our first sprint, “Accept all” hid what the agent changed.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a diff with its reason, decisions per field and editing a draft.</p>
+    ${examplesHtml(ACT_EX)}
+  </section>`;}
+
+const EXC_EX=[
+ {id:'queue',marker:'Only what needs you',what:'Routine invoices are summed up in one line. The two that need judgement are listed with the reason they were flagged. Open one to see the problem, the proposal and the reason.'},
+ {id:'bulk',marker:'Bulk actions only for the easy ones',what:'Easy exceptions with the same fix can be handled together. The risky one, a new bank account, is left out of the bulk action and must be checked on its own.'},
+ {id:'inbox',marker:'One inbox for all agents',what:'Each agent posts what it needs from you, newest first, like email. The count goes down as you finish items, and an empty state says when nothing needs you.',narrow:true},
+];
+function exceptions(p){return `
+  <h1>Exceptions</h1>
+  <div class="lede">
+    <p class="law">Routine items are handled automatically and summarised in one line. Only the items that need judgement are listed, each with the reason it was flagged.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a queue with reasons, bulk actions and an agent inbox.</p>
+    ${examplesHtml(EXC_EX)}
+  </section>`;}
+
+const HO_EX=[
+ {id:'case',marker:'Handed to a named person',what:'The agent prepares the case, stops, and hands it to Anders with what it checked and why it is his call. Open what was checked, or take the case.'},
+ {id:'fail',marker:'Stops when something fails',what:'When the agent can’t read the attachment, it says what failed and offers the ways forward: enter it yourself, ask a colleague or upload a readable copy.'},
+ {id:'owner',marker:'An owner, not a suspense account',what:'The same case, handed to a person or parked in a suspense account. Switch between them to compare.'},
+];
+function handOver(p){return `
+  <h1>Escalation</h1>
+  <div class="lede">
+    <p class="law">When the agent reaches the edge of the rules, or something fails, it prepares what it can, stops, and hands the case to a named person with what it checked, what failed and why it’s theirs.</p>
+    <p>Show the edge of the rules that started the escalation. For judgement calls, such as asset or repair, the case goes to the accountant.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a hand-over with context, a failure with ways forward and a comparison with a suspense account.</p>
+    ${examplesHtml(HO_EX)}
+  </section>`;}
+
+const UNDO_EX=[
+ {id:'sent',marker:'Undo right on the result',what:'The undo sits on the reminder itself, with how long it is still possible. The undo is logged like the send.'},
+ {id:'warn',marker:'Says first what can’t be undone',what:'Before the payments go, the agent says what can’t be reversed and until when they can still be stopped.'},
+ {id:'ulog',marker:'The undo is logged, like the action',what:'Every change has its undo where it is listed. A reminder is held for a few seconds before it sends, what can’t be unsent offers a correction instead, and each undo becomes a row of its own.'},
+];
+function undo(p){return `
+  <h1>Undo</h1>
+  <div class="lede">
+    <p class="law">Anything the agent did can be reversed right where it shows up, for as long as that is still possible, and the agent says before it acts what can’t be undone. An undo is logged like the action.</p>
+    <p>Payments, for example, can’t be undone once they leave the bank, so the agent says so before they go.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including undo on the result, a warning before what can’t be undone and a log of changes.</p>
+    ${examplesHtml(UNDO_EX)}
+  </section>`;}
+
+const LOG_EX=[
+ {id:'run',marker:'Every step of the run',what:'Each run is logged step by step: what the agent read, what it changed, which rules it used and who reviewed the result. Click an entry to see the details.'},
+ {id:'event',marker:'Who did each step',what:'Agent steps and your own steps sit in one timeline, newest at the bottom. Your own actions carry your initials. Filter by who did it, and undo straight from the log.'},
+ {id:'plain',marker:'Plain sentences, not system logs',what:'The same three steps written for people, or as a raw system log. Switch between them to compare.'},
+];
+function activityLog(p){return `
+  <h1>Audit trail</h1>
+  <div class="lede">
+    <p class="law">A time-stamped record of every run: what the agent read, what it changed, which rules it used and who reviewed the result.</p>
+    <p>It should be a log an auditor or the tax authority could follow.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a run step by step, a shared timeline with undo and a comparison with a raw log.</p>
+    ${examplesHtml(LOG_EX)}
+  </section>`;}
+
+const REC_EX=[
+ {id:'week',marker:'This week with your agent',what:'A weekly card with concrete numbers: time saved, issues caught and how much was accepted without edits, and where the agent was weaker. Switch week, or click a number to see what is behind it.'},
+ {id:'thread',marker:'Summary before the thread',what:'A long thread opens with a short summary, and each point links to the message it came from. Click a number to see the message.'},
+ {id:'back',marker:'Brief me when I’m back',what:'After a weekend away, the first thing you see is one line about what happened and what needs you. The details are one click away.'},
+];
+function recap(p){return `
+  <h1>Recap</h1>
+  <div class="lede">
+    <p class="law">A regular summary with concrete numbers, such as time saved, issues caught and items handled without edits. When someone comes back to a long-running job, the agent first tells them what happened while they were away and what needs them now.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a weekly recap, a thread summary and a brief when you come back.</p>
+    ${examplesHtml(REC_EX)}
+  </section>`;}
+
+const EVO_EX=[
+ {id:'earn',marker:'Offers more at a threshold',what:'Each approval is tracked. After 10 approvals with at least 85% unchanged, the agent offers to send reminders on its own, and says how to switch it back.'},
+ {id:'stepback',marker:'Steps back after corrections',what:'When you correct the agent twice, it moves itself back a level and says why, and what it takes to earn the level again.'},
+ {id:'ladder',marker:'Levels you can step through',what:'Everyone starts with no automation. Step up when the agent has earned it, or step down at any time. Pay, filings and salary changes never graduate.'},
+];
+function evolution(p){return `
+  <h1>Earned autonomy</h1>
+  <div class="lede">
+    <p class="law">After several approvals without changes, the agent offers to do that action on its own. After corrections or reversals, it steps back and asks again.</p>
+    <p>Reminders, matching and coding can earn their way to Autopilot. Pay, filings and salary changes never do.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including an offer at a threshold, a step back after corrections and levels that can be stepped through.</p>
+    ${examplesHtml(EVO_EX)}
+  </section>`;}
+
+const FD_EX=[
+ {id:'bfile',marker:'Named, explained and bounded',what:'The failure is named in the title, with the concrete cause and what did not happen, and the ways forward. The outcome is recorded either way.'},
+ {id:'empty',marker:'Empty results, said as empty',what:'When the agent finds nothing, it says so, and lists where it looked and where it couldn’t look.'},
+ {id:'cover',marker:'Not covered by a confident summary',what:'The same failed payroll run, disclosed or covered up. Switch between them to compare.'},
+];
+function failureDisclosure(p){return `
+  <h1>Failure disclosure</h1>
+  <div class="lede">
+    <p class="law">When the agent can’t finish, it says so plainly: what failed, why, what did not happen and what you can do next. It never covers a failure with a confident summary.</p>
+    <p>Record the outcome in the log, whichever way forward is chosen.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a rejected bank file, an empty search and a comparison with a cover-up.</p>
+    ${examplesHtml(FD_EX)}
+  </section>`;}
+
+const UNC_EX=[
+ {id:'q',marker:'One question, with a best guess',what:'The agent asks about the one thing it doesn’t know, leads with its best guess and why, and shows what each answer will do before you choose.'},
+ {id:'part',marker:'Ask about the part, not the whole',what:'Payroll keeps running for everyone else while one question waits. Answer it, and the last payslip is finished.'},
+ {id:'guess',marker:'Asked, not guessed',what:'The same missing absence reason, asked about or guessed. Switch between them to compare.'},
+];
+function uncertainty(p){return `
+  <h1>Clarifying questions</h1>
+  <div class="lede">
+    <p class="law">The agent recognises when it’s uncertain and asks a specific question instead of guessing or flagging the whole item. The question comes with its best guess, the alternatives and what it will do with your answer.</p>
+  </div>
+  <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
+  <section class="sec" aria-labelledby="exH">
+    <h2 id="exH">Examples</h2>
+    <p>How the pattern can be applied in practice, including a question with a best guess, a question that doesn’t hold up the rest and a comparison with guessing.</p>
+    ${examplesHtml(UNC_EX)}
+  </section>`;}
+
+const OV=[
+ ['Before the agent acts','Agree on what the agent may do, and when.',[['say-its-an-agent','Always clear what an agent did, from the very first interaction.'],['autonomy-levels','A level per task, from Assistant to Autopilot, chosen by the person responsible.'],['triggers','Starts on its own when a date arrives or something happens, and says what started it.'],['suggestions','Prepares the change and offers it as a button. Nothing happens before the tap.']]],
+ ['While the agent acts','Show the work, and keep people in control of every decision.',[['live-progress','A count of the work and a running feed, with the rule behind each step.'],['failure-disclosure','What failed, why, what did not happen and what to do next.'],['exceptions','Routine work in one line. Only what needs judgement is listed, with the reason.'],['actions','A before-and-after for every change, with accept, edit or reject.'],['uncertainty','One specific question with a best guess, instead of guessing.'],['hand-over','Stops at the edge of the rules and hands the case to a named person.'],['undo','Undo right where the result shows up, and a warning before what can’t be undone.']]],
+ ['After the agent acts','Say honestly what happened, and keep a record anyone can follow.',[['activity-log','A plain-language record of every run: what was read, changed and reviewed.'],['recap','A short summary with real numbers, and a brief when you come back.']]],
+ ['Over time','Let trust grow with a track record.',[['autonomy-evolution','Offers to do more after approvals without changes, and steps back after corrections.']]],
+];
+function overview(){let n=0;const total=OV.reduce((a,g)=>a+g[2].length,0);return `
+  <h1>Patterns</h1>
+  <div class="lede">
+    <p>${total} patterns, grouped by when they apply: before, while and after the agent acts, and over time. Each pattern has a short rule, guidance on what to do and what to avoid, and live examples you can try.</p>
+  </div>
+  ${OV.map((g,gi)=>`<section class="sec ovsec" aria-labelledby="ov${gi}"><div class="ovh"><div><h2 id="ov${gi}">${esc(g[0])}</h2><p>${esc(g[1])}</p></div></div>
+   <div class="ovgrid">${g[2].map(it=>{n++;const f=find(it[0]);return `<a class="ovc" href="#patterns-${it[0]}"><span class="mono">${String(n).padStart(2,'0')}</span><b>${esc(f.label)}</b><span>${esc(it[1])}</span></a>`;}).join('')}</div></section>`).join('')}
+  <section class="proto" aria-labelledby="protoH">
+    <h2 id="protoH">Prototype your next agent<svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 1.5Q10.5 8.3 14.6 9Q10.5 9.7 10 16.5Q9.5 9.7 5.4 9Q9.5 8.3 10 1.5Z" fill="currentColor"/><path d="M19 12.6Q19.25 16 21.1 16.3Q19.25 16.6 19 20Q18.75 16.6 16.9 16.3Q18.75 16 19 12.6Z" fill="currentColor"/></svg></h2>
+    <p class="pl">Apply these patterns to your next agentic experience. The Discovery to Prototype Engine from Product Discovery helps you identify your most value-adding agentic opportunities, and transform them into prototypes ready to be tested with your customers.</p>
+    <ol class="psteps">
+      <li><b>Identify opportunity</b><span>Bring customer feedback and competitors. The plug-in finds the pain points worth solving.</span></li>
+      <li><b>Prototype</b><span>Triggers, actions, boundaries and failure modes, using the patterns on this site.</span></li>
+      <li><b>Test with customers</b><span>Get an interactive prototype and a test plan to put in front of real customers.</span></li>
+    </ol>
+    <div class="pacts"><a class="cta pcta" href="${PLUGIN_URL}" target="_blank" rel="noopener">Get the Claude plug-in ${EXT}</a></div>
+  </section>`;}
+
+function placeholder(p){return `<h1>${esc(p.label)}</h1><div class="soon">Content for this pattern is coming soon.</div>`;}
+
+
+/* ---------- live examples ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LV={propose:null,client:0,feed:null};
+const PLAY={propose:false,client:false,feed:false,sched:false,cal:false,start:false,lvl:false,perm:false,levlog:false,offer:false,versus:false,next:false,rec:false,src:false,states:false,vat:false,chg:false,draft:false,queue:false,bulk:false,inbox:false,case:false,fail:false,owner:false,sent:false,warn:false,ulog:false,run:false,event:false,plain:false,week:false,thread:false,back:false,earn:false,stepback:false,ladder:false,bfile:false,empty:false,cover:false,q:false,part:false,guess:false};
+const T={propose:[],client:[],feed:[],sched:[],cal:[],start:[],lvl:[],perm:[],levlog:[],offer:[],versus:[],next:[],rec:[],src:[],states:[],vat:[],chg:[],draft:[],queue:[],bulk:[],inbox:[],case:[],fail:[],owner:[],sent:[],warn:[],ulog:[],run:[],event:[],plain:[],week:[],thread:[],back:[],earn:[],stepback:[],ladder:[],bfile:[],empty:[],cover:[],q:[],part:[],guess:[]};
+function later(id,f,ms){T[id].push(setTimeout(()=>{if(PLAY[id])f();},ms));}
+function stop(id){T[id].forEach(clearTimeout);T[id]=[];}
+const PLAYI='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5 3.5v9l7-4.5z" fill="currentColor"/></svg>';
+const PAUSEI='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="3.5" width="2.6" height="9" rx="1" fill="currentColor"/><rect x="9.4" y="3.5" width="2.6" height="9" rx="1" fill="currentColor"/></svg>';
+function ctl(id){const b=document.querySelector(`[data-pp="${id}"]`);if(!b)return;const on=PLAY[id];b.innerHTML=(on?PAUSEI:PLAYI)+`<span>${on?'Pause':'Play'}</span>`;b.setAttribute('aria-label',(on?'Pause':'Play')+' example');b.setAttribute('aria-pressed',String(!on));const lv=document.getElementById('lv-'+id);if(lv)lv.classList.toggle('paused',!on);}
+function toggle(id){PLAY[id]=!PLAY[id];stop(id);ctl(id);if(PLAY[id])RUN[id]();}
+/* proposal */
+function rProp(){const el=document.getElementById('lv-propose');if(!el)return;const d=LV.propose;
+  el.innerHTML=`<div class="row"><span class="nm">Anna Karlsson</span><span class="type">Sick leave</span><span class="rule">Sick Pay Act: Employer pays days 2–14</span></div>
+  ${d?`<p class="res" style="margin:0"><span class="ico ${d==='reject'?'rej':'ok'}"></span><span>${d==='reject'?'Rejected. The payslip keeps sick pay from the employer for all 16 days.':'Accepted. Anna’s October payslip now follows the Sick Pay Act, and days 15–16 are reported to Försäkringskassan.'}</span></p>
+   <div class="acts"><button class="b" type="button" data-p="undo">Change decision</button><span class="by">Proposed by <span class="agent">Absence agent</span></span></div>`:
+  `<p style="margin:0"><b>Change Anna’s October payslip?</b> She has been sick 16 days in a row from 5 Oct. The employer pays sick pay for days 2–14 only. From day 15, Försäkringskassan pays instead.</p>
+   <dl class="cmp"><dt class="now">On the payslip now</dt><dd class="now">Sick pay from the employer for all 16 days</dd><dt class="new">Proposed</dt><dd class="new">Day 1: qualifying deduction<br>Days 2–14: 80% sick pay from the employer<br>Days 15–16: no sick pay from you, reported to Försäkringskassan</dd></dl>
+   <div class="acts"><button class="b p" type="button" data-p="accept">Accept</button><button class="b" type="button" data-p="edit">Edit</button><button class="b" type="button" data-p="reject">Reject</button><span class="by">Proposed by <span class="agent">Absence agent</span></span></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;const a=b.dataset.p;LV.propose=a==='undo'?null:a==='edit'?'accept':a;if(PLAY.propose)toggle('propose');else rProp();};}
+function runProp(){LV.propose=null;rProp();later('propose',()=>{LV.propose='accept';rProp();later('propose',runProp,3200);},3800);}
+/* client question */
+function rCli(){const el=document.getElementById('lv-client');if(!el)return;const st=LV.client;
+  el.innerHTML=`<div class="row"><span class="nm">Systembolaget, SEK 2 140 on 14 Oct</span><span class="tag ${st>=3?'':st>=2?'w':'n'}">${st>=3?'booked':st>=2?'answered':'waiting'}</span><span class="rule">Sent Thu 30 Oct</span></div>
+  <div class="thread"><div class="bub me">What was the purchase at Systembolaget on 14 Oct for?<small>Drafted by <span class="agent">Client agent</span>, sent by you</small></div>
+  ${st===1?'<span class="typing" aria-label="Mats is typing"><i></i><i></i><i></i></span>':''}
+  ${st>=2?'<div class="bub them">Wine for the catering job at Ekholm Tandvård’s anniversary party.<small>Mats Lindqvist · just now</small></div>':''}</div>
+  ${st===2?'<p style="margin:0"><b>Book the purchase like this?</b> Mats says it was wine for a catering job, so it counts as goods for resale.</p><dl class="cmp"><dt class="now">Now</dt><dd class="now">Not booked, waiting for what the purchase was for</dd><dt class="new">Proposed</dt><dd class="new">Account 4010 Goods for resale, 25% VAT</dd></dl><div class="acts"><button class="b p" type="button" data-c="ok">Accept</button><span class="by">Proposed by <span class="agent">Bookkeeping agent</span></span></div>':''}
+  ${st>=3?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Booked to 4010 Goods for resale, 25% VAT, based on Mats’s answer.</span></p>':''}
+  ${st===0?'<p class="hint" style="margin:0">Waiting for Mats to answer in the client app…</p>':''}`;
+  el.onclick=e=>{const b=e.target.closest('[data-c="ok"]');if(!b)return;LV.client=3;rCli();};}
+function runCli(){LV.client=0;rCli();later('client',()=>{LV.client=1;rCli();later('client',()=>{LV.client=2;rCli();later('client',()=>{LV.client=3;rCli();later('client',runCli,3000);},3200);},1700);},1500);}
+/* agents feed */
+const JOBS=[['Close agent','Booking 12 supplier invoices from this morning','Booked 12 supplier invoices from this morning'],['Invoice agent','Matching customer payments','Matched 4 customer payments, SEK 318 000'],['Payroll agent','Checking November time reports','Checked November time reports, all on track'],['VAT agent','Drafting the October VAT return','Drafted October VAT return, SEK 571 850 to pay']];
+function rFeed(){const el=document.getElementById('lv-feed');if(!el)return;const f=LV.feed;
+  el.innerHTML=`<h4>Work in progress</h4><ul class="feed">${f.map(x=>`<li class="${x.fresh?'in':''}"><span class="ico ${x.run?'wait':'ok'}" role="img" aria-label="${x.run?'Working':'Done'}"></span><span><span class="agent">${esc(x.a)}</span> ${esc(x.run?x.doing:x.done)}<small>${x.run?'Working…':esc(x.when)}</small></span></li>`).join('')}</ul>`;f.forEach(x=>x.fresh=false);}
+let jobI=1;
+function tickFeed(){const run=LV.feed.find(x=>x.run);if(run){run.run=false;run.when='Just now';run.fresh=true;}
+  const j=JOBS[jobI%JOBS.length];jobI++;LV.feed.forEach(x=>{if(!x.run&&x.when==='Just now'&&x!==run)x.when='A minute ago';});
+  LV.feed=LV.feed.filter(x=>x.a!==j[0]);LV.feed.unshift({a:j[0],doing:j[1],done:j[2],run:true,when:''});LV.feed=LV.feed.slice(0,4);rFeed();later('feed',tickFeed,3800);}
+function runFeed(){later('feed',tickFeed,3800);}
+
+/* ---------- triggers examples ---------- */
+const TR={rows:[{id:'r1',when:'Every 5th',what:'Reconcile all bank accounts',last:'5 Oct: 212 of 230 matched, 18 sent to review',next:'Next run 5 Nov, 06:00',on:true,st:'ok'},{id:'r2',when:'On client reply',what:'Match receipts to card purchases',last:'Listening for replies from 42 clients',next:'Runs when a reply arrives',on:true,st:'idle'},{id:'r3',when:'12 Nov',what:'Draft AGI for Skatteverket',last:'Drafted 4 Nov, waiting for your approval',next:'Due 12 Nov',on:true,st:'ready'}],cal:{a:null,b:null,open:null},start:2};
+function rSched(){const el=document.getElementById('lv-sched');if(!el)return;
+  el.innerHTML=`<div class="row"><h4>Running on its own</h4><span class="tag n" style="margin-left:auto">${TR.rows.filter(r=>r.on).length} of 3 active</span></div>
+  <ul class="trg">${TR.rows.map(r=>`<li class="${r.on?'':'off'}"><span class="when">${esc(r.when)}</span><span class="tx"><b>${esc(r.what)}</b><span class="agent" style="align-self:flex-start;margin:3px 0">${({r1:'Reconciliation agent',r2:'Bookkeeping agent',r3:'Payroll agent'})[r.id]}</span><small>${r.on?esc(r.last):'Paused. Nothing runs until you turn it back on.'}</small>${r.on?`<small class="nx">${esc(r.next)}</small>`:''}</span>
+   <span class="stt">${!r.on?'<span class="tag n">paused</span>':r.st==='run'?'<span class="ico wait" role="img" aria-label="Running"></span>':r.st==='ready'?'<span class="tag">ready</span>':r.st==='ok'?'<span class="ico ok" role="img" aria-label="Done"></span>':'<span class="tag n">listening</span>'}</span>
+   <button class="sw" type="button" role="switch" aria-checked="${r.on}" aria-label="${r.on?'Pause':'Resume'}: ${esc(r.what)}" data-sw="${r.id}"><i></i></button></li>`).join('')}</ul>`;
+  el.onclick=e=>{const b=e.target.closest('[data-sw]');if(!b)return;const r=TR.rows.find(x=>x.id===b.dataset.sw);r.on=!r.on;if(r.id==='r2'&&!r.on){r.st='idle';r.last='Listening for replies from 42 clients';}rSched();};}
+function runSched(){const r=TR.rows[1];if(!r.on){later('sched',runSched,1500);return;}
+  r.st='idle';r.last='Listening for replies from 42 clients';rSched();
+  later('sched',()=>{if(!r.on)return runSched();r.st='run';r.last='Lindqvist Café sent a receipt. Matching it…';rSched();
+   later('sched',()=>{if(!r.on)return runSched();r.st='ok';r.last='Just now: receipt matched to card purchase, SEK 3 480';rSched();later('sched',runSched,3400);},1800);},1800);}
+const CAL={days:['Mon','Tue','Wed','Thu','Fri'],hours:['09','11','14'],ev:{'0-0':['a','Reconciliation','a'],'3-0':['m','Site visit, Ystad'],'0-1':['m','1:1 Lena & Lars'],'2-1':['m','Bank meeting'],'4-1':['a','Reminders','b'],'1-2':['m','Call: Nordström']}};
+const CALD={a:{name:'Reconciliation',sched:'Every Monday, 09:00',done:'212 of 230 lines matched, 18 sent to review'},b:{name:'Reminders',sched:'Every Friday, 11:00',done:'Reminded 3 clients about missing receipts'}};
+function rCal(){const el=document.getElementById('lv-cal');if(!el)return;const c=TR.cal;
+  const cell=(d,h)=>{const e=CAL.ev[d+'-'+h];if(!e)return '';if(e[0]==='m')return `<span class="mt">${esc(e[1])}</span>`;const k=e[2],st=c[k];
+    return `<button class="ag ${st==='run'?'run':''} ${c.open===k?'sel':''}" type="button" data-ag="${k}">${st==='run'?'<span class="ico wait" aria-hidden="true"></span>':st==='done'?'<span class="ico ok" aria-hidden="true"></span>':'<span class="dia" aria-hidden="true">◆</span>'}<span>${esc(e[1])}</span></button>`;};
+  el.innerHTML=`<div class="row"><span class="nm">Week 41</span><span class="hint">Berg Bygg AB · Calendar</span><button class="b" type="button" style="margin-left:auto" data-cal="new">+ Schedule an agent</button></div>
+  <div class="calwrap"><div class="calg"><span></span>${CAL.days.map(d=>`<span class="dh">${d}</span>`).join('')}
+  ${CAL.hours.map((h,hi)=>`<span class="hh">${h}</span>${CAL.days.map((d,di)=>`<span class="cc">${cell(di,hi)}</span>`).join('')}`).join('')}</div></div>
+  ${c.open?`<div class="calnote"><b>${esc(CALD[c.open].name)}</b> · ${esc(CALD[c.open].sched)}<br><span class="hint">${c[c.open]==='done'?'Just now: ':c[c.open]==='run'?'Running now… ':'Last run: '}${c[c.open]==='run'?'':esc(CALD[c.open].done)}</span></div>`:''}
+  ${c.newMsg?`<div class="calnote">Describe it in words, for example “every Friday at 11, remind clients about missing receipts”. The agent gets its own slot in the calendar.</div>`:''}
+  <div class="evts"><span class="hint">Starts on events, no time slot</span><span class="evt"><span class="dia" aria-hidden="true">◆</span>New supplier invoice → <span class="agent">Bookkeeping agent</span></span><span class="evt"><span class="dia" aria-hidden="true">◆</span>Client reply → <span class="agent">Client agent</span></span></div>`;
+  el.onclick=e=>{const g=e.target.closest('[data-ag]');if(g){c.open=c.open===g.dataset.ag?null:g.dataset.ag;c.newMsg=false;rCal();return;}if(e.target.closest('[data-cal]')){c.newMsg=!c.newMsg;c.open=null;rCal();}};}
+function runCal(){const c=TR.cal;c.a=null;c.b=null;rCal();
+  later('cal',()=>{c.a='run';c.open='a';rCal();later('cal',()=>{c.a='done';rCal();later('cal',()=>{c.b='run';c.open='b';rCal();later('cal',()=>{c.b='done';rCal();later('cal',runCal,3000);},1800);},1600);},1800);},900);}
+const SRC=[['Time reports','64 of 64 approved by managers'],['Absence','14 records: sick leave, VAB and vacation'],['Employee changes','1 new employee, 1 leaver'],['Tax tables','Checked against Skatteverket']];
+function rStart(){const el=document.getElementById('lv-start');if(!el)return;const n=TR.start,done=n>=SRC.length;
+  el.innerHTML=`<div class="row"><h4>Collect</h4><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'collected':'collecting'}</span></div>
+  <p class="started"><span class="ico ${done?'ok':'wait'}" aria-hidden="true"></span><span><span class="agent">Payroll agent</span> <b>started on its own at 06:00 on 18 October,</b> when time reporting closed.</span></p>
+  <div class="pbar" role="progressbar" aria-valuenow="${Math.round(n/SRC.length*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${n/SRC.length*100}%"></i></div>
+  <ul class="feed">${SRC.map((x,i)=>`<li><span class="ico ${i<n?'ok':i===n?'wait':''}" aria-hidden="true"></span><span><b>${esc(x[0])}</b><small>${i<n?esc(x[1]):i===n?'Working…':'Waiting'}</small></span></li>`).join('')}</ul>
+  <p class="hint" style="margin:0">${done?'Done at 06:04. The next run starts on its own on 18 November.':'Collecting from 4 sources…'}</p>`;}
+function runStart(){TR.start=0;rStart();const step=()=>{TR.start++;rStart();if(TR.start<SRC.length)later('start',step,1100);else later('start',runStart,3200);};later('start',step,1100);}
+function initTrig(){if(!document.getElementById('lv-sched'))return;TR.cal={a:'done',b:null,open:null};TR.start=2;TR.rows[1].st='idle';rSched();rCal();rStart();}
+
+/* ---------- autonomy examples ---------- */
+const LVN=['Assistant','Copilot','Autopilot'];
+const AU={tasks:[{t:'Bank reconciliation',v:2,work:'12 new bank lines'},{t:'Payroll run',v:1,work:'October payroll for 64 employees'},{t:'VAT filing',v:0,work:'October VAT return'}],out:null,
+  perm:{mode:2,rows:[['Ledger','Read and draft entries',0],['Emails to customers','Reminders and replies',1],['Bank payments','High impact',2],['Payroll','High impact',2]],st:null},
+  log:[]};
+const PL=[['Allowed',''],['Ask every time','n'],['Off for agents','w']];
+function outcome(task){const v=task.v,w=task.work;return v===2?`Did it on its own: ${w} handled, you get a summary`:v===1?`Prepared ${w}, waiting for your approval`:`Answers questions about ${w}, does nothing on its own`;}
+function rLvl(){const el=document.getElementById('lv-lvl');if(!el)return;
+  el.innerHTML=`<h4>Agent level per task</h4>${AU.tasks.map((t,i)=>`<div class="lvrow"><span class="lbl">${esc(t.t)} <span class="agent">${['Reconciliation agent','Payroll agent','VAT agent'][i]}</span></span><div class="seg" role="group" aria-label="${esc(t.t)} level">${LVN.map((n,j)=>`<button type="button" data-t="${i}" data-v="${j}" aria-pressed="${t.v===j}">${n}</button>`).join('')}</div>
+  <p class="out ${AU.out===i?'in':''}">${AU.out===i?'<span class="ico wait" aria-hidden="true"></span>':''}<span>${esc(AU.out===i?'New work: '+t.work+'…':outcome(t))}</span></p></div>`).join('')}`;
+  el.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;AU.tasks[+b.dataset.t].v=+b.dataset.v;rLvl();};}
+function runLvl(){let i=0;const step=()=>{AU.out=i;rLvl();later('lvl',()=>{AU.out=null;rLvl();i=(i+1)%3;later('lvl',step,1400);},1500);};step();}
+const MODES=[['Ask','answers questions, never acts'],['Plan','prepares everything, you press go'],['Agent','acts within what’s allowed below, and stops at anything new']];
+function rPerm(){const el=document.getElementById('lv-perm');if(!el)return;const P=AU.perm,em=P.rows[1][2];
+  el.innerHTML=`<div class="row"><h4>Permissions</h4><span class="agent">Bookkeeping agent</span><div class="seg sm" role="group" aria-label="Agent mode" style="margin-left:auto">${MODES.map((m,j)=>`<button type="button" data-m="${j}" aria-pressed="${P.mode===j}">${m[0]}</button>`).join('')}</div></div>
+  <p class="hint" style="margin:0">${esc(MODES[P.mode][0])}: ${esc(MODES[P.mode][1])}.</p>
+  <ul class="perm">${P.rows.map((r,i)=>`<li><span><b>${esc(r[0])}</b><small>${esc(r[1])}</small></span><button class="tag ${PL[r[2]][1]}" type="button" data-r="${i}" aria-label="${esc(r[0])}: ${PL[r[2]][0]}. Change permission">${PL[r[2]][0]}</button></li>`).join('')}</ul>
+  ${P.st==='ask'?`<div class="askbox"><span><b>The agent wants to send 3 overdue reminders.</b> Emails to customers are set to “Ask every time”.</span><span class="acts"><button class="b p" type="button" data-a="yes">Send</button><button class="b" type="button" data-a="no">Not now</button><span class="by">Asked by <span class="agent">Bookkeeping agent</span></span></span></div>`:
+   P.st==='sent'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Sent 3 reminders to Norrbygg, Lind El and Stålgruppen.</span></p>':
+   P.st==='blocked'?'<p class="res" style="margin:0"><span class="ico rej"></span><span>Not sent. Emails to customers are off for agents.</span></p>':
+   P.st==='plan'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>3 reminder drafts are ready for you to send.</span></p>':
+   P.st==='no'?'<p class="hint" style="margin:0">Kept as drafts. Nothing was sent.</p>':P.st==='askmode'?'<p class="hint" style="margin:0">In Ask mode the agent only answers questions. It lists the 3 overdue invoices, and you send the reminders yourself.</p>':''}
+  ${P.st==='ask'?'':'<div class="acts"><button class="b ink" type="button" data-a="go">Send the 3 overdue reminders</button></div>'}`;
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.m){P.mode=+b.dataset.m;P.st=null;}
+    else if(b.dataset.r){const r=P.rows[+b.dataset.r];r[2]=(r[2]+1)%3;P.st=null;}
+    else if(b.dataset.a==='go'){P.st=P.mode===0?'askmode':P.mode===1?'plan':em===2?'blocked':em===1?'ask':'sent';}
+    else if(b.dataset.a==='yes')P.st='sent';else if(b.dataset.a==='no')P.st='no';
+    rPerm();};}
+function runPerm(){const P=AU.perm;P.mode=2;P.rows[1][2]=1;P.st=null;rPerm();later('perm',()=>{P.st='ask';rPerm();later('perm',()=>{P.st='sent';rPerm();later('perm',runPerm,3200);},2600);},1500);}
+const LOGS=[['06:00','Bank reconciliation','Matched 212 of 230 bank lines','Autopilot','a'],['06:04','Payroll run','October payroll calculated, 64 employees','Copilot · approved by Maria E.','c'],['06:10','VAT filing','Explained the reverse charge VAT boxes','Assistant · asked by Lena S.','s'],['07:15','Bank reconciliation','Booked 6 new card purchases','Autopilot','a'],['07:20','Payroll run','Payment file sent to the bank','Copilot · approved by Maria E.','c']];
+function LVT(n){const k={Assistant:1,Copilot:2,Autopilot:3}[n]||0;return `<span class="lvtag" title="Autonomy level ${k} of 3"><span class="lvm" aria-hidden="true">${[1,2,3].map(j=>`<i class="${j<=k?'on':''}"></i>`).join('')}</span>${n}</span>`;}
+const AGN={'Bank reconciliation':'Reconciliation agent','Payroll run':'Payroll agent','VAT filing':'VAT agent'};
+let logI=3;
+function rLog(){const el=document.getElementById('lv-levlog');if(!el)return;
+  el.innerHTML=`<h4>Activity log</h4><ul class="feed">${AU.log.map(x=>`<li class="${x.fresh?'in':''}"><span class="mono">${esc(x[0])}</span><span><b>${esc(x[1])}</b> ${esc(x[2])}<small><span class="agent">${AGN[x[1]]}</span> ${LVT(esc(x[3].split(' · ')[0]))}${x[3].includes(' · ')?' '+esc(x[3].split(' · ')[1]):''}</small></span></li>`).join('')}</ul>`;AU.log.forEach(x=>x.fresh=false);}
+function runLog(){later('levlog',()=>{const x=LOGS[logI%LOGS.length].slice();logI++;x.fresh=true;AU.log.unshift(x);AU.log=AU.log.slice(0,4);rLog();runLog();},2200);}
+function initAuto(){if(!document.getElementById('lv-lvl'))return;AU.out=null;AU.perm.mode=2;AU.perm.rows[1][2]=1;AU.perm.st=null;AU.log=LOGS.slice(0,3).reverse().map(x=>x.slice());logI=3;rLvl();rPerm();rLog();}
+
+/* ---------- suggestions examples ---------- */
+const SG={offer:'idle',n:0,versus:0,next:'idle'};
+const CARDS=[['02 Oct','Circle K, Sibbhult','812,40 kr'],['01 Oct','Byggmax, Hässleholm','3 450,00 kr'],['30 Sep','Bauhaus, Malmö','1 290,00 kr']];
+function rOffer(){const el=document.getElementById('lv-offer');if(!el)return;const st=SG.offer;
+  el.innerHTML=`<div class="row"><h4>Card payments without a receipt</h4><span class="tag ${st==='done'||st==='booked'?'':'w'}" style="margin-left:auto">${st==='booked'?'0 left':st==='done'?'12 matched':'12'}</span></div>
+  ${st==='idle'?`<div class="offerbox"><span><b>12 of these have receipts in your inbox.</b> Match them? You check each match before it is booked.</span><span class="acts"><button class="b p" type="button" data-o="go">Match 12</button><button class="b" type="button" data-o="no">Not now</button><span class="by">Suggested by <span class="agent">Bookkeeping agent</span></span></span></div>`:
+   st==='run'?`<div class="offerbox"><span class="res"><span class="ico wait" aria-hidden="true"></span><span>Matching receipts… ${SG.n} of 12</span></span></div>`:
+   st==='done'?`<div class="offerbox"><span class="res"><span class="ico ok" aria-hidden="true"></span><span><b>12 receipts matched.</b> Check them below, then book.</span></span><span class="acts"><button class="b p" type="button" data-o="book">Book all 12</button><button class="b" type="button" data-o="reset">Undo matching</button></span></div>`:
+   st==='booked'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Booked 12 card payments with receipts.</span></p>':
+   '<p class="hint" style="margin:0">Okay. The 12 stay unmatched, and the offer comes back tomorrow.</p>'}
+  <ul class="cards">${CARDS.map((c,i)=>`<li><span class="mono">${c[0]}</span><span>${esc(c[1])}${(st==='done'||st==='booked'||(st==='run'&&SG.n>i*4))?'<small class="rc">✓ receipt_'+(i+1)+'.pdf</small>':''}</span><span class="amt">${c[2]}</span></li>`).join('')}</ul>`;
+  el.onclick=e=>{const b=e.target.closest('[data-o]');if(!b)return;const a=b.dataset.o;if(PLAY.offer)toggle('offer');
+    if(a==='go'){SG.offer='run';SG.n=0;rOffer();const t=()=>{SG.n+=3;if(SG.n>=12){SG.offer='done';rOffer();}else{rOffer();setTimeout(t,350);}};setTimeout(t,350);return;}
+    SG.offer=a==='no'?'no':a==='book'?'booked':'idle';rOffer();};}
+function runOffer(){SG.offer='idle';rOffer();later('offer',()=>{SG.offer='run';SG.n=0;rOffer();const t=()=>{SG.n+=3;if(SG.n>=12){SG.offer='done';rOffer();later('offer',()=>{SG.offer='booked';rOffer();later('offer',runOffer,2600);},2200);}else{rOffer();later('offer',t,450);}};later('offer',t,450);},2200);}
+function rVs(){const el=document.getElementById('lv-versus');if(!el)return;const v=SG.versus;
+  el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Agent offers','Agent acts unasked'].map((n,j)=>`<button type="button" data-vs="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
+  <div class="row"><span class="nm">Erik Nilsson</span><span class="type">Leaver</span><span class="rule">Last day 31 Oct</span></div>
+  ${v===0?`<p style="margin:0"><b>Add vacation pay to Erik’s final salary?</b> He has 8 unused vacation days, and they must be paid out when he leaves.</p><dl class="cmp"><dt class="now">Final salary now</dt><dd class="now">No vacation pay</dd><dt class="new">Proposed</dt><dd class="new">8 days of vacation compensation, SEK 11 840</dd></dl>
+   <div class="acts"><button class="b p" type="button">Add to final salary</button><button class="b" type="button">Not now</button><span class="by">Proposed by <span class="agent">Payroll agent</span></span></div>`:
+   `<p class="res" style="margin:0"><span class="ico ok"></span><span>Added 8 days of vacation compensation, SEK 11 840, to the final salary.</span></p>
+   <div class="acts"><button class="b" type="button">Undo</button><span class="by">Done by <span class="agent">Payroll agent</span></span></div>
+   <p class="warnline">Changed without asking. Easy to miss in a list of 64 employees, and hard to trust next month.</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-vs]');if(!b)return;if(PLAY.versus)toggle('versus');SG.versus=+b.dataset.vs;rVs();};}
+function runVs(){later('versus',()=>{SG.versus=1-SG.versus;rVs();runVs();},2600);}
+function rNext(){const el=document.getElementById('lv-next');if(!el)return;const st=SG.next;
+  el.innerHTML=`<div class="row"><span class="nm">Norrbygg Entreprenad AB</span><span class="tag w">12 days late</span><span class="rule">Invoice 3291 · SEK 860 000</span></div>
+  ${st==='sent'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminder sent at 08:42. Drafted by Invoice agent, sent by you.</span></p>':
+  `<div class="offerbox"><span><b>Send a friendly reminder?</b> Norrbygg usually pays within 3 days of a reminder.</span>
+   ${st==='preview'?'<div class="mail"><small>To: ap@norrbygg.se · Subject: Invoice 3291</small>Hi, a friendly reminder that invoice 3291 for SEK 860 000 was due on 20 October. Could you let us know when it will be paid? Kind regards, Berg Bygg AB</div>':''}
+   <span class="acts"><button class="b p" type="button" data-n="send">Send reminder</button><button class="b" type="button" data-n="${st==='preview'?'hide':'preview'}">${st==='preview'?'Hide preview':'Preview'}</button><span class="by">Suggested by <span class="agent">Invoice agent</span></span></span></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-n]');if(!b)return;if(PLAY.next)toggle('next');const a=b.dataset.n;SG.next=a==='send'?'sent':a==='preview'?'preview':'idle';rNext();};}
+function runNext(){SG.next='idle';rNext();later('next',()=>{SG.next='preview';rNext();later('next',()=>{SG.next='sent';rNext();later('next',runNext,2600);},2600);},1600);}
+function initSug(){if(!document.getElementById('lv-offer'))return;SG.offer='idle';SG.versus=0;SG.next='idle';rOffer();rVs();rNext();}
+
+/* ---------- live progress examples ---------- */
+const RECL=[['Matched “ACME AB” to invoice 2291','rule 4','Rule 4: amount and OCR reference match exactly.'],['Split payment across 2 invoices','98%','98% confidence: the total matches invoices 2288 and 2290, paid on the same day.'],['Booked card fee, SEK 45','rule 2','Rule 2: monthly card fee from the same bank, booked to 6570.'],['Matched “Lund El AB” to invoice 5521','rule 4','Rule 4: amount and OCR reference match exactly.'],['Flagged payment from unknown sender','needs a look','No rule fits and confidence is below 80%, so a person checks it.'],['Matched Swish payment to invoice 1093','91%','91% confidence: same amount and customer, reference missing.']];
+const LP={n:212,feed:[0,1],open:null,src:'done',cite:null,step:2,state:'working',ann:[]};
+function rRec(){const el=document.getElementById('lv-rec');if(!el)return;
+  el.innerHTML=`<div class="row"><span class="ico ${LP.n>=230?'ok':'wait'}" aria-hidden="true"></span><h4>Reconciling bank feed</h4><span class="agent">Reconciliation agent</span><span class="tag ${LP.n>=230?'':'n'}" style="margin-left:auto">${LP.n>=230?'done':'working'}</span></div>
+  <div class="pbar" role="progressbar" aria-valuenow="${LP.n}" aria-valuemin="0" aria-valuemax="230" aria-label="Bank lines matched"><i style="width:${LP.n/230*100}%"></i></div>
+  <p class="mono" style="margin:0;font-size:12px;color:var(--muted)">${LP.n} of 230 matched · ${Math.max(0,230-LP.n-0)>0?18:18} need a look</p>
+  <ul class="recf">${LP.feed.map((i,k)=>{const r=RECL[i];return `<li class="${k===0&&LP.fresh?'in':''}"><span>${esc(r[0])}</span><button class="tag ${r[1]==='needs a look'?'w':r[1].includes('%')?'n':''}" type="button" data-rr="${i}" aria-expanded="${LP.open===i}">${esc(r[1])}</button>${LP.open===i?`<small>${esc(r[2])}</small>`:''}</li>`;}).join('')}</ul>`;LP.fresh=false;
+  el.onclick=e=>{const b=e.target.closest('[data-rr]');if(!b)return;const i=+b.dataset.rr;LP.open=LP.open===i?null:i;rRec();};}
+let recI=2;
+function runRec(){if(LP.n>=230){LP.n=212;LP.feed=[0,1];recI=2;}later('rec',()=>{LP.n=Math.min(230,LP.n+3);LP.feed.unshift(recI%RECL.length);recI++;LP.feed=LP.feed.slice(0,4);LP.fresh=true;rRec();if(LP.n>=230)later('rec',runRec,3000);else runRec();},1300);}
+const CITES={1:['Contract BB-2026-04, clause 6.2','Plywood 12 mm: SEK 214 per sheet, fixed until 31 Dec 2026.'],2:['Invoice INV-2231, line 3','Plywood 12 mm, 40 sheets × SEK 228 = SEK 9 120.']};
+function rSrc(){const el=document.getElementById('lv-src');if(!el)return;const st=LP.src;
+  el.innerHTML=`<div class="thread"><div class="bub them" style="align-self:flex-end">Is the plywood price on INV-2231 right?</div>
+  ${st==='think'?'<div class="thinking"><span class="ico wait"></span>Checking the contract and the invoice…</div>':st==='done'?`<div class="bub me" style="max-width:92%"><span class="routed" style="margin-bottom:4px"><span>Answered by</span><span class="agent">Contract agent</span></span>No. The contract fixes plywood at SEK 214 a sheet <button class="cite" type="button" data-ct="1" aria-label="Source 1" aria-expanded="${LP.cite===1}">1</button>, and the invoice charges SEK 228 <button class="cite" type="button" data-ct="2" aria-label="Source 2" aria-expanded="${LP.cite===2}">2</button>. The difference is SEK 560 for 40 sheets.</div>`:''}</div>
+  ${st==='done'&&LP.cite?`<div class="srcbox"><b>${LP.cite}. ${esc(CITES[LP.cite][0])}</b><span>${esc(CITES[LP.cite][1])}</span></div>`:''}
+  <p class="hint" style="margin:0">Every claim points to its source.</p>`;
+  el.onclick=e=>{const b=e.target.closest('[data-ct]');if(!b)return;if(PLAY.src)toggle('src');const c=+b.dataset.ct;LP.cite=LP.cite===c?null:c;rSrc();};}
+function runSrc(){LP.src='ask';LP.cite=null;rSrc();later('src',()=>{LP.src='think';rSrc();later('src',()=>{LP.src='done';rSrc();later('src',()=>{LP.cite=1;rSrc();later('src',()=>{LP.cite=2;rSrc();later('src',runSrc,2400);},1800);},1400);},1800);},900);}
+const STEPS2=[['Match bank lines','212 of 230 matched'],['Post accruals','Rental accrual and work in progress'],['Pay suppliers','3 payments, SEK 148 200'],['Send the summary to Lena','Result and open items']];
+const STW={working:'Agent working',waiting:'Waiting for you',paused:'Paused',done:'Done'};
+function announce(){const s=LP.step,st=LP.state;const msg=st==='done'?'Month-end close done. 4 of 4 steps finished.':`Step ${s+1} of 4. ${STEPS2[s][0]}. ${STW[st]}${st==='waiting'?': approve 3 payments':''}.`;LP.ann.unshift(msg);LP.ann=LP.ann.slice(0,3);const live=document.getElementById('srLive');if(live)live.textContent=msg;}
+function rStates(){const el=document.getElementById('lv-states');if(!el)return;const s=LP.step,st=LP.state;
+  el.innerHTML=`<div class="row"><h4>Month-end close</h4><span class="tag ${st==='done'?'':st==='waiting'?'w':'n'}" style="margin-left:auto">${st==='done'?'Done':'Step '+(s+1)+' of 4 · '+STW[st]}</span></div>
+  <div class="pbar"><i style="width:${(st==='done'?4:s)/4*100}%"></i></div>
+  <ol class="stl">${STEPS2.map((x,i)=>{const d=st==='done'||i<s,cur=i===s&&st!=='done';return `<li class="${cur?'cur':''}"><span class="ico ${d?'ok':cur&&st==='working'?'wait':'num'}" aria-hidden="true">${!d&&!(cur&&st==='working')?i+1:''}</span><span><b>${esc(x[0])}</b><small>${d?'Done · '+esc(x[1]):cur?STW[st]+(st==='waiting'?' · approve 3 payments':'')+' · '+esc(x[1]):'Not started'}</small></span></li>`;}).join('')}</ol>
+  <div class="acts">${st==='waiting'?'<button class="b p" type="button" data-st="approve">Approve 3 payments</button>':''}${st==='done'?'':`<button class="b" type="button" data-st="${st==='paused'?'resume':'pause'}">${st==='paused'?'Resume run':'Pause run'}</button>`}<span class="by">Run by <span class="agent">Close agent</span></span></div>
+  <div class="srbox"><span class="lbl">What a screen reader hears</span>${LP.ann.map((a,i)=>`<span class="${i?'old':''}">“${esc(a)}”</span>`).join('')}</div>
+  <span id="srLive" class="sr-only" role="status" aria-live="polite"></span>`;
+  el.onclick=e=>{const b=e.target.closest('[data-st]');if(!b)return;const a=b.dataset.st;
+    if(a==='pause'){LP.prev=LP.state;LP.state='paused';if(PLAY.states)toggle('states');}
+    else if(a==='resume'){LP.state=LP.prev||'working';}
+    else if(a==='approve'){LP.step=3;LP.state='working';}
+    announce();rStates();};}
+function runStates(){if(LP.state==='done'||LP.state==='paused'){if(LP.state==='done'){LP.step=0;LP.state='working';announce();rStates();}else{LP.state=LP.prev||'working';announce();rStates();}}
+  later('states',()=>{if(LP.step<2){LP.step++;LP.state='working';}else if(LP.step===2&&LP.state==='working'){LP.state='waiting';}else if(LP.step===2){LP.step=3;LP.state='working';}else{LP.state='done';}announce();rStates();if(LP.state==='done')later('states',runStates,3000);else runStates();},2000);}
+function initLP(){if(!document.getElementById('lv-rec'))return;LP.n=212;LP.feed=[0,1];LP.open=null;LP.src='done';LP.cite=null;LP.step=2;LP.state='working';LP.ann=['Step 3 of 4. Pay suppliers. Agent working.','Step 2 of 4. Post accruals. Done.'];rRec();rSrc();rStates();}
+
+/* ---------- actions examples ---------- */
+const AC={vat:'idle',acct:'6540',chg:[null,null,null],saved:false,draft:'idle',txt:''};
+const ACCTS={'6540':'6540 Software · reverse charge','6550':'6550 IT services · reverse charge','6150':'6150 Office supplies · 25%'};
+function rVat(){const el=document.getElementById('lv-vat');if(!el)return;const st=AC.vat;
+  el.innerHTML=`<div class="row"><h4>Suggested correction · VAT code</h4><span class="rule">Invoice 4471 · Figma Inc · SEK 2 940</span></div>
+  ${st==='idle'||st==='edit'?`<p style="margin:0"><b>Change the VAT code on this invoice?</b></p><dl class="cmp"><dt class="now">Booked now</dt><dd class="now">6150 Office supplies · 25%</dd><dt class="new">Proposed</dt><dd class="new">${esc(ACCTS[st==='edit'?AC.acct:'6540'])}</dd></dl>
+   <p class="hint" style="margin:0">Supplier is outside Sweden, so reverse charge applies. Rule: EU and non-EU services, VAT Act ch. 5.</p>
+   ${st==='edit'?`<label class="lvrow"><span class="lbl">Account</span><select class="sel" data-v="acct">${Object.keys(ACCTS).map(k=>`<option value="${k}" ${k===AC.acct?'selected':''}>${esc(ACCTS[k])}</option>`).join('')}</select></label>
+   <div class="acts"><button class="b p" type="button" data-v="save">Save</button><button class="b" type="button" data-v="cancel">Cancel</button><span class="by">Proposed by <span class="agent">Bookkeeping agent</span></span></div>`:
+   `<div class="acts"><button class="b p" type="button" data-v="accept">Accept</button><button class="b" type="button" data-v="edit">Edit</button><button class="b" type="button" data-v="reject">Reject</button><span class="by">Proposed by <span class="agent">Bookkeeping agent</span></span></div>`}`:
+  `<p class="res" style="margin:0"><span class="ico ${st==='reject'?'rej':'ok'}"></span><span>${st==='reject'?'Rejected. Kept 6150 Office supplies · 25%.':st==='saved'?`Booked to ${esc(ACCTS[AC.acct])}, edited by you.`:'Booked to 6540 Software · reverse charge.'}</span></p>
+   <div class="acts"><button class="b" type="button" data-v="undo">Change decision</button><span class="by">Proposed by <span class="agent">Bookkeeping agent</span></span></div>`}`;
+  const sl=el.querySelector('select');if(sl)sl.onchange=()=>{AC.acct=sl.value;rVat();};
+  el.onclick=e=>{const b=e.target.closest('button[data-v]');if(!b)return;if(PLAY.vat)toggle('vat');const a=b.dataset.v;
+    AC.vat=a==='undo'||a==='cancel'?'idle':a==='edit'?'edit':a==='save'?(AC.acct==='6540'?'accept':'saved'):a;if(a==='undo')AC.acct='6540';rVat();};}
+function runVat(){AC.vat='idle';AC.acct='6540';rVat();later('vat',()=>{AC.vat='edit';rVat();later('vat',()=>{AC.acct='6550';rVat();later('vat',()=>{AC.vat='saved';rVat();later('vat',runVat,2800);},1400);},1400);},1800);}
+const CHG=[['Bank account','BG 5521-0098','BG 7740-1123','New bankgiro on invoice 8812 and in the supplier’s letter of 2 Oct.',true],['Payment terms','30 days','20 days','Matches the framework agreement signed 1 Oct.'],['Address','Box 112, 971 04 Luleå','Hamngatan 4, 972 38 Luleå','From the header on invoice 8812.']];
+function rChg(){const el=document.getElementById('lv-chg');if(!el)return;const d=AC.chg,pend=d.filter(x=>x===null).length;
+  el.innerHTML=`<div class="row"><h4>Supplier · Nordic Steel AB</h4><span class="tag ${AC.saved?'':'w'}" style="margin-left:auto">${AC.saved?'saved':pend?pend+' pending':'ready to save'}</span></div>
+  <p style="margin:0"><b>Update the supplier details?</b> Decide on each change. Nothing is saved until you press Save.</p>
+  <ul class="chgl">${CHG.map((c,i)=>`<li class="${d[i]?'dec '+d[i]:''}"><div class="row"><b>${c[0]}</b>${c[4]?'<span class="tag w">high stakes</span>':''}<span class="rule">${d[i]==='acc'?'Accepted':d[i]==='rej'?'Rejected':''}</span></div>
+    ${d[i]===null?`<dl class="cmp"><dt class="now">Now</dt><dd class="now">${esc(c[1])}</dd><dt class="new">Proposed</dt><dd class="new">${esc(c[2])}</dd></dl><small>${esc(c[3])}</small>
+    <div class="acts"><button class="b p" type="button" data-c="acc" data-i="${i}">Accept</button><button class="b" type="button" data-c="rej" data-i="${i}">Reject</button></div>`:
+    `<small>${d[i]==='acc'?esc(c[1])+' → '+esc(c[2]):'Kept '+esc(c[1])}</small>${AC.saved?'':`<div class="acts"><button class="b" type="button" data-c="undo" data-i="${i}">Change</button></div>`}`}</li>`).join('')}</ul>
+  ${AC.saved?`<p class="res" style="margin:0"><span class="ico ok"></span><span>Saved ${d.filter(x=>x==='acc').length} of 3 changes. Proposed by Supplier agent, saved by you.</span></p><div class="acts"><button class="b" type="button" data-c="reset">Start over</button></div>`:
+  `<div class="acts"><button class="b ink" type="button" data-c="save" ${pend?'disabled':''}>Save changes</button><span class="hint">${pend?'Nothing is saved until every change is decided.':'Only accepted changes are saved.'}</span><span class="by">Proposed by <span class="agent">Supplier agent</span></span></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-c]');if(!b||b.disabled)return;if(PLAY.chg)toggle('chg');const a=b.dataset.c,i=+b.dataset.i;
+    if(a==='save')AC.saved=true;else if(a==='reset'){AC.chg=[null,null,null];AC.saved=false;}else AC.chg[i]=a==='undo'?null:a;rChg();};}
+function runChg(){AC.chg=[null,null,null];AC.saved=false;rChg();const seq=[[0,'acc'],[1,'rej'],[2,'acc']];let k=0;
+  const step=()=>{if(k<seq.length){AC.chg[seq[k][0]]=seq[k][1];k++;rChg();later('chg',step,1300);}else{AC.saved=true;rChg();later('chg',runChg,3000);}};later('chg',step,1600);}
+const DRAFT='Hi Erik,\n\nInvoice 1047 for the roof work at Storgatan 12 (48 750,00 kr) was due on 20 September and is now 14 days overdue.\n\nCould you let us know when we can expect payment? If it is already on its way, please ignore this message.\n\nBest regards,\nLena Ström, Berg Bygg AB';
+function rDraft(){const el=document.getElementById('lv-draft');if(!el)return;const st=AC.draft,ed=AC.txt!==DRAFT;
+  el.innerHTML=`<div class="row"><h4>Reminder · Nordström Fastighet AB</h4>${st==='sent'?'<span class="tag">sent</span>':ed?'<span class="tag n">edited by you</span>':''}</div>
+  ${st==='sent'?`<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminder sent to erik.nordstrom@nordstromfast.se. Drafted by Invoice agent, ${ed?'edited and ':''}sent by you.</span></p><div class="acts"><button class="b" type="button" data-d="reset">Start over</button></div>`:
+  `<div class="mail"><small>To erik.nordstrom@nordstromfast.se · Invoice 1047</small>${st==='edit'?`<textarea class="ta" rows="9" aria-label="Reminder text">${esc(AC.txt)}</textarea>`:`<div class="pre">${esc(AC.txt)}</div>`}</div>
+  <div class="acts"><button class="b ink" type="button" data-d="send">Send reminder</button>${st==='edit'?'<button class="b" type="button" data-d="done">Done editing</button>':'<button class="b" type="button" data-d="edit">Edit</button>'}${ed?'<button class="lnk" type="button" data-d="back">Back to the agent draft</button>':''}<span class="by">Drafted by <span class="agent">Invoice agent</span></span></div>`}`;
+  const ta=el.querySelector('textarea');if(ta)ta.oninput=()=>{const was=AC.txt!==DRAFT;AC.txt=ta.value;if(was!==(AC.txt!==DRAFT)){const pos=ta.selectionStart;rDraft();const t2=el.querySelector('textarea');t2.focus();t2.setSelectionRange(pos,pos);}};
+  el.onclick=e=>{const b=e.target.closest('button[data-d]');if(!b)return;if(PLAY.draft)toggle('draft');const a=b.dataset.d;
+    if(a==='back')AC.txt=DRAFT;if(a==='reset'){AC.txt=DRAFT;AC.draft='idle';}else AC.draft=a==='send'?'sent':a==='edit'?'edit':a==='back'?AC.draft:'idle';rDraft();
+    if(a==='edit'){const t=el.querySelector('textarea');if(t)t.focus();}};}
+function runDraft(){AC.draft='idle';AC.txt=DRAFT;rDraft();later('draft',()=>{AC.draft='edit';rDraft();later('draft',()=>{AC.txt=DRAFT.replace('Could you let us know','Could you let us know by Friday 10 October');rDraft();later('draft',()=>{AC.draft='idle';rDraft();later('draft',()=>{AC.draft='sent';rDraft();later('draft',runDraft,3000);},1400);},1600);},1400);},1600);}
+function initAct(){if(!document.getElementById('lv-vat'))return;AC.vat='idle';AC.acct='6540';AC.chg=[null,null,null];AC.saved=false;AC.draft='idle';AC.txt=DRAFT;rVat();rChg();rDraft();}
+
+/* ---------- exceptions examples ---------- */
+const EXQ=[{t:'Amount 40% above usual',who:'Nordic Steel AB · invoice 8840 · SEK 182 400',prob:'The amount is 40% above the usual SEK 130 000 a month from this supplier.',prop:'Hold the payment and ask the supplier about the extra steel delivery on the invoice.',why:'Flagged by rule: amount more than 25% above the 12-month average.',ok:'Hold and ask supplier',no:'Approve anyway'},
+ {t:'New bank account for supplier',who:'Lund El AB · invoice 5530 · SEK 24 600',prop:'Call Lund El AB on the number in the supplier register to confirm the new account before paying.',prob:'The invoice asks for payment to a bankgiro that is not in the supplier register.',why:'Flagged by rule: bank details changed. Always checked by a person.',ok:'I called, it’s correct',no:'Block payment'}];
+const EX={q:[null,null],open:null,bulk:[null,null,null,null],risk:null,sel:true,inbox:[true,true,true],seen:false};
+function rQueue(){const el=document.getElementById('lv-queue');if(!el)return;const left=EX.q.filter(x=>x===null).length;
+  el.innerHTML=`<div class="row"><h4>Today · supplier invoices</h4></div>
+  <p class="res" style="margin:0"><span class="dot ok"></span><span>214 approved automatically by <span class="agent">Invoice agent</span>${2-left?`, ${2-left} decided by you`:''}</span></p>
+  ${left?`<p class="res" style="margin:0"><span class="dot ac"></span><b>${left} need${left===1?'s':''} you</b></p>
+  <ul class="exq">${EXQ.map((x,i)=>EX.q[i]?'':`<li><div class="row"><span>${esc(x.t)}</span>${EX.open===i?'':`<button class="b" type="button" data-q="open" data-i="${i}" style="margin-left:auto">Check</button>`}</div>
+   ${EX.open===i?`<div class="excard"><small>${esc(x.who)}</small><p><b>Problem.</b> ${esc(x.prob)}</p><p><b>Proposal.</b> ${esc(x.prop)}</p><p class="hint">${esc(x.why)}</p>
+   <div class="acts"><button class="b p" type="button" data-q="ok" data-i="${i}">${esc(x.ok)}</button><button class="b" type="button" data-q="no" data-i="${i}">${esc(x.no)}</button><span class="by">Flagged by <span class="agent">Invoice agent</span></span></div></div>`:''}</li>`).join('')}</ul>`:
+  `<div class="empty"><span class="ico ok"></span><span><b>Nothing needs you.</b> 216 supplier invoices handled today. Next batch at 13:00.</span><button class="b" type="button" data-q="reset">Start over</button></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-q]');if(!b)return;if(PLAY.queue)toggle('queue');const a=b.dataset.q,i=+b.dataset.i;
+    if(a==='open')EX.open=i;else if(a==='reset'){EX.q=[null,null];EX.open=null;}else{EX.q[i]=a;EX.open=null;}rQueue();};}
+function runQueue(){EX.q=[null,null];EX.open=null;rQueue();later('queue',()=>{EX.open=0;rQueue();later('queue',()=>{EX.q[0]='ok';EX.open=null;rQueue();later('queue',()=>{EX.open=1;rQueue();later('queue',()=>{EX.q[1]='ok';EX.open=null;rQueue();later('queue',runQueue,3000);},2200);},1200);},2200);},1400);}
+const BULK=[['Circle K, Sibbhult','812,40 kr'],['Byggmax, Hässleholm','3 450,00 kr'],['Bauhaus, Malmö','1 290,00 kr'],['Ahlsell, Kristianstad','2 118,00 kr']];
+function rBulk(){const el=document.getElementById('lv-bulk');if(!el)return;const open=EX.bulk.filter(x=>x===null).length+(EX.risk?0:1);
+  el.innerHTML=`<div class="row"><h4>Expenses · exceptions</h4><span class="tag ${open?'w':''}" style="margin-left:auto">${open?open+' need you':'all handled'}</span></div>
+  ${EX.bulk.some(x=>x===null)?`<div class="offerbox"><span><b>4 card payments are missing a receipt.</b> Receipts with the same amount and date were found in the inbox.</span>
+   <span class="acts"><button class="b p" type="button" data-k="all">Match all 4</button><span class="by">Suggested by <span class="agent">Expense agent</span></span></span></div>`:''}
+  <ul class="cards">${BULK.map((c,i)=>`<li><span class="mono">Easy</span><span>${esc(c[0])}${EX.bulk[i]?'<small class="rc">✓ Receipt matched</small>':'<small class="hint">Receipt found: same amount and date</small>'}</span><span class="amt">${c[1]}</span></li>`).join('')}
+  <li class="risk"><span class="mono">Check</span><span>Payment to new bank account<small class="hint">${EX.risk?EX.risk==='ok'?'✓ Confirmed by you after calling Lund El AB':'Payment blocked by you':'Lund El AB · not part of the bulk action'}</small></span><span class="amt">24 600 kr</span>
+   ${EX.risk?'':`<span class="acts" style="grid-column:2/-1"><button class="b" type="button" data-k="ok">I called, it’s correct</button><button class="b" type="button" data-k="no">Block payment</button></span>`}</li></ul>
+  ${open?'':'<div class="acts"><button class="b" type="button" data-k="reset">Start over</button></div>'}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-k]');if(!b)return;if(PLAY.bulk)toggle('bulk');const a=b.dataset.k;
+    if(a==='all')EX.bulk=EX.bulk.map(()=>'ok');else if(a==='reset'){EX.bulk=[null,null,null,null];EX.risk=null;}else EX.risk=a;rBulk();};}
+function runBulk(){EX.bulk=[null,null,null,null];EX.risk=null;rBulk();later('bulk',()=>{EX.bulk=EX.bulk.map(()=>'ok');rBulk();later('bulk',()=>{EX.risk='ok';rBulk();later('bulk',runBulk,3000);},2200);},1800);}
+const INB=[['Invoice agent','3 invoices need you','09:12'],['Reminder agent','3 reminders ready to send','08:40'],['Reconciliation agent','Done: 211 of 214 matched, 3 need a look','08:31']];
+function rInbox(){const el=document.getElementById('lv-inbox');if(!el)return;const n=EX.inbox.filter(Boolean).length;
+  el.innerHTML=`<div class="row"><h4>Agent inbox</h4><span class="tag ${n?'w':''}" style="margin-left:auto">${n?n+' need you':'all caught up'}</span></div>
+  ${n?`<ul class="inb">${INB.map((x,i)=>EX.inbox[i]?`<li><span><span class="agent">${esc(x[0])}</span><small>${esc(x[1])}</small></span><span class="mono">${x[2]}</span><button class="b" type="button" data-ib="${i}" aria-label="Mark ${esc(x[0])} done">Done</button></li>`:'').join('')}</ul>
+  <p class="hint" style="margin:0">Newest first, like email.</p>`:
+  `<div class="empty"><span class="ico ok"></span><span><b>Nothing needs you right now.</b> Your agents handled 428 items today.</span><button class="b" type="button" data-ib="reset">Start over</button></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-ib]');if(!b)return;if(PLAY.inbox)toggle('inbox');const a=b.dataset.ib;if(a==='reset')EX.inbox=[true,true,true];else EX.inbox[+a]=false;rInbox();};}
+function runInbox(){EX.inbox=[true,true,true];rInbox();let i=0;const step=()=>{EX.inbox[i]=false;i++;rInbox();if(i<3)later('inbox',step,1300);else later('inbox',runInbox,3000);};later('inbox',step,1600);}
+function initExc(){if(!document.getElementById('lv-queue'))return;EX.q=[null,null];EX.open=null;EX.bulk=[null,null,null,null];EX.risk=null;EX.inbox=[true,true,true];rQueue();rBulk();rInbox();}
+
+/* ---------- hand-over examples ---------- */
+const HO={c:'new',open:false,f:'idle',vat:'25',o:0};
+function rCase(){const el=document.getElementById('lv-case');if(!el)return;const st=HO.c;
+  el.innerHTML=`<div class="row"><h4>Handed to Anders Holm</h4><span class="tag ${st==='done'?'':'w'}" style="margin-left:auto">${st==='done'?'done':st==='taken'?'with Anders':'new case'}</span></div>
+  <dl class="kv"><dt>Case</dt><dd>Excavator, SEK 780 000 · invoice 9910 from Maskin Syd AB</dd>
+  <dt>Checked</dt><dd><button class="lnk" type="button" data-h="chk" aria-expanded="${HO.open}">Invoice, asset register</button>${HO.open?`<ul class="chk"><li>✓ Invoice text: “Excavator CAT 308, reconditioned, incl. new tracks”</li><li>✓ Asset register: an excavator CAT 308 bought in 2019</li><li>✓ Drafts ready for both: asset 1220 or repair 5500</li></ul>`:''}</dd>
+  <dt>Why you</dt><dd>Asset or repair is a judgement call. The rules allow both, and the choice changes this year’s result by SEK 624 000.</dd></dl>
+  ${st==='new'?'<div class="acts"><button class="b p" type="button" data-h="take">Take the case</button><span class="by">Prepared by <span class="agent">Close agent</span></span></div>':
+   st==='taken'?'<div class="acts"><button class="b ink" type="button" data-h="asset">Book as asset</button><button class="b" type="button" data-h="repair">Book as repair</button><span class="by">Prepared by <span class="agent">Close agent</span></span></div>':
+   `<p class="res" style="margin:0"><span class="ico ok"></span><span>Booked as ${HO.as==='asset'?'asset on 1220, depreciated over 5 years':'repair on 5500'}. Decided by Anders Holm, prepared by Close agent.</span></p><div class="acts"><button class="b" type="button" data-h="reset">Start over</button></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-h]');if(!b)return;if(PLAY.case)toggle('case');const a=b.dataset.h;
+    if(a==='chk')HO.open=!HO.open;else if(a==='take')HO.c='taken';else if(a==='reset'){HO.c='new';HO.open=false;}else{HO.c='done';HO.as=a;}rCase();};}
+function runCase(){HO.c='new';HO.open=false;rCase();later('case',()=>{HO.open=true;rCase();later('case',()=>{HO.c='taken';rCase();later('case',()=>{HO.c='done';HO.as='asset';rCase();later('case',runCase,3000);},1800);},2000);},1400);}
+function rFail(){const el=document.getElementById('lv-fail');if(!el)return;const st=HO.f;
+  el.innerHTML=`<div class="row"><h4>INV-2244 · Nord Konsult AB</h4><span class="amt" style="margin-left:auto;font-weight:600">15 000,00 kr</span></div>
+  ${st==='idle'?`<div class="answer"><span><b>No VAT code suggested.</b> The invoice says “Services and materials, see attached” and the attachment can’t be read, so I can’t tell how much is goods.</span></div>
+   <div class="acts"><button class="b ink" type="button" data-f="self">Enter it myself</button><button class="b" type="button" data-f="ask">Ask Erik</button><button class="lnk" type="button" data-f="up">Upload a readable copy</button><span class="by"><span class="agent">Invoice agent</span></span></div>`:
+  st==='self'?`<label class="lvrow"><span class="lbl">VAT code</span><select class="sel">${[['25','25% · services and materials'],['12','12% · reduced rate'],['0','0% · reverse charge']].map(o=>`<option value="${o[0]}" ${HO.vat===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></label>
+   <div class="acts"><button class="b p" type="button" data-f="save">Save</button><button class="b" type="button" data-f="idle">Cancel</button></div>`:
+  st==='saved'?`<p class="res" style="margin:0"><span class="ico ok"></span><span>VAT code entered by you. The log shows it was entered by a person, not the agent.</span></p><div class="acts"><button class="b" type="button" data-f="idle">Start over</button></div>`:
+  st==='ask'?`<p class="res" style="margin:0"><span class="ico wait"></span><span>Sent to Erik Lund with the invoice, the unreadable attachment and what the agent checked. Waiting for Erik.</span></p><div class="acts"><button class="b" type="button" data-f="idle">Start over</button></div>`:
+  st==='read'?'<p class="res" style="margin:0"><span class="ico wait"></span><span>Reading the new copy…</span></p>':
+  `<div class="answer"><span><b>Suggested: split VAT.</b> The new copy shows services 9 000 kr and materials 6 000 kr, both at 25%.</span></div>
+   <div class="acts"><button class="b p" type="button" data-f="saved2">Accept</button><button class="b" type="button" data-f="idle">Start over</button><span class="by">Proposed by <span class="agent">Invoice agent</span></span></div>`}`;
+  const sl=el.querySelector('select');if(sl)sl.onchange=()=>{HO.vat=sl.value;};
+  el.onclick=e=>{const b=e.target.closest('button[data-f]');if(!b)return;if(PLAY.fail)toggle('fail');const a=b.dataset.f;
+    if(a==='up'){HO.f='read';rFail();setTimeout(()=>{if(HO.f==='read'){HO.f='sug';rFail();}},1200);return;}
+    HO.f=a==='save'?'saved':a==='saved2'?'acc':a;if(HO.f==='acc'){el.innerHTML='';HO.f='idle';rFail();el.querySelector('.answer').innerHTML='<span><b>Booked with split VAT.</b> Services 9 000 kr and materials 6 000 kr at 25%. Accepted by you.</span>';el.querySelector('.acts').innerHTML='<button class="b" type="button" data-f="idle">Start over</button>';return;}rFail();};}
+function runFail(){HO.f='idle';rFail();later('fail',()=>{HO.f='read';rFail();later('fail',()=>{HO.f='sug';rFail();later('fail',runFail,3200);},1400);},2200);}
+function rOwner(){const el=document.getElementById('lv-owner');if(!el)return;const v=HO.o;
+  el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Handed to a person','Suspense account'].map((n,j)=>`<button type="button" data-ow="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
+  <div class="row"><span class="nm">Excavator CAT 308</span><span class="rule">Invoice 9910 · SEK 780 000</span></div>
+  ${v===0?`<p class="res" style="margin:0"><span class="ico wait"></span><span><b>With Anders Holm</b>, due today. He has what the agent checked and drafts for both bookings.</span></p>
+   <div class="acts"><span class="tag">owner: Anders Holm</span><span class="by">Handed over by <span class="agent">Close agent</span></span></div>`:
+   `<dl class="cmp"><dt class="now">Booked to</dt><dd class="now">2999 Suspense account · SEK 780 000</dd></dl>
+   <div class="acts"><span class="tag w">owner: nobody</span><span class="by">Parked by <span class="agent">Close agent</span></span></div>
+   <p class="warnline">Nobody owns it. It turns up at year-end, four months later, with no notes on what was checked.</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-ow]');if(!b)return;if(PLAY.owner)toggle('owner');HO.o=+b.dataset.ow;rOwner();};}
+function runOwner(){later('owner',()=>{HO.o=1-HO.o;rOwner();runOwner();},2600);}
+function initHO(){if(!document.getElementById('lv-case'))return;HO.c='new';HO.open=false;HO.f='idle';HO.o=0;rCase();rFail();rOwner();}
+
+/* ---------- undo examples ---------- */
+const UD={t:580,sent:'sent',w:'ask',held:8,rows:null};
+const mmss=t=>Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+function rSent(){const el=document.getElementById('lv-sent');if(!el)return;const st=UD.sent;
+  el.innerHTML=`<div class="row"><h4>Sent by <span class="agent">Reminder agent</span> · 09:12</h4></div>
+  <div class="cardrow"><span>Nordström Fastigheter · invoice 1047</span>${st==='sent'?'<button class="b" type="button" data-u="undo">Undo</button>':st==='undone'?'<span class="tag n">recalled</span>':'<span class="tag">sent</span>'}</div>
+  ${st==='sent'?`<p class="hint" style="margin:0">You can undo for ${mmss(UD.t)}</p>`:st==='undone'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminder recalled at 09:14 before it reached Nordström. Undone by you, logged like the send.</span></p><div class="acts"><button class="b" type="button" data-u="reset">Start over</button></div>':'<p class="hint" style="margin:0">The undo window has closed. Send a correction if something was wrong.</p><div class="acts"><button class="b" type="button" data-u="reset">Start over</button></div>'}
+  <p class="hint" style="margin:0;border-top:1px solid var(--line);padding-top:8px">Can’t be undone: payments once they leave the bank.</p>`;
+  el.onclick=e=>{const b=e.target.closest('button[data-u]');if(!b)return;if(PLAY.sent)toggle('sent');const a=b.dataset.u;if(a==='reset'){UD.sent='sent';UD.t=580;}else UD.sent='undone';rSent();};}
+function runSent(){UD.sent='sent';UD.t=580;rSent();const tick=()=>{UD.t-=1;if(UD.t<=574){UD.sent='undone';rSent();later('sent',runSent,3200);return;}rSent();later('sent',tick,1000);};later('sent',tick,1000);}
+function rWarn(){const el=document.getElementById('lv-warn');if(!el)return;const st=UD.w;
+  el.innerHTML=`<div class="row"><h4>Pay suppliers</h4><span class="rule">3 payments · SEK 148 200</span></div>
+  <ul class="cards">${[['Nordic Steel AB','96 400 kr'],['Lund El AB','24 600 kr'],['Maskin Syd AB','27 200 kr']].map(c=>`<li><span class="mono">31 Oct</span><span>${c[0]}</span><span class="amt">${c[1]}</span></li>`).join('')}</ul>
+  ${st==='ask'?`<div class="offerbox"><span><b>Payments can’t be undone once they leave the bank.</b> You can stop them until 14:00 today, when the bank file is sent.</span><span class="acts"><button class="b p" type="button" data-w="go">Schedule payments</button><button class="b" type="button" data-w="no">Not yet</button><span class="by">Prepared by <span class="agent">Close agent</span></span></span></div>`:
+   st==='sched'?`<p class="res" style="margin:0"><span class="ico wait"></span><span>Scheduled for 14:00. You can stop them until then.</span></p><div class="acts"><button class="b" type="button" data-w="stop">Stop payments</button><span class="by">Scheduled by you</span></div>`:
+   st==='bank'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Sent to the bank at 14:00. These can’t be undone now. To get money back, ask the supplier for a refund.</span></p><div class="acts"><button class="b" type="button" data-w="reset">Start over</button></div>':
+   st==='stopped'?'<p class="res" style="margin:0"><span class="ico rej"></span><span>Payments stopped at 11:20, before the bank file was sent. Stopped by you, logged.</span></p><div class="acts"><button class="b" type="button" data-w="reset">Start over</button></div>':
+   '<p class="hint" style="margin:0">Okay. Nothing is scheduled. The payments wait in Pay suppliers.</p><div class="acts"><button class="b" type="button" data-w="reset">Start over</button></div>'}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-w]');if(!b)return;if(PLAY.warn)toggle('warn');const a=b.dataset.w;UD.w=a==='go'?'sched':a==='stop'?'stopped':a==='no'?'no':'ask';rWarn();};}
+function runWarn(){UD.w='ask';rWarn();later('warn',()=>{UD.w='sched';rWarn();later('warn',()=>{UD.w='bank';rWarn();later('warn',runWarn,3200);},2400);},2200);}
+const ULOG0=()=>[{t:'10:46',who:'Bookkeeping agent',what:'booked 12 accruals for September',k:'undo'},{t:'10:44',who:'Bookkeeping agent',what:'sent a reminder to Holm & Dotter AB',k:'fix'},{t:'10:31',who:'Lena Ström',what:'approved the plan',k:'person'}];
+function rUlog(){const el=document.getElementById('lv-ulog');if(!el)return;if(!UD.rows)UD.rows=ULOG0();
+  el.innerHTML=`${UD.held>0?`<div class="toast"><span>Reminder to Nordström Fastigheter: held for ${UD.held} seconds before it sends</span><button class="b" type="button" data-l="hold">Undo</button></div>`:''}
+  <h4>What the agent changed today</h4>
+  <ul class="ulog">${UD.rows.map((r,i)=>`<li class="${r.fresh?'in':''} ${r.k==='done'?'gone':''}"><span class="mono">${r.t}</span><span>${/agent$/.test(r.who)?`<span class="agent">${esc(r.who)}</span>`:`<b>${esc(r.who)}</b>`} ${esc(r.what)}</span><span class="end">${r.k==='undo'?`<button class="b" type="button" data-l="u" data-i="${i}">Undo</button>`:r.k==='fix'?`<span class="tag w">Can’t be unsent</span><button class="lnk" type="button" data-l="fix" data-i="${i}">Send a correction</button>`:r.k==='done'?'<span class="tag n">undone</span>':r.k==='fixd'?'<span class="tag">correction sent</span>':'<span class="hint">person</span>'}</span></li>`).join('')}</ul>`;
+  UD.rows.forEach(r=>r.fresh=false);
+  el.onclick=e=>{const b=e.target.closest('button[data-l]');if(!b)return;if(PLAY.ulog)toggle('ulog');const a=b.dataset.l,i=+b.dataset.i;
+    if(a==='hold'){UD.held=0;UD.rows.unshift({t:'10:48',who:'Lena Ström',what:'stopped the reminder to Nordström Fastigheter before it was sent',k:'person',fresh:true});}
+    else if(a==='u'){UD.rows[i].k='done';UD.rows.unshift({t:'10:49',who:'Lena Ström',what:'undid 12 accruals for September',k:'person',fresh:true});}
+    else if(a==='fix'){UD.rows[i].k='fixd';UD.rows.unshift({t:'10:50',who:'Lena Ström',what:'sent a correction to Holm & Dotter AB',k:'person',fresh:true});}
+    UD.rows=UD.rows.slice(0,5);rUlog();};}
+function runUlog(){UD.rows=ULOG0();UD.held=8;rUlog();const tick=()=>{UD.held--;if(UD.held<=0){UD.held=0;UD.rows.unshift({t:'10:48',who:'Reminder agent',what:'sent a reminder to Nordström Fastigheter',k:'undo',fresh:true});rUlog();
+  later('ulog',()=>{UD.rows[1].k='done';UD.rows.unshift({t:'10:49',who:'Lena Ström',what:'undid 12 accruals for September',k:'person',fresh:true});UD.rows=UD.rows.slice(0,5);rUlog();later('ulog',runUlog,3400);},2200);return;}rUlog();later('ulog',tick,1000);};later('ulog',tick,1000);}
+function initUndo(){if(!document.getElementById('lv-sent'))return;UD.sent='sent';UD.t=580;UD.w='ask';UD.held=8;UD.rows=ULOG0();rSent();rWarn();rUlog();}
+
+/* ---------- activity log examples ---------- */
+const RUNL=[['06:00','Reconciliation run started','Started on its own: every Monday at 06:00. Run by Reconciliation agent.'],['06:02','Read 230 bank lines, 2 accounts','Read: Handelsbanken 1234 and Swedbank 5678, 1–4 Oct.'],['06:04','Posted 212 entries (rules 1–7)','Changed: 212 entries on 1930 and 1510. Rules 1–7: OCR, amount and date matches.'],['06:04','18 sent to review by Lisa K.','No rule fitted, or confidence was below 80%. Assigned to Lisa Karlsson.'],['09:20','Lisa K. approved 16, changed 2','Reviewed by Lisa Karlsson. Changed: 2 lines moved from 3010 to 3041.']];
+const AL={n:5,open:null,f:'all',ev:null,pl:0};
+function rRun(){const el=document.getElementById('lv-run');if(!el)return;
+  el.innerHTML=`<div class="row"><h4>Audit trail · Client: Berg AB</h4><span class="tag ${AL.n>=5?'':'n'}" style="margin-left:auto">${AL.n>=5?'reviewed':'running'}</span></div>
+  <ol class="tl">${RUNL.slice(0,AL.n).map((r,i)=>`<li class="${i===AL.n-1&&AL.fresh?'in':''} ${i===4?'per':''}"><span class="mono">${r[0]}</span><span>${i<4?'<span class="agent">Reconciliation agent</span> ':''}<button class="lnk plain" type="button" data-rl="${i}" aria-expanded="${AL.open===i}">${esc(r[1])}</button>${AL.open===i?`<small>${esc(r[2])}</small>`:''}</span></li>`).join('')}</ol>`;AL.fresh=false;
+  el.onclick=e=>{const b=e.target.closest('[data-rl]');if(!b)return;if(PLAY.run)toggle('run');const i=+b.dataset.rl;AL.open=AL.open===i?null:i;rRun();};}
+function runRun(){AL.n=0;AL.open=null;rRun();const step=()=>{AL.n++;AL.fresh=true;rRun();if(AL.n<5)later('run',step,1100);else later('run',()=>{AL.open=2;rRun();later('run',runRun,2600);},1200);};later('run',step,800);}
+const EVL0=()=>[{d:'Yesterday',t:'14:02',who:'a',x:'Created salary run: October, 14 employees'},{d:'Yesterday',t:'14:05',who:'ME',x:'Provided preferences: pay date 23 Oct'},{d:'Yesterday',t:'14:06',who:'a',x:'Calculated 14 payslips'},{d:'Yesterday',t:'14:07',who:'w',x:'Flagged Johan Ek: overtime rate'},{d:'Today',t:'09:12',who:'ME',x:'Fixed overtime rate for Johan Ek'},{d:'Today',t:'09:13',who:'a',x:'Recalculated 1 payslip'},{d:'Today',t:'09:15',who:'a',x:'Created bank file: 412 968 kr',u:true}];
+function rEvent(){const el=document.getElementById('lv-event');if(!el)return;if(!AL.ev)AL.ev=EVL0();const f=AL.f;
+  const rows=AL.ev.filter(r=>f==='all'||(f==='me'?r.who==='ME':r.who!=='ME'));let last='';
+  el.innerHTML=`<div class="row"><h4>Event log · October payroll</h4><div class="seg sm" role="group" aria-label="Filter" style="margin-left:auto;grid-template-columns:repeat(3,auto)">${[['all','All'],['agent','Agent'],['me','You']].map(o=>`<button type="button" data-ef="${o[0]}" aria-pressed="${f===o[0]}">${o[1]}</button>`).join('')}</div></div>
+  <ul class="evl">${rows.map(r=>{const h=r.d!==last?`<li class="dh">${r.d}</li>`:'';last=r.d;return h+`<li class="${r.fresh?'in':''} ${r.gone?'gone':''}"><span class="mono">${r.t}</span><span class="who">${r.who==='ME'?'<span class="ini">ME</span>':'<span class="agent">Payroll agent</span>'}</span><span>${esc(r.x)}</span><span class="end">${r.u&&!r.gone?`<button class="b" type="button" data-eu="1">Undo</button>`:r.gone?'<span class="tag n">undone</span>':''}</span></li>`;}).join('')}</ul>
+  <p class="hint" style="margin:0">Past tense, newest at the bottom. Your own actions carry your initials.</p>`;
+  AL.ev.forEach(r=>r.fresh=false);
+  el.onclick=e=>{const b=e.target.closest('button[data-ef],button[data-eu]');if(!b)return;if(PLAY.event)toggle('event');
+    if(b.dataset.ef)AL.f=b.dataset.ef;else{const r=AL.ev.find(x=>x.u);r.gone=true;AL.ev.push({d:'Today',t:'09:21',who:'ME',x:'Withdrew bank file: 412 968 kr, not yet sent to the bank',fresh:true});}rEvent();};}
+function runEvent(){AL.ev=EVL0();AL.f='all';rEvent();later('event',()=>{AL.f='me';rEvent();later('event',()=>{AL.f='all';rEvent();later('event',()=>{const r=AL.ev.find(x=>x.u);r.gone=true;AL.ev.push({d:'Today',t:'09:21',who:'ME',x:'Withdrew bank file: 412 968 kr, not yet sent to the bank',fresh:true});rEvent();later('event',runEvent,3200);},1600);},1800);},1600);}
+function rPlain(){const el=document.getElementById('lv-plain');if(!el)return;const v=AL.pl;
+  el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Plain sentences','Raw system log'].map((n,j)=>`<button type="button" data-pl="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
+  ${v===0?`<ol class="tl">${RUNL.slice(1,4).map(r=>`<li><span class="mono">${r[0]}</span><span><span class="agent">Reconciliation agent</span> ${esc(r[1])}</span></li>`).join('')}</ol>
+   <div class="acts"><span class="hint">Who, what and which rules, in words.</span></div>`:
+   `<pre class="raw">2026-10-05T06:02:31Z INFO recon.ingest src=[HB-1234,SWB-5678] n=230
+2026-10-05T06:04:07Z INFO recon.post n=212 rules=[R1..R7] gl=[1930,1510] ok
+2026-10-05T06:04:08Z WARN recon.route n=18 conf&lt;0.80 assignee=uid:4471</pre>
+   <p class="warnline">Correct, but nobody outside the team can follow it, and there is nothing to undo from.</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-pl]');if(!b)return;if(PLAY.plain)toggle('plain');AL.pl=+b.dataset.pl;rPlain();};}
+function runPlain(){later('plain',()=>{AL.pl=1-AL.pl;rPlain();runPlain();},2600);}
+function initLog(){if(!document.getElementById('lv-run'))return;AL.n=5;AL.open=null;AL.f='all';AL.ev=EVL0();AL.pl=0;rRun();rEvent();rPlain();}
+
+/* ---------- recap examples ---------- */
+const WEEKS={41:[['4.5 h','saved on reviews','Reviews you didn’t have to do: 212 bank lines and 64 payslips checked against the rules.'],['7','out-of-policy spends caught','5 above the per-diem limit, 2 on weekends without a project. All 7 sent to managers.'],['5 days','faster payment','Customers paid on average 5 days sooner after reminders, compared with September.'],['98%','matched without edits','421 of 430 bank lines accepted as matched. You changed 9.']],
+ 40:[['3.8 h','saved on reviews','Reviews you didn’t have to do: 188 bank lines and 64 payslips.'],['4','out-of-policy spends caught','3 above the per-diem limit, 1 duplicate receipt.'],['3 days','faster payment','Customers paid on average 3 days sooner after reminders.'],['96%','matched without edits','398 of 415 bank lines accepted as matched. You changed 17.']]};
+const WEAK={41:'Weaker this week: you changed 4 of 12 VAT codes on foreign invoices.',40:'Weaker this week: 9 receipts were matched to the wrong card payment.'};
+const RC={wk:41,tile:null,cite:null,show:false,need:[true,true,true]};
+function rWeek(){const el=document.getElementById('lv-week');if(!el)return;const w=WEEKS[RC.wk];
+  el.innerHTML=`<div class="row"><h4>This week with your agents</h4><div class="seg sm" role="group" aria-label="Week" style="margin-left:auto;grid-template-columns:auto auto">${[40,41].map(n=>`<button type="button" data-wk="${n}" aria-pressed="${RC.wk===n}">Week ${n}</button>`).join('')}</div></div>
+  <p class="by" style="margin:0">From <span class="agent">Reconciliation agent</span><span class="agent">Expense agent</span><span class="agent">Reminder agent</span><span class="agent">Payroll agent</span></p>
+  <div class="tiles">${w.map((t,i)=>`<button type="button" class="tile" data-tl="${i}" aria-expanded="${RC.tile===i}"><b>${t[0]}</b><span>${t[1]}</span></button>`).join('')}</div>
+  ${RC.tile!==null?`<div class="srcbox"><b>${esc(w[RC.tile][0])} ${esc(w[RC.tile][1])}</b><span>${esc(w[RC.tile][2])}</span></div>`:''}
+  <p class="warnline">${esc(WEAK[RC.wk])}</p>`;
+  el.onclick=e=>{const b=e.target.closest('button[data-wk],button[data-tl]');if(!b)return;if(PLAY.week)toggle('week');if(b.dataset.wk)RC.wk=+b.dataset.wk;else{const i=+b.dataset.tl;RC.tile=RC.tile===i?null:i;}rWeek();};}
+function runWeek(){let i=0;const step=()=>{RC.tile=i%4;if(i%4===0)RC.wk=RC.wk===41?40:41;rWeek();i++;later('week',step,1600);};later('week',step,600);}
+const MSGS=[['Jonas, Ahlsell · 24 Sep','Price list changes from 1 October, plywood +4%.'],['Lena · 25 Sep','Asked if the old price holds for the Villa Ek order.'],['Jonas · 26 Sep','Yes, old price for orders placed before 30 Sep.'],['Jonas · 2 Oct','INV-2231 sent, plywood at the new price.']];
+function rThread(){const el=document.getElementById('lv-thread');if(!el)return;const c=RC.cite;
+  const ct=n=>`<button class="cite" type="button" data-tc="${n}" aria-label="Message ${n}" aria-expanded="${c===n}">${n}</button>`;
+  el.innerHTML=`<div class="row"><h4>Thread with Ahlsell · 4 messages</h4></div>
+  <div class="answer"><span class="routed"><span>Summary by</span><span class="agent">Invoice agent</span></span>
+   <ul class="sum"><li>Ahlsell raised plywood 4% from 1 Oct ${ct(1)}</li><li>The old price was promised for orders before 30 Sep ${ct(3)}</li><li>INV-2231 still uses the new price ${ct(4)}</li></ul></div>
+  <ul class="msgs">${MSGS.map((m,i)=>`<li class="${c===i+1?'hl':''}"><b>${esc(m[0])}</b><span>${esc(m[1])}</span></li>`).join('')}</ul>`;
+  el.onclick=e=>{const b=e.target.closest('[data-tc]');if(!b)return;if(PLAY.thread)toggle('thread');const n=+b.dataset.tc;RC.cite=RC.cite===n?null:n;rThread();};}
+function runThread(){const seq=[1,3,4,null];let i=0;const step=()=>{RC.cite=seq[i%4];rThread();i++;later('thread',step,1500);};later('thread',step,600);}
+const NEEDS=[['Failed','Lund El AB · bank sync failed','The bank didn’t answer on Saturday at 06:00. Last good sync: Friday 18:00','Retry','w'],['Check','Holm & Dotter AB · 4 lines without a match','SEK 12 300 in payments with no invoice to match','Review','w'],['Check','Nordström Fastigheter · split payment','One payment may cover 2 invoices. Confidence 71%, below the 80% limit','Review','w']];
+function rBack(){const el=document.getElementById('lv-back');if(!el)return;const n=RC.need.filter(Boolean).length;
+  el.innerHTML=`<div class="row"><h4>Welcome back, Anders</h4><span class="rule">Since Friday</span></div>
+  <p class="by" style="margin:0">From <span class="agent">Reconciliation agent</span><span class="agent">Bank agent</span><span class="agent">Close agent</span></p>
+  <p style="margin:0">Since Friday, <b>38 of 41 clients reconciled on their own.</b> ${n?`${n} need${n===1?'s':''} you.`:'Nothing needs you now.'}</p>
+  ${RC.show?`<div class="lbl hint">Needs you</div><ul class="inb">${NEEDS.map((x,i)=>`<li class="${RC.need[i]?'':'gone'}"><span class="tag ${RC.need[i]?x[4]:''}">${RC.need[i]?x[0]:'Done'}</span><span><b>${esc(x[1])}</b><small>${esc(x[2])}</small></span>${RC.need[i]?`<button class="b" type="button" data-bk="${i}">${x[3]}</button>`:'<span></span>'}</li>`).join('')}</ul>
+   <div class="lbl hint">Done</div><ul class="inb"><li><span class="tag">Done</span><span><b>38 clients reconciled</b><small>3 104 bank lines matched, all by rules 1–7</small></span><button class="b" type="button">Open</button></li><li><span class="tag">Done</span><span><b>September VAT return drafted</b><small>SEK 571 850 to pay by 12 Oct</small></span><button class="b" type="button">Open</button></li></ul>
+   <div class="acts"><button class="b" type="button" data-bk="hide">Hide details</button></div>`:
+   `<div class="acts"><button class="b p" type="button" data-bk="show">Show me</button><button class="b" type="button" data-bk="snooze">Snooze</button></div>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-bk]');if(!b)return;if(PLAY.back)toggle('back');const a=b.dataset.bk;
+    if(a==='show')RC.show=true;else if(a==='hide'||a==='snooze')RC.show=false;else RC.need[+a]=false;rBack();};}
+function runBack(){RC.show=false;RC.need=[true,true,true];rBack();later('back',()=>{RC.show=true;rBack();let i=0;const step=()=>{RC.need[i]=false;i++;rBack();if(i<3)later('back',step,1200);else later('back',runBack,3000);};later('back',step,1600);},1800);}
+function initRec(){if(!document.getElementById('lv-week'))return;RC.wk=41;RC.tile=null;RC.cite=null;RC.show=false;RC.need=[true,true,true];rWeek();rThread();rBack();}
+
+/* ---------- autonomy evolution examples ---------- */
+const EV={n:12,st:'offer',sb:[0,0,0,0,0],k:5,lv:1};
+function rEarn(){const el=document.getElementById('lv-earn');if(!el)return;const n=EV.n,st=EV.st;
+  el.innerHTML=`<div class="row"><h4>Payment reminders</h4><span class="agent">Reminder agent</span><span style="margin-left:auto">${LVT(st==='auto'?'Autopilot':'Copilot')}</span></div>
+  <div class="track" aria-label="${n} of 12 approved unchanged">${Array.from({length:12},(_,i)=>`<span class="${i<n?'on':''} ${i===9?'th':''}"></span>`).join('')}</div>
+  <p class="mono" style="margin:0;font-size:12px;color:var(--muted)">${n} approved, 0 changed · offer at 10 with 85% unchanged</p>
+  ${st==='offer'&&n>=10?`<div class="offerbox"><span><b>Send reminders like these on your own?</b> You can switch it back any time.</span><span class="acts"><button class="b p" type="button" data-e="yes">Yes, from now on</button><button class="b" type="button" data-e="no">Keep asking</button><span class="by">Suggested by <span class="agent">Reminder agent</span></span></span></div>`:
+   st==='auto'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminders now run on Autopilot. You get a weekly recap, and can switch back in Settings.</span></p><div class="acts"><button class="b" type="button" data-e="reset">Switch back</button></div>':
+   st==='no'?'<p class="hint" style="margin:0">Okay, I’ll keep asking. The offer comes back after 10 more approvals.</p><div class="acts"><button class="b" type="button" data-e="reset">Start over</button></div>':
+   '<p class="hint" style="margin:0">Still asking before each reminder.</p>'}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-e]');if(!b)return;if(PLAY.earn)toggle('earn');const a=b.dataset.e;EV.st=a==='yes'?'auto':a==='no'?'no':'offer';if(a==='reset')EV.n=12;rEarn();};}
+function runEarn(){EV.n=0;EV.st='offer';rEarn();const step=()=>{EV.n++;rEarn();if(EV.n<12)later('earn',step,400);else later('earn',()=>{EV.st='auto';rEarn();later('earn',runEarn,3000);},2200);};later('earn',step,600);}
+const SBFIX=['6550 IT services','5410 Tools','6211 Landline','5410 Tools','5615 Vehicle leasing'];
+const SBR=[['INV-4471','Figma Inc','6540 Software'],['INV-4472','Byggmax','4010 Materials'],['INV-4473','Telia','6212 Mobile phone'],['INV-4474','Ahlsell','4010 Materials'],['INV-4475','Circle K','5611 Fuel']];
+function rStep(){const el=document.getElementById('lv-stepback');if(!el)return;const c=EV.sb.filter(x=>x===1).length,back=c>=2;
+  el.innerHTML=`<div class="row"><h4>Account coding</h4><span class="agent">Account agent</span><span style="margin-left:auto">${LVT(back?'Copilot':'Autopilot')}</span></div>
+  <ul class="sbl">${SBR.slice(0,EV.k).map((r,i)=>`<li><span class="mono">${r[0]}</span><span>${r[1]}${EV.sb[i]?`<small style="color:var(--warn)">Corrected by you: ${r[2]} → ${SBFIX[i]}</small>`:`<small class="rc">Coded by <span class="agent">Account agent</span>: ${r[2]}</small>`}</span>${!EV.sb[i]&&!back?`<button class="b" type="button" data-sb="${i}">Correct</button>`:'<span></span>'}</li>`).join('')}</ul>
+  ${back?`<div class="offerbox"><span><b>I’ve stepped back to Copilot.</b> You corrected 2 of the last 5 codings. I’ll suggest and you choose, until 10 more are approved unchanged.</span><span class="acts"><button class="b p" type="button" data-sb="ok">Okay</button><button class="b" type="button" data-sb="keep">Keep Autopilot</button><span class="by"><span class="agent">Account agent</span></span></span></div>`:`<p class="hint" style="margin:0">${c} correction${c===1?'':'s'} · steps back after 2</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-sb]');if(!b)return;if(PLAY.stepback)toggle('stepback');const a=b.dataset.sb;
+    if(a==='ok'||a==='keep'){EV.sb=[0,0,0,0,0];}else EV.sb[+a]=1;rStep();};}
+function runStep(){EV.sb=[0,0,0,0,0];EV.k=5;rStep();later('stepback',()=>{EV.sb[1]=1;rStep();later('stepback',()=>{EV.sb[4]=1;rStep();later('stepback',runStep,3600);},1800);},1800);}
+const LVS=[['No automation','You pick the account from the list.'],['Partial','It suggests, you choose.'],['Full','It codes invoices. You can take control back.']];
+function rLadder(){const el=document.getElementById('lv-ladder');if(!el)return;const v=EV.lv;
+  el.innerHTML=`<div class="row"><h4>Level of automation</h4><span class="agent">Account agent</span></div>
+  <ol class="stl">${LVS.map((l,i)=>`<li class="${i===v?'cur':''}"><span class="ico num" aria-hidden="true">${i+1}</span><span><b>${l[0]}</b><small>${l[1]}${i===v?' · current':''}</small></span></li>`).join('')}</ol>
+  <div class="acts"><button class="b" type="button" data-lv="-1" ${v===0?'disabled':''}>Step down</button><button class="b ink" type="button" data-lv="1" ${v===2?'disabled':''}>Step up</button><span class="hint">${v===0?'Everyone starts here.':v===1?'Earned: 11 of 12 suggestions accepted unchanged.':'You can step down at any time.'}</span></div>
+  <div class="never"><span class="lbl">Never graduate</span>${['Pay suppliers','VAT filing','Salary changes'].map(x=>`<span class="tag w">${x} · always asks</span>`).join('')}</div>`;
+  el.onclick=e=>{const b=e.target.closest('button[data-lv]');if(!b||b.disabled)return;if(PLAY.ladder)toggle('ladder');EV.lv=Math.max(0,Math.min(2,EV.lv+ +b.dataset.lv));rLadder();};}
+function runLadder(){const seq=[0,1,2,1];let i=0;const step=()=>{EV.lv=seq[i%4];rLadder();i++;later('ladder',step,1700);};step();}
+function initEvo(){if(!document.getElementById('lv-earn'))return;EV.n=12;EV.st='offer';EV.sb=[0,0,0,0,0];EV.k=5;EV.lv=0;rEarn();rStep();rLadder();}
+
+/* ---------- failure disclosure examples ---------- */
+const FD={b:'failed',e:'done',c:0};
+function rBfile(){const el=document.getElementById('lv-bfile');if(!el)return;const st=FD.b;
+  el.innerHTML=`${st==='try'?'<div class="row"><span class="ico wait" aria-hidden="true"></span><h4>Sending bank file to Handelsbanken</h4><span class="tag n" style="margin-left:auto">working</span></div><p class="hint" style="margin:0">3 payments, SEK 148 200</p>':
+  st==='failed'?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h4>Bank file rejected</h4><span class="tag w" style="margin-left:auto">failed</span></div>
+   <p style="margin:0"><b>Why:</b> Handelsbanken rejected the file because the payment to Hamburg Stahl GmbH has no BIC code.</p>
+   <p style="margin:0"><b>Not done:</b> No payments were sent. SEK 148 200 is still in your account.</p></div>
+   <div class="acts"><button class="b ink" type="button" data-bf="fix">Add BIC and resend</button><button class="b" type="button" data-bf="two">Send the other 2</button><button class="b" type="button" data-bf="hand">Hand to Anders</button><span class="by"><span class="agent">Close agent</span></span></div>`:
+  st==='fix'?'<p class="res" style="margin:0"><span class="ico ok"></span><span><b>Bank file sent.</b> 3 payments, SEK 148 200. BIC added by you, logged with the failed attempt.</span></p><div class="acts"><button class="b" type="button" data-bf="reset">Start over</button></div>':
+  st==='two'?'<p class="res" style="margin:0"><span class="ico ok"></span><span><b>2 of 3 payments sent,</b> SEK 121 000. Hamburg Stahl GmbH, SEK 27 200, waits in Pay suppliers.</span></p><div class="acts"><button class="b" type="button" data-bf="reset">Start over</button></div>':
+  '<p class="res" style="margin:0"><span class="ico wait"></span><span>Handed to Anders Holm with the bank’s reply and the 3 payments. Nothing sent yet.</span></p><div class="acts"><button class="b" type="button" data-bf="reset">Start over</button></div>'}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-bf]');if(!b)return;if(PLAY.bfile)toggle('bfile');const a=b.dataset.bf;FD.b=a==='reset'?'failed':a;rBfile();};}
+function runBfile(){FD.b='try';rBfile();later('bfile',()=>{FD.b='failed';rBfile();later('bfile',()=>{FD.b='fix';rBfile();later('bfile',runBfile,2800);},3200);},1600);}
+function rEmpty(){const el=document.getElementById('lv-empty');if(!el)return;const st=FD.e;
+  el.innerHTML=`<div class="thread"><div class="bub them" style="align-self:flex-end">Find the delivery note for INV-2231.</div>
+  ${st==='think'?'<div class="thinking"><span class="ico wait"></span>Searching…</div>':st==='done'?`<div class="bub me" style="max-width:92%"><span class="routed" style="margin-bottom:4px"><span>Answered by</span><span class="agent">Invoice agent</span></span><b>No delivery note found for INV-2231.</b>
+   <ul class="chk2"><li><span class="tag">searched</span> Supplier inbox, Documents, Ahlsell’s supplier portal</li><li><span class="tag w">not searched</span> Lena’s email, no access</li></ul></div>`:''}</div>
+  ${st==='done'?`<div class="acts"><button class="b p" type="button" data-em="ask">Ask Ahlsell for it</button><button class="b" type="button" data-em="lena">Ask Lena</button></div>`:st==='asked'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Drafted a request to Ahlsell for the delivery note. Review and send it in Messages.</span></p>':''}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-em]');if(!b)return;if(PLAY.empty)toggle('empty');FD.e='asked';rEmpty();};}
+function runEmpty(){FD.e='ask';rEmpty();later('empty',()=>{FD.e='think';rEmpty();later('empty',()=>{FD.e='done';rEmpty();later('empty',()=>{FD.e='asked';rEmpty();later('empty',runEmpty,2600);},2600);},1400);},900);}
+function rCover(){const el=document.getElementById('lv-cover');if(!el)return;const v=FD.c;
+  el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Disclosed','Covered up'].map((n,j)=>`<button type="button" data-cv="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
+  ${v===0?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h4>Payroll run stopped at step 3 of 5</h4></div>
+   <p style="margin:0"><b>Why:</b> Skatteverket’s 2027 tax tables were not available, so tax can’t be calculated.</p>
+   <p style="margin:0"><b>Not done:</b> No payslips were created and no bank file was made.</p>
+   <p style="margin:0"><b>Next:</b> I’ll try once more at 13:00. If it still fails, the run goes to you.</p></div>
+   <div class="acts"><button class="b" type="button">Use 2026 tables for now</button><span class="by"><span class="agent">Payroll agent</span></span></div>`:
+   `<p class="res" style="margin:0"><span class="ico ok"></span><span><b>Payroll run complete.</b> 64 payslips ready for approval.</span></p>
+   <div class="acts"><button class="b p" type="button">Approve</button><span class="by"><span class="agent">Payroll agent</span></span></div>
+   <p class="warnline">Looks done. The payslips used last year’s tax tables, and nobody can tell.</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-cv]');if(!b)return;if(PLAY.cover)toggle('cover');FD.c=+b.dataset.cv;rCover();};}
+function runCover(){later('cover',()=>{FD.c=1-FD.c;rCover();runCover();},2800);}
+function initFD(){if(!document.getElementById('lv-bfile'))return;FD.b='failed';FD.e='done';FD.c=0;rBfile();rEmpty();rCover();}
+
+/* ---------- uncertainty examples ---------- */
+const UQ=[['sick','Sick leave','Best guess','Qualifying deduction for Monday. Sick pay from day 2 if she is off longer.'],['vac','Vacation','','1 vacation day taken, 24 left. Full pay.'],['unpaid','Unpaid leave','','1 day’s salary deducted, SEK 1 840. No sick pay.']];
+const UN={sel:'sick',ans:null,n:63,pa:null,g:0};
+function rQ(){const el=document.getElementById('lv-q');if(!el)return;const a=UN.ans;
+  el.innerHTML=`<div class="row"><span class="nm">Anna Karlsson</span><span class="type">Absence</span><span class="rule">Monday 6 Oct · 8 h</span></div>
+  ${a?`<p class="res" style="margin:0"><span class="ico ok"></span><span>Booked as ${UQ.find(o=>o[0]===a)[1].toLowerCase()}. ${esc(UQ.find(o=>o[0]===a)[3])} Answered by you.</span></p><div class="acts"><button class="b" type="button" data-uq="reset">Change answer</button><span class="by">Asked by <span class="agent">Absence agent</span></span></div>`:
+  `<div class="offerbox"><span><b>Anna was off on Monday, but there’s no absence reason.</b> Sick leave, vacation or unpaid leave? It affects her sick pay.</span>
+   <div class="opts" role="radiogroup" aria-label="Absence reason">${UQ.map(o=>`<button type="button" role="radio" class="opt" data-uo="${o[0]}" aria-checked="${UN.sel===o[0]}"><span><b>${o[1]}</b>${o[2]?` <span class="tag n">${o[2]}</span>`:''}</span><small>${esc(o[3])}</small></button>`).join('')}</div>
+   <span class="hint" style="color:inherit;opacity:.8">Why the guess: no vacation or leave was requested for Monday.</span>
+   <span class="acts"><button class="b p" type="button" data-uq="ok">Book as ${UQ.find(o=>o[0]===UN.sel)[1].toLowerCase()}</button><button class="b" type="button" data-uq="ask">Ask Anna</button><span class="by">Asked by <span class="agent">Absence agent</span></span></span></div>`}
+  ${UN.asked?'<p class="hint" style="margin:0">Sent Anna a question in the app. The payslip waits for her answer, the rest of payroll does not.</p>':''}`;
+  el.onclick=e=>{const o=e.target.closest('[data-uo]');if(o){if(PLAY.q)toggle('q');UN.sel=o.dataset.uo;rQ();return;}const b=e.target.closest('button[data-uq]');if(!b)return;if(PLAY.q)toggle('q');const a=b.dataset.uq;
+    if(a==='ok'){UN.ans=UN.sel;UN.asked=false;}else if(a==='ask'){UN.asked=true;}else{UN.ans=null;UN.asked=false;}rQ();};}
+function runQ(){UN.ans=null;UN.asked=false;UN.sel='sick';rQ();const seq=['vac','unpaid','sick'];let i=0;const step=()=>{if(i<3){UN.sel=seq[i];i++;rQ();later('q',step,1300);}else{UN.ans='sick';rQ();later('q',runQ,3000);}};later('q',step,1400);}
+function rPart(){const el=document.getElementById('lv-part');if(!el)return;const done=UN.pa!==null;
+  el.innerHTML=`<div class="row"><h4>October payroll</h4><span class="agent">Payroll agent</span><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'64 of 64 ready':UN.n+' of 64 ready'}</span></div>
+  <div class="pbar"><i style="width:${(done?64:UN.n)/64*100}%"></i></div>
+  <ul class="cards">${[['Erik Nilsson','Final salary with vacation pay','41 220 kr'],['Maria Ek','Overtime 6 h added','38 960 kr']].map(r=>`<li><span class="mono">Ready</span><span>${r[0]}<small class="rc">✓ ${r[1]}</small></span><span class="amt">${r[2]}</span></li>`).join('')}
+  <li class="${done?'':'q'}"><span class="mono">${done?'Ready':'Ask'}</span><span>Anna Karlsson${done?`<small class="rc">✓ Monday booked as ${UN.pa}</small>`:'<small>11 of 12 lines ready. Monday 6 Oct has no absence reason.</small>'}</span><span class="amt">${done?(UN.pa==='unpaid leave'?'32 560 kr':UN.pa==='sick leave'?'33 812 kr':'34 400 kr'):'–'}</span>
+   ${done?'':`<span class="acts" style="grid-column:2/-1">${[['sick leave','Sick leave (best guess)'],['vacation','Vacation'],['unpaid leave','Unpaid leave']].map((o,j)=>`<button class="b ${j===0?'p':''}" type="button" data-pa="${o[0]}">${o[1]}</button>`).join('')}</span>`}</li></ul>
+  ${done?'<div class="acts"><button class="b" type="button" data-pa="reset">Start over</button><span class="by"><span class="agent">Payroll agent</span></span></div>':'<p class="hint" style="margin:0">The other 63 payslips carry on while this waits.</p>'}`;
+  el.onclick=e=>{const b=e.target.closest('button[data-pa]');if(!b)return;if(PLAY.part)toggle('part');const a=b.dataset.pa;UN.pa=a==='reset'?null:a;if(a==='reset')UN.n=63;rPart();};}
+function runPart(){UN.pa=null;UN.n=58;rPart();const step=()=>{UN.n++;rPart();if(UN.n<63)later('part',step,500);else later('part',()=>{UN.pa='sick leave';rPart();later('part',runPart,3000);},2000);};later('part',step,600);}
+function rGuess(){const el=document.getElementById('lv-guess');if(!el)return;const v=UN.g;
+  el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Agent asks','Agent guesses'].map((n,j)=>`<button type="button" data-ug="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
+  <div class="row"><span class="nm">Anna Karlsson</span><span class="type">Absence</span><span class="rule">Monday 6 Oct</span></div>
+  ${v===0?`<p style="margin:0"><b>No absence reason.</b> Sick leave, vacation or unpaid leave? Best guess: sick leave. It affects her sick pay.</p>
+   <div class="acts"><button class="b p" type="button">Sick leave</button><button class="b" type="button">Vacation</button><button class="b" type="button">Unpaid leave</button><span class="by">Asked by <span class="agent">Absence agent</span></span></div>`:
+   `<p class="res" style="margin:0"><span class="ico ok"></span><span>Booked Monday as unpaid leave. SEK 1 840 deducted.</span></p>
+   <div class="acts"><span class="by">Done by <span class="agent">Absence agent</span></span></div>
+   <p class="warnline">Anna was sick. She loses a day’s pay instead of the qualifying deduction, and finds out on payday.</p>`}`;
+  el.onclick=e=>{const b=e.target.closest('[data-ug]');if(!b)return;if(PLAY.guess)toggle('guess');UN.g=+b.dataset.ug;rGuess();};}
+function runGuess(){later('guess',()=>{UN.g=1-UN.g;rGuess();runGuess();},2800);}
+function initUnc(){if(!document.getElementById('lv-q'))return;UN.sel='sick';UN.ans=null;UN.asked=false;UN.n=63;UN.pa=null;UN.g=0;rQ();rPart();rGuess();}
+
+const RUN={propose:runProp,client:runCli,feed:runFeed,sched:runSched,cal:runCal,start:runStart,lvl:runLvl,perm:runPerm,levlog:runLog,offer:runOffer,versus:runVs,next:runNext,rec:runRec,src:runSrc,states:runStates,vat:runVat,chg:runChg,draft:runDraft,queue:runQueue,bulk:runBulk,inbox:runInbox,case:runCase,fail:runFail,owner:runOwner,sent:runSent,warn:runWarn,ulog:runUlog,run:runRun,event:runEvent,plain:runPlain,week:runWeek,thread:runThread,back:runBack,earn:runEarn,stepback:runStep,ladder:runLadder,bfile:runBfile,empty:runEmpty,cover:runCover,q:runQ,part:runPart,guess:runGuess};
+function initLive(){Object.keys(T).forEach(stop);Object.keys(PLAY).forEach(k=>PLAY[k]=false);initTrig();initAuto();initSug();initLP();initAct();initExc();initHO();initUndo();initLog();initRec();initEvo();initFD();initUnc();bindPP();if(!document.getElementById('lv-propose'))return;
+  LV.feed=[{a:JOBS[0][0],doing:JOBS[0][1],done:JOBS[0][2],run:true},{a:'Invoice agent',done:'Matched 4 customer payments, SEK 318 000',when:'Earlier today'},{a:'Payroll agent',done:'Checked November time reports so far, all on track',when:'Earlier today'},{a:'VAT agent',done:'Drafted October VAT return, SEK 571 850 to pay',when:'Earlier today'}];
+  LV.propose=null;LV.client=2;rProp();rCli();rFeed();
+}
+function bindCopy(){document.querySelectorAll('[data-copy]').forEach(b=>{b.onclick=async()=>{const t=document.getElementById('protoPrompt').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){b.textContent='Select and copy';}setTimeout(()=>{b.textContent='Copy';},1800);};});}
+function bindPP(){bindCopy();document.querySelectorAll('[data-pp]').forEach(b=>{b.onclick=()=>toggle(b.dataset.pp);ctl(b.dataset.pp);});}
+
+const PRIN=[
+ ['lead-with-the-work','Lead with the work, not a prompt','The agent brings what needs attention. Nobody should have to know what to ask.',[
+   ['Netflix','The home screen is the recommendation. Most viewing starts there, not in search.','Gomez-Uribe and Hunt, 2015'],
+   ['Spotify Discover Weekly','A new playlist for you every Monday. Nobody has to ask.','Music Business Worldwide'],
+   ['Skatteverket','The tax return arrives pre-filled. If it’s right, you approve it by text message.','Skatteverket',1],
+   ['Sage Accounting','Nudges well ahead of VAT deadlines, and lists what still needs doing.','Sage product tour',1]],['triggers','exceptions','recap']],
+ ['higher-stakes-tighter-control','The higher the stakes, the tighter the control','Routine work runs alone. Money, pay and filings wait for a person.',[
+   ['Contactless payments','Tap freely for small amounts. Above €50, or after a few taps in a row, the PIN is required.','Bird & Bird'],
+   ['ChatGPT','You choose: always ask, ask before changes, or only before important changes. Bank transfers are refused.','OpenAI'],
+   ['Xero','Automatic reconciliation is switched on per bank account, and acts only when highly confident.','Xero',1],
+   ['Sage Accounting','Copilot drafts the payment reminder; you stay in control of sending it.','Sage product tour',1]],['autonomy-levels','suggestions','actions','undo','hand-over']],
+ ['never-hide-the-agent','Never hide the agent, never hide the reason','Always labelled as an agent, and always showing why.',[
+   ['Gmail','Every message in spam says why it’s there.','Spam Resource'],
+   ['ChatGPT','On longer tasks, you can follow its progress step by step as it works.','OpenAI'],
+   ['Xero','Each auto-reconciled line says how: rule, match, memory or prediction.','Insightful Accountant',1],
+   ['QuickBooks','A RULE badge shows when a bank rule categorised a transaction.','Intuit',1]],['say-its-an-agent','live-progress','failure-disclosure']],
+ ['control-one-step-away','Control is always one step away','Accept, edit, undo or take over, in one tap.',[
+   ['Gmail Undo send','Every email waits 5 seconds by default, up to 30, with Undo right there.','Google'],
+   ['ChatGPT agent','Interrupt, take over the browser, or stop the task at any point.','OpenAI'],
+   ['Xero','Change an account code or tax rate right on the Reconciled page, or remove and redo a match.','Xero',1]],['actions','undo','hand-over']],
+ ['flag-whats-new','Flag what’s new, not just what’s wrong','The unusual case is the one that matters.',[
+   ['Outlook','“You don’t often get email from…” appears when someone new writes.','Cornell IT'],
+   ['Gmail','“Be careful with this message” appears when a sender can’t be verified.','Spam Resource'],
+   ['UK banks: Confirmation of Payee','Adding a new payee triggers a name check, and shows the real name if it doesn’t match.','Pay.UK'],
+   ['Sage Accounting','Checks your data and flags common mistakes HMRC would care about, before you file.','Sage product tour',1],
+   ['QuickBooks','Bank transactions that match nothing are marked “Need your review” instead of being booked.','Intuit',1]],['exceptions','uncertainty']],
+ ['autonomy-is-earned','Autonomy is earned, not granted','The agent proves itself run by run, and steps back when it’s wrong.',[
+   ['Gmail','Mark a message “Not spam” and the filter learns from it.','University of Michigan'],
+   ['Claude Code','“Yes, don’t ask again” turns one approval into a standing permission for that action. Everything else still asks.','Spendesk MCP guide'],
+   ['QuickBooks','Bank rules suggest first. Booking automatically is a separate opt-in, per rule.','Intuit',1],
+   ['Xero','Off by default and switched on per account; “memory” decisions learn from how you reconciled before.','Insightful Accountant',1]],['autonomy-evolution','activity-log','recap']],
+];
+function sideP(cur){return `<aside class="side pr" aria-label="Principles"><div class="grp">${PRIN.map(x=>`<a href="#principles-${x[0]}" ${cur===x[0]?'aria-current="page"':''}><span>${esc(x[1])}</span></a>`).join('')}</div></aside>`;}
+function prinOverview(){return `
+  <h1>Principles</h1>
+  <div class="lede"><p>${PRIN.length} principles behind every pattern. They describe how agents should behave in Visma products, so that people stay in control while the agents do the work.</p></div>
+  <section class="sec ovsec" aria-label="All principles"><div class="ovgrid">${PRIN.map((x,i)=>`<a class="ovc" href="#principles-${x[0]}"><span class="mono">${String(i+1).padStart(2,'0')}</span><b>${esc(x[1])}</b><span>${esc(x[2])}</span></a>`).join('')}</div></section>`;}
+function prinPage(x){return `
+  <h1>${esc(x[1])}</h1>
+  <div class="lede"><p class="law">${esc(x[2])}</p></div>
+  <section class="sec" aria-labelledby="ipH"><h2 id="ipH">In practice</h2><p>Products that already work this way, inside and outside accounting.</p>
+   <div class="ipgrid">${x[3].map(c=>`<div class="ipc">${c[3]?'<span class="pita">PITA</span>':''}<b>${esc(c[0])}</b><span class="ipt">${esc(c[1])}</span></div>`).join('')}</div></section>
+  <section class="sec" aria-labelledby="rpH"><h2 id="rpH">Patterns to use</h2><p>Patterns that put this principle into practice.</p>
+   <div class="ovgrid" style="margin-top:14px">${x[4].map(id=>{const f=find(id);const o=OV.flatMap(g=>g[2]).find(it=>it[0]===id);return `<a class="ovc" href="#patterns-${id}"><b>${esc(f.label)}</b><span>${esc(o?o[1]:'')}</span></a>`;}).join('')}</div></section>`;}
+
+const GUIDE={
+ 'failure-disclosure':{l:['The failure named in the title, like “Bank file rejected”','The concrete cause, in the customer’s terms','What did not happen: “No payments were sent.”','A way forward: fix it, retry once, or hand it to a person','Empty results and low confidence said as such, not hidden'],d:'“Bank file rejected. The payment to Hamburg Stahl GmbH has no BIC code. No payments were sent.” Then: add the BIC and resend, send the other 2, or hand it to Anders.',a:'“Something went wrong.” A failure styled like a normal result, or a run that keeps retrying forever.'},
+ 'uncertainty':{l:['One specific question, about the part the agent doesn’t know','Its best guess, and why','The alternatives, each with what it will do','The rest of the work carrying on while the question waits'],d:'“Anna was off on Monday, but there’s no absence reason. Sick leave, vacation or unpaid leave? It affects her sick pay.” With sick leave marked as the best guess.',a:'Booking unpaid leave straight away, or flagging the whole payslip for review.'},
+ 'triggers':{l:['The trigger in words: “when time reporting closes”','What it did, reported where people already look','A way to pause the trigger','The next run date'],d:'It starts when time reporting closes, and says so: “Started on its own at 06:00.”',a:'A “Run agent” button. Nothing happens until someone remembers.'},
+ 'autonomy-levels':{l:['The current level, visible per task'],d:'Reconciliation on Autopilot, payroll on Copilot, salary changes by a person only, each visible on screen.',a:'One on/off switch for the whole product.'},
+ 'suggestions':{l:['One clear confirm action','The offer says what it will do, and nothing happens until the tap'],d:'The agent prepares the change and offers it as a button. Nothing is sent until the person taps.',a:'The agent acts first and tells you after.'},
+ 'say-its-an-agent':{l:['A plain “Agent” label on every action','A marker that stays on each field it filled','A role name, never a person’s name or face','The same label in the log'],d:'The marker stays on the field, and the log says “Payroll agent”.',a:'A one-time “AI filled this” banner.'},
+ 'live-progress':{l:['A progress count: “48 of 64”','The rule or source behind each step','Named states: working, waiting, paused, done','A status message for every state change, and pause reachable by keyboard'],d:'“Collecting for 48 of 64 employees”, each finished check listed with the rule it used, and announced as “Step 3 of 5. Calculate depreciation. Agent working.”',a:'A spinner, then a result. Or a bare 94%. Or progress shown only on screen.'},
+ 'exceptions':{l:['A count: “3 need you”','A card per item: problem, proposal, reason','Bulk actions only for the easy ones','An empty state when nothing needs you'],d:'One card per exception: the problem, the proposal and the reason.',a:'Alerts for everything, and no proposal.'},
+ 'actions':{l:['Before and after, as a diff, with Accept, Edit and Reject'],d:'Accept or reject per change, with a diff on high-stakes fields.',a:'“Accept all” on the whole form.'},
+ 'hand-over':{l:['A named person, not a queue, with what was checked and why it’s theirs'],d:'The excavator case handed to Anders with what was checked.',a:'The case lands in a suspense account, or the agent guesses.'},
+ 'undo':{l:['Undo where the result shows up, and how long it’s possible','What can’t be undone, said before it acts'],d:'“Sent 09:12. Undo for 10 minutes.”',a:'Undo only inside the log.'},
+ 'activity-log':{l:['A timeline of steps','Who did each step: agent or person','Entries written as plain sentences','Undo from the log'],d:'Plain sentences, who approved what, and undo from the log.',a:'Raw system logs, and no undo.'},
+ 'recap':{l:['What it handled without asking, and what it caught','Your decision time, and where it was weaker','What needs you now, first','The details, one click later'],d:'How much was accepted without checking, how long decisions took, and what was caught. “Since Friday, 38 of 41 clients reconciled on their own. 3 need you.”',a:'A count of messages sent. A list of every notification since Friday.'},
+ 'autonomy-evolution':{l:['A track of approvals without changes','An offer to do more at a threshold','A step back after corrections','Things that never graduate: pay, filings, salary changes'],d:'After 10 approvals at 85% unchanged it offers more, and it steps back after two corrections.',a:'It always asks, or it runs fully automatic from day one.'},
+};
+function guideHtml(id){const x=GUIDE[id];if(!x)return '';return `<div class="guide"><div class="look"><h2 class="glbl">What to look for</h2><ul>${x.l.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>
+  <div class="da"><div class="dobox"><span class="glbl">Do</span><p>${esc(x.d)}</p></div><div class="avbox"><span class="glbl">Avoid</span><p>${esc(x.a)}</p></div></div></div>
+  `;}
+
+function route(){
+  let h=(location.hash||'').slice(1);
+  if(!h)h='patterns';
+  const top=h.startsWith('patterns-')?'patterns':h.startsWith('principles-')?'principles':h;
+  document.querySelectorAll('[data-top]').forEach(a=>{if(a.dataset.top===top)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  const pg=$('#page');
+  if(top==='patterns'){
+    if(h==='patterns'){pg.innerHTML=`<div class="with-side">${side('overview')}<main class="main" id="main">${overview()}</main></div>`;return;}
+    const p=find(h.slice(9))||find(DEFAULT);
+    let body=`${p.id===DEFAULT?sayItsAnAgent(p):p.id==='triggers'?triggers(p):p.id==='autonomy-levels'?autonomy(p):p.id==='suggestions'?suggestions(p):p.id==='live-progress'?liveProgress(p):p.id==='actions'?actions(p):p.id==='exceptions'?exceptions(p):p.id==='uncertainty'?uncertainty(p):p.id==='hand-over'?handOver(p):p.id==='undo'?undo(p):p.id==='activity-log'?activityLog(p):p.id==='recap'?recap(p):p.id==='failure-disclosure'?failureDisclosure(p):p.id==='autonomy-evolution'?evolution(p):placeholder(p)}`;
+    body=body.replace('<a class="demo"',guideHtml(p.id)+'<a class="demo"');
+    pg.innerHTML=`<div class="with-side">${side(p.id)}<main class="main" id="main">${body}</main></div>`;
+  } else if(top==='principles'){
+    const x=PRIN.find(p=>'principles-'+p[0]===h);
+    pg.innerHTML=`<div class="with-side">${sideP(x?x[0]:'')}<main class="main" id="main">${x?prinPage(x):prinOverview()}</main></div>`;
+  } else {
+    const names={principles:'Principles',demo:'Demo',assess:'Assess your agent'};
+    const n=names[top]||'Principles';
+    pg.innerHTML=`<main class="blank" id="main"><h1>${esc(n)}</h1><div class="soon">This page is coming soon.</div></main>`;
+  }
+}
+window.addEventListener('hashchange',()=>{route();initLive();window.scrollTo({top:0});});
+route();initLive();
+})();
+</script>
+
+</body></html>

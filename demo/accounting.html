@@ -1,0 +1,536 @@
+<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>October Close</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: header; five-step run tracker; one step's work at a time in the main column; right rail with agent levels and the run log. */
+:root{
+  /* Visma brand: Visma Purple #7F56FA, White #FEFEFE, Black #131313; secondary Cool Grey Light, Cool Grey, Burgundy, Olive. Visma Text with Inter as web fallback. */
+  --bg:#fefefe; --stage:#fefefe; --surface:#fefefe; --phone:#fefefe; --paper:#fefefe; --raise:#f3f5f6; --card:#e7ebec; --soft:#e7ebec; --ink:#131313; --navy:#131313; --muted:#5c6469; --line:#dce1e3; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#4c0c32; --blue:#4a4608; --ok:#2b7a4b; --okbg:#e2f0e6; --warn:#4c0c32; --warnbg:#f3e6ec; --link:#131313; --pat:#4a4608; --patbg:#ecebdd;
+  --display:"Visma Text","Inter","Segoe UI",system-ui,sans-serif; --body:"Visma Text","Inter","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){ --bg:#131313; --stage:#131313; --surface:#1c1c1e; --phone:#1c1c1e; --paper:#1c1c1e; --raise:#232326; --card:#2a2b2e; --soft:#2a2b2e; --ink:#ededed; --navy:#fefefe; --muted:#a7b0b4; --line:#36393c; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#e7b8cf; --blue:#d6d08f; --ok:#63c58e; --okbg:#16301f; --warn:#eba9c9; --warnbg:#3a1628; --link:#fefefe; --pat:#d6d08f; --patbg:#34321a; color-scheme:dark; }}
+:root[data-theme="dark"]{ --bg:#131313; --stage:#131313; --surface:#1c1c1e; --phone:#1c1c1e; --paper:#1c1c1e; --raise:#232326; --card:#2a2b2e; --soft:#2a2b2e; --ink:#ededed; --navy:#fefefe; --muted:#a7b0b4; --line:#36393c; --accent:#7f56fa; --accent-ink:#fefefe; --accent2:#e7b8cf; --blue:#d6d08f; --ok:#63c58e; --okbg:#16301f; --warn:#eba9c9; --warnbg:#3a1628; --link:#fefefe; --pat:#d6d08f; --patbg:#34321a; color-scheme:dark; }
+.eyebrow::before{content:"";display:inline-block;width:.75em;height:.65em;margin-right:.5em;background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%)}
+
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:18px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);color:var(--navy);margin:0;text-wrap:balance}
+h1{font-size:24px;font-weight:800}
+h2{font-size:16px;font-weight:800}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+
+/* header */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.title{display:flex;flex-direction:column;gap:2px}
+.title .sub{font-size:13.5px;color:var(--muted)}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 16px;font-family:var(--display);font-weight:700;font-size:13px;color:var(--navy)}
+.btn:hover{border-color:var(--navy)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{padding:4px 11px;font-size:12px}
+.btn.lg{padding:11px 22px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn[aria-pressed="true"]{background:var(--patbg);border-color:var(--pat);color:var(--pat)}
+.profile{display:flex;align-items:center;gap:10px;padding-left:14px;border-left:1px solid var(--line)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:13px;flex:none}
+.who-txt{display:flex;flex-direction:column;line-height:1.2}
+.who-txt b{font-family:var(--display);font-size:14px;color:var(--navy)}
+.who-txt span{font-size:12.5px;color:var(--muted)}
+.pat{display:none;font-family:var(--display);font-weight:700;font-size:11px;color:var(--pat);background:var(--patbg);border-radius:6px;padding:2px 7px;white-space:nowrap;vertical-align:middle}
+.show-pat .pat{display:inline-block}
+
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+.steps li{min-width:0}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;text-align:left;width:100%;min-width:0}
+.step .n{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px;background:var(--soft);color:var(--muted)}
+.step .lbl{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.step .lbl b{font-family:var(--display);font-size:14px;color:var(--navy)}
+.step .lbl span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step.done .n{background:var(--ok);color:var(--surface)}
+.step .n{position:relative}
+.step.done .n::after{content:"";position:absolute;left:10px;top:6px;width:5px;height:10px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.step.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.step.cur .n{background:var(--accent);color:var(--accent-ink)}
+.step.done.cur .n{background:var(--ok);color:var(--surface)}
+.step:disabled{cursor:default}
+
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lead{font-size:15px;color:var(--muted);max-width:70ch}
+.foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.foot .hint{margin-right:auto}
+.hint{font-size:13px;color:var(--muted)}
+.rail{display:flex;flex-direction:column;gap:18px;min-width:0}
+
+/* collect */
+.src-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.src-list li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.src-list li:first-child{border-top:0}
+.src-list .t b{font-weight:600}
+.src-list .t span{display:block;font-size:13px;color:var(--muted)}
+.ico{width:18px;height:18px;border-radius:50%;background:var(--line);position:relative;flex:none}
+.ico.ok{background:var(--ok)}
+.ico.ok::after{content:"";position:absolute;left:6px;top:3px;width:4px;height:8px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ico.wait{background:transparent;border:2.5px solid #e6defe;border-top-color:var(--accent);border-right-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ico.warn{background:var(--warn)}
+.ico.alert{background:var(--warn);display:grid;place-items:center}
+.ico.alert::after{content:"!";color:#fefefe;font-family:var(--display);font-weight:800;font-size:11px;line-height:1}
+.src-list li.miss{background:var(--warnbg);border-radius:10px;padding-inline:10px;margin-inline:-10px;border-top-color:transparent}
+.src-list li.miss+li{border-top-color:transparent}
+.src-list li.miss .t b{color:var(--warn)}
+.src-list li.miss .t span{color:var(--ink)}
+.tag.alert{background:var(--warn);color:#fefefe;font-weight:500}
+@keyframes pulse{50%{opacity:.3}}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:99px;background:var(--okbg);color:var(--ok);white-space:nowrap}
+.tag.w{background:var(--warnbg);color:var(--warn)}
+.tag.n{background:var(--soft);color:var(--muted)}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .35s}
+.offer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.offer>span:first-child{margin-right:auto}
+.pop-anchor{position:relative;display:inline-flex}
+.btn-ico{display:inline-flex;align-items:center;gap:6px}
+.btn-ico[aria-expanded="true"]{border-color:var(--accent);background:#e6defe;color:#131313}
+.btn-ico[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.cal{position:absolute;top:calc(100% + 10px);left:0;width:272px;z-index:30;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 32px rgba(19,19,19,.18)}
+.cal::before{content:"";position:absolute;top:-7px;left:34px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+@media (max-width:600px){.cal{left:auto;right:0}.cal::before{left:auto;right:34px}}
+.cal-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cal-h b{font-family:var(--display);font-size:13.5px;color:var(--navy)}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cal-g .dw{font-size:10.5px;color:var(--muted);font-weight:600;padding-bottom:2px}
+.cd{border:0;background:transparent;border-radius:8px;padding:5px 0;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cd:hover:not(:disabled){background:#e6defe}
+.cd:disabled{color:var(--line);cursor:default}
+.cd.dl{box-shadow:inset 0 0 0 1.5px var(--warn);font-weight:700}
+.cd.dl:disabled{color:var(--muted)}
+.cd.sel,.cd.sel:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn-pair{display:inline-flex;gap:8px;flex-wrap:nowrap}
+
+/* checks */
+.auto{display:flex;align-items:center;gap:8px;font-size:14px;background:var(--okbg);color:var(--ok);border-radius:8px;padding:9px 12px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--raise)}
+.item.decided{background:var(--surface)}
+.item-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.emp{font-family:var(--display);font-weight:700;color:var(--navy)}
+.type{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:1px 8px;background:var(--soft);color:var(--blue)}
+.rule{margin-left:auto;font-size:12px;color:var(--muted);text-align:right}
+.acts .mono{text-align:right}
+.why{font-size:14px}
+.why b{font-weight:700}
+.diff{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.diff div{padding:4px 10px}
+.diff .m{background:var(--warnbg);color:var(--warn)}
+.diff .p{background:var(--okbg);color:var(--ok)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acts .mono{margin-left:auto}
+.edit-row{display:flex;gap:6px;flex-wrap:wrap}
+.edit-row input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--surface)}
+.remember{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.remember input{margin-top:3px;accent-color:var(--accent)}
+.result{font-size:13.5px;display:flex;gap:8px;align-items:center}
+
+/* review */
+.totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tot{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tot span{font-size:12.5px;color:var(--muted)}
+.tot b{font-family:var(--display);font-size:20px;color:var(--navy)}
+.tot em{font-style:normal;font-size:12px;color:var(--muted)}
+.bridge{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.bridge li{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,1.4fr) 132px;gap:14px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.bridge li:first-child{border-top:0}
+.bridge .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bridge .track{height:14px;position:relative}
+.bridge .track::before{content:"";position:absolute;top:-8px;bottom:-8px;left:var(--zero);border-left:1px dashed var(--line)}
+.bridge .track i{position:absolute;top:0;bottom:0;border-radius:4px;min-width:2px}
+.bridge .track i.up{background:#7f56fa}.bridge .track i.down{background:#b8407a}.bridge .track i.tot{background:var(--ink)}
+.bridge li.axis{border-top:0;padding-top:0;font-size:11.5px;color:var(--muted)}
+.bridge li.axis .track{height:16px}.bridge li.axis .track span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.bridge li.axis .track::before{display:none}
+.bridge li:hover .track i{filter:brightness(1.12)}
+.wf-note{font-size:12.5px;color:var(--muted);margin:0}
+.bridge li.sum{font-family:var(--display);font-weight:800;color:var(--navy)}
+.ask{display:flex;gap:8px}
+.ask input{flex:1;min-width:0;border:1px solid var(--line);background:var(--raise);border-radius:10px;padding:9px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--raise);border-radius:99px;padding:3px 10px;font-size:13px}
+.chip:hover{border-color:var(--navy)}
+.answer{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.routed{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.agent{font-family:var(--display);font-weight:700;font-size:12px;background:var(--soft);color:var(--navy);border-radius:99px;padding:2px 9px}
+
+/* approve / report */
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.plan li>.ico{margin-top:calc((1.45em - 18px)/2)}
+.plan li:first-child{border-top:0}
+.plan li span:last-child b{font-weight:600}
+.plan li small{display:block;color:var(--muted);font-size:13px}
+.rep{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.rcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--raise)}
+.rcard h3{font-size:14.5px}
+.rcard .when{font-size:12.5px;color:var(--muted)}
+.rcard .acts{margin-top:auto}
+.recap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-family:var(--display);font-size:22px;color:var(--navy);line-height:1.15}
+.stat span{font-size:12.5px;color:var(--muted)}
+.banner{display:flex;gap:12px;align-items:center;background:var(--okbg);color:var(--ok);border-radius:10px;padding:12px 14px;font-size:15px}
+.banner b{color:var(--ink)}
+
+/* rail */
+.lvl{display:flex;flex-direction:column;gap:10px}
+.lvl-row{display:flex;flex-direction:column;gap:4px}
+.lvl-row label{font-size:13px;color:var(--muted)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 0;font-family:var(--display);font-weight:700;font-size:12px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#e6defe;color:#131313}
+.log{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;max-height:420px;overflow:auto}
+.log li{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.log li:first-child{border-top:0}
+.log .who{display:block;font-size:12px;color:var(--muted)}
+.new{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:var(--okbg)}to{background:transparent}}
+
+@media (max-width:1100px){.cols{grid-template-columns:1fr}.rep{grid-template-columns:1fr}}
+@media (max-width:760px){.steps{grid-template-columns:1fr 1fr}.totals,.recap{grid-template-columns:1fr 1fr}.bridge li{grid-template-columns:minmax(0,1fr) 100px}.bridge .track,.bridge li.axis{display:none}.profile{border-left:0;padding-left:0}}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+@media (prefers-reduced-motion:reduce){.ico.wait,.new{animation:none}.bar i{transition:none}}
+</style>
+<style>
+.ptable{width:100%;border-collapse:collapse;font-size:14px}
+.ptable th{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.ptable td{padding:8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ptable tr:last-child td{border-bottom:0}
+.ptable .r{text-align:right}
+.ptable td:first-child{white-space:normal}
+.ptable .sub{display:block;font-size:12px;color:var(--muted)}
+.prog{display:flex;align-items:center;gap:8px}
+.prog .pb{width:90px;height:6px;border-radius:99px;background:var(--line);position:relative;overflow:hidden;flex:none}
+.prog .pb i{position:absolute;left:0;top:0;bottom:0;background:#7f56fa;border-radius:99px}
+.prog .pb b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.tblwrap{overflow-x:auto}
+</style>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="title"><h1>October close · Berg Bygg AB</h1><span class="sub">4 active projects · 64 employees · VAT return due Thursday 26 Nov</span></div>
+    <span class="spacer"></span>
+    <button class="btn" id="patToggle" type="button" aria-pressed="false">Show design patterns</button>
+    <div class="profile" aria-label="Signed in as Lena Ström, accountant"><span class="avatar" aria-hidden="true">LS</span><span class="who-txt"><b>Lena Ström</b><span>Accountant</span></span></div>
+  </header>
+
+  <ol class="steps" id="steps" aria-label="Month-end close steps"></ol>
+
+  <div class="cols">
+    <main class="panel" id="main" aria-live="polite"></main>
+    <aside class="rail">
+      <section class="panel" aria-labelledby="lvH">
+        <div class="ph"><h2 id="lvH">How much the agents do</h2><span class="pat">P5 Autonomy levels per task</span></div>
+        <div class="lvl" id="levels"></div>
+        <p class="hint">Assistant answers questions. Copilot prepares work for your approval. Autopilot acts on its own and reports back.</p>
+      </section>
+      <section class="panel" aria-labelledby="lgH">
+        <div class="ph"><h2 id="lgH">Close log</h2><span class="pat">P10 Activity log</span></div>
+        <ul class="log" id="log"></ul>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kr=n=>'SEK '+Math.round(n).toLocaleString('sv-SE');
+const sgn=n=>(n>0?'+':n<0?'−':'')+Math.abs(Math.round(n)).toLocaleString('sv-SE');
+const P=t=>`<span class="pat">${t}</span>`;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function now(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+
+/* ---------- state ---------- */
+const S={step:0,maxStep:0,collect:{progress:0,handled:false,auto:false},recon:{progress:0},closed:false,closing:0,reports:{vat:null,rot:null,mgmt:null},cal:null,chat:null};
+const STEPS=[['Collect and book','Invoices, bank, payroll'],['Reconcile','Accounts that must agree'],['Check','Cases that need you'],['Review and close','Result and projects'],['Report','Skatteverket and management']];
+const levels=[['Book supplier and customer invoices',2],['Bank and ledger reconciliation',2],['Accruals and work in progress',1],['VAT return to Skatteverket',1],['Management report',1]];
+const L=['Assistant','Copilot','Autopilot'];
+
+/* ---------- log ---------- */
+const logData=[
+ ['1 Nov','Close agent','October close started automatically when the month ended','Autopilot'],
+ ['1 Nov','Payroll agent','October payroll posted from Maria Ek\'s payroll run: salaries 7010/7210, contributions 7510, tax 2710','Autopilot'],
+];
+function renderLog(){$('#log').innerHTML=logData.map(r=>`<li class="${r[4]?'new':''}"><span class="mono">${esc(r[0])}</span><span><b>${esc(r[1])}</b> ${esc(r[2])}<span class="who">${esc(r[3])}</span></span></li>`).join('');logData.forEach(r=>r[4]=false);}
+function log(a,t,w){logData.unshift([now(),a,t,w,true]);renderLog();}
+
+/* ---------- levels ---------- */
+function renderLevels(){$('#levels').innerHTML=levels.map((l,i)=>`<div class="lvl-row"><label id="lv${i}">${esc(l[0])}</label><div class="seg" role="group" aria-labelledby="lv${i}">${L.map((n,j)=>`<button type="button" data-l="${i}" data-v="${j}" aria-pressed="${l[1]===j}">${n}</button>`).join('')}</div></div>`).join('');}
+$('#levels').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const l=levels[+b.dataset.l],v=+b.dataset.v;if(l[1]===v)return;l[1]=v;renderLevels();log('Settings',`${l[0]} set to ${L[v]}`,'Changed by Lena S.');if(S.step===4)render();});
+
+/* ---------- stepper ---------- */
+function stepDone(i){return i<S.maxStep||(i===4&&allReported());}
+function renderSteps(){
+  $('#steps').innerHTML=STEPS.map((s,i)=>{const d=stepDone(i);return `<li><button class="step ${d?'done':''} ${i===S.step?'cur':''}" type="button" data-s="${i}" ${i>S.maxStep?'disabled':''} aria-current="${i===S.step?'step':'false'}"><span class="n">${d?'':i+1}</span><span class="lbl"><b>${s[0]}</b><span>${s[1]}</span></span></button></li>`;}).join('');
+}
+$('#steps').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;S.step=+b.dataset.s;render();});
+function go(i){S.step=i;S.maxStep=Math.max(S.maxStep,i);render();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});if(i===1)runRecon();}
+
+/* ---------- step 1: collect and book ---------- */
+const sources=[
+ ['Supplier invoices','312 booked and matched to purchase orders and projects','ok'],
+ ['Card purchases','41 of 44 have receipts','rcpt'],
+ ['Customer invoices','46 sent, including 3 progress invoices and 1 with ROT deduction','ok'],
+ ['Bank transactions','184 imported from 2 accounts and matched','ok'],
+ ['Payroll journal','October payroll from Maria Ek\'s payroll run, SEK 2 205 450 gross','ok'],
+];
+function stepCollect(){
+  const p=S.collect.progress,done=p>=100;
+  $('#main').innerHTML=`
+  <div class="ph"><h2>Collect and book</h2>${P('P1 Event and schedule triggers')}${P('P9 Live progress with reasons')}</div>
+  <p class="lead">The close started by itself on 1 November. The agent booked everything it could match with confidence.</p>
+  <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+  <ul class="src-list">${sources.map((s,i)=>{const shown=p>=(i+1)*20,isR=s[2]==='rcpt',missing=shown&&isR&&!S.collect.handled;
+    const st=!shown?'wait':missing?'alert':'ok';
+    const tag=!shown?'<span class="tag n">booking</span>':isR?(S.collect.handled?'<span class="tag">'+(S.collect.handled==='remind'?'reminded':'booked')+'</span>':'<span class="tag alert">needs attention</span>'):'<span class="tag">done</span>';
+    const title=missing?'Card purchases: 3 receipts missing':s[0];
+    const sub=!shown?'Working…':missing?'Johan Eriksson (2) and Per Lund (1) have not uploaded receipts. SEK 7 840 in total.':isR&&S.collect.handled==='remind'?'44 of 44 have receipts after reminders':s[1];
+    return `<li class="${missing?'miss':''}"><span class="ico ${st}"${missing?' role="img" aria-label="Needs attention"':''}></span><span class="t"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${tag}</li>`;}).join('')}</ul>
+  ${done&&!S.collect.handled?`<div class="offer"><span><b>3 card purchases have no receipt.</b> They can't be VAT-deducted until the receipts are uploaded.</span><span class="btn-pair"><button class="btn sm p" type="button" id="remind">Send reminders</button><button class="btn sm" type="button" id="noVat">Book without VAT</button></span><label class="remember" style="flex-basis:100%"><input type="checkbox" id="autoRemind" ${S.collect.auto?'checked':''}> Next time, remind card holders automatically when a receipt is 5 days late</label>${P('P4 Agent builder in plain language')}</div>${P('P6 Offer the action, let the person trigger it')} ${P('P2 Agent inside existing channels')}`:''}
+  ${S.collect.note?`<p class="hint">${esc(S.collect.note)}</p>`:''}${S.collect.handled&&S.collect.auto?'<p class="hint">Saved as a rule: from next month, the agent reminds card holders on its own and tells you afterwards.</p>':''}
+  <div class="foot"><span class="hint">${done?(S.collect.handled?'Everything is booked.':'Booked. 3 receipts need attention before reconciling.'):'Booking transactions from 5 sources…'}</span><button class="btn p lg" type="button" id="next" ${done?'':'disabled'}>Continue to reconciliation</button></div>`;
+  const ar=$('#autoRemind');if(ar)ar.onchange=()=>{S.collect.auto=ar.checked;};
+  const rule=()=>{if(S.collect.auto)log('Rule builder','New rule: remind card holders automatically when a receipt is 5 days late','Created by Lena S.');};
+  const r=$('#remind');if(r)r.onclick=()=>{rule();S.collect.handled='remind';S.collect.note='Reminders sent at '+now()+'. All 3 receipts were uploaded within the hour and booked with VAT.';log('Document agent','Reminded 2 card holders, 3 receipts uploaded and booked','Triggered by Lena S.');render();};
+  const k=$('#noVat');if(k)k.onclick=()=>{rule();S.collect.handled='novat';S.collect.note='Booked the 3 purchases without VAT deduction. You can add the receipts later and the VAT will be corrected.';log('Document agent','Booked 3 card purchases without VAT deduction','Decided by Lena S.');render();};
+  $('#next').onclick=()=>go(1);
+}
+function runCollect(){const t=setInterval(()=>{S.collect.progress=Math.min(100,S.collect.progress+10);if(S.step===0)stepCollect();if(S.collect.progress>=100){clearInterval(t);log('Close agent','Booked 587 transactions from 5 sources','Autopilot');}},reduce?60:260);}
+
+/* ---------- step 2: reconcile ---------- */
+const recon=[
+ ['Bank accounts 1930 and 1940','Balance matches the bank statements on 31 Oct'],
+ ['Supplier ledger vs 2440','SEK 4 918 300 in both'],
+ ['Customer ledger vs 1510','SEK 7 102 750 in both, after the retention case in Check'],
+ ['VAT accounts 2610–2650','Output and input VAT agree with booked invoices'],
+ ['Payroll liabilities 2710 and 2731','Match the AGI from the payroll run: SEK 648 402 tax, SEK 692 952 contributions'],
+];
+function stepRecon(){
+  const p=S.recon.progress,done=p>=100;
+  $('#main').innerHTML=`
+  <div class="ph"><h2>Reconcile</h2><span class="tag ${done?'':'n'}">${done?'5 of 5 agree':'reconciling'}</span>${P('P9 Live progress with reasons')}</div>
+  <p class="lead">Accounts that must agree with an outside source are checked line by line. You only hear about differences.</p>
+  <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+  <ul class="src-list">${recon.map((r,i)=>{const shown=p>=(i+1)*20;return `<li><span class="ico ${shown?'ok':'wait'}"></span><span class="t"><b>${esc(r[0])}</b><span>${shown?esc(r[1]):'Working…'}</span></span><span class="tag ${shown?'':'n'}">${shown?'agrees':'checking'}</span></li>`;}).join('')}</ul>
+  <div class="foot"><span class="hint">${done?'All accounts agree. 5 cases still need your judgment.':'Reconciling 5 account groups…'}</span><button class="btn" type="button" id="back">Back</button><button class="btn p lg" type="button" id="next" ${done?'':'disabled'}>Continue to checks</button></div>`;
+  $('#back').onclick=()=>go(0);$('#next').onclick=()=>go(2);
+}
+function runRecon(){if(S.recon.progress>=100||S.recon.running)return;S.recon.running=true;const t=setInterval(()=>{S.recon.progress=Math.min(100,S.recon.progress+10);if(S.step===1)stepRecon();if(S.recon.progress>=100){clearInterval(t);log('Reconciliation agent','Reconciled bank, ledgers, VAT and payroll accounts, no differences','Autopilot');}},reduce?60:220);}
+
+/* ---------- step 3: check ---------- */
+const cases=[
+ {id:'rc',emp:'Lund El AB',type:'Reverse charge',rule:'VAT Act: Reverse charge on construction services',
+  why:'<b>Subcontractor charged 25% VAT</b> on electrical installation at Kv. Tallen. Construction services between builders use reverse charge.',
+  from:'Pay invoice 5521 incl. SEK 46 250 VAT',to:'Request a credit note from Lund El, then book SEK 185 000 with reverse charge VAT',
+  pl:0, agent:'VAT agent', remember:'Next time, request credit notes automatically when subcontractors charge VAT on construction work'},
+ {id:'rot',emp:'Kitchen renovation, private customer',type:'ROT deduction',rule:'ROT: 30% of labour, max SEK 50 000 per person',
+  why:'<b>ROT claim not sent.</b> The customer has paid their part of invoice 3308. The remaining SEK 42 600 must be claimed from Skatteverket.',
+  from:'SEK 42 600 open on the customer ledger',to:'Claim SEK 42 600 from Skatteverket and move it to the ROT receivable',
+  pl:0, agent:'Invoice agent'},
+ {id:'acc',emp:'Ramirent',type:'Accrual',rule:'Accrual principle: Cost in the month it is used',
+  why:'<b>October equipment rental not invoiced yet.</b> The excavator and scaffolding at 2 sites usually cost SEK 38 400 a month.',
+  from:'No rental cost in October',to:'Accrue SEK 38 400 on 5820 Equipment rental, reverse automatically on 1 Nov',
+  pl:-38400, agent:'Accruals agent'},
+ {id:'wip',emp:'Project P-2217 Kv. Tallen',type:'Work in progress',rule:'K3: Revenue by stage of completion',
+  why:'<b>62% complete but only 48% invoiced.</b> Hours and materials show more work done than billed.',
+  from:'Revenue as invoiced: 48% of SEK 1 530 000',to:'Book SEK 214 000 as earned but not yet invoiced revenue (1620)',
+  pl:214000, agent:'Project agent'},
+ {id:'ret',emp:'Norrbygg Entreprenad AB',type:'Retention',rule:'Contract: 5% withheld until final inspection',
+  why:'<b>Main contractor paid 95%</b> of progress invoice 3291. The missing SEK 21 500 is a contractual retention, not a late payment.',
+  from:'SEK 21 500 overdue on invoice 3291',to:'Move SEK 21 500 to retention receivable, due at final inspection in March',
+  pl:0, agent:'Invoice agent'},
+];
+const decisions={},remembered={};
+document.addEventListener('change',e=>{if(e.target.id&&e.target.id.startsWith('rem-'))remembered[e.target.id.slice(4)]=e.target.checked;});
+function openCount(){return cases.filter(c=>!decisions[c.id]).length;}
+function stepCheck(){
+  const open=openCount();
+  $('#main').innerHTML=`
+  <div class="ph"><h2>Check</h2><span class="tag ${open?'w':''}">${open?open+' to decide':'all decided'}</span><span class="tag">582 of 587 booked</span>${P('P7 Exceptions queue')}${P('P8 Accept, edit or reject')}</div>
+  <div id="cases" style="display:flex;flex-direction:column;gap:10px">${cases.map(caseHtml).join('')}</div>
+  <div class="foot"><span class="hint">${open?'Decide the remaining '+open+' to review the result.':'All cases are decided.'}</span><button class="btn" type="button" id="back">Back</button><button class="btn p lg" type="button" id="next" ${open?'disabled':''}>Review the result</button></div>`;
+  $('#back').onclick=()=>go(1);$('#next').onclick=()=>{log('Close agent','Prepared October result and project margins','Autopilot');go(3);};
+}
+function caseHtml(c){
+  const d=decisions[c.id];
+  if(d){const label=d.a==='reject'?'Rejected, kept: '+c.from:(d.a==='edit'?'Approved with your edit: ':'Approved: ')+(d.text||c.to);
+    return `<article class="item decided" data-id="${c.id}"><div class="item-h"><span class="emp">${esc(c.emp)}</span><span class="type">${esc(c.type)}</span><span class="rule">${esc(c.rule)}</span></div>
+    <p class="result"><span class="ico ${d.a==='reject'?'warn':'ok'}"></span><span>${esc(label)}</span></p>${d.remember?'<p class="hint">Saved as a rule: the agent will request credit notes on its own next time.</p>':''}
+    <div class="acts"><button class="btn sm" type="button" data-a="undo">Change decision</button></div></article>`;}
+  return `<article class="item" data-id="${c.id}">
+    <div class="item-h"><span class="emp">${esc(c.emp)}</span><span class="type">${esc(c.type)}</span><span class="rule">${esc(c.rule)}</span></div>
+    <p class="why">${c.why}</p>
+    <div class="diff" aria-label="Proposed change"><div class="m">− ${esc(c.from)}</div><div class="p">+ ${esc(c.to)}</div></div>
+    ${c.remember?`<label class="remember"><input type="checkbox" id="rem-${c.id}" ${remembered[c.id]?'checked':''}> ${esc(c.remember)}</label>${P('P4 Agent builder in plain language')}`:''}
+    <div class="acts" data-acts><span class="btn-pair"><button class="btn sm p" type="button" data-a="accept">Accept</button><button class="btn sm" type="button" data-a="edit">Edit</button><button class="btn sm" type="button" data-a="reject">Reject</button></span><span class="mono">Proposed by ${esc(c.agent)}</span></div>
+  </article>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('#cases button');if(!b)return;
+  const card=b.closest('.item');const c=cases.find(x=>x.id===card.dataset.id);const a=b.dataset.a;
+  if(a==='accept'||a==='save'){const rem=!!remembered[c.id];const text=a==='save'?card.querySelector('.edit-row input').value:null;
+    decisions[c.id]={a:a==='save'?'edit':'accept',text,remember:rem};
+    log(c.agent,`${c.emp}: ${text||c.to}`,'Approved by Lena S.');if(rem)log('Rule builder','New rule: request credit notes automatically when subcontractors charge VAT on construction work','Created by Lena S.');stepCheck();}
+  else if(a==='reject'){decisions[c.id]={a:'reject'};log(c.agent,`${c.emp}: proposal rejected, kept "${c.from}"`,'Rejected by Lena S.');stepCheck();}
+  else if(a==='edit'){card.querySelector('[data-acts]').outerHTML=`<div class="edit-row"><input id="edit-${c.id}" type="text" value="${esc(c.to)}" aria-label="Edit proposed change"><button class="btn sm p" type="button" data-a="save">Save and approve</button><button class="btn sm" type="button" data-a="cancel">Cancel</button></div>`;card.querySelector('.edit-row input').focus();}
+  else if(a==='cancel'){stepCheck();}
+  else if(a==='undo'){delete decisions[c.id];S.maxStep=Math.min(S.maxStep,2);stepCheck();renderSteps();}
+});
+
+/* ---------- step 4: review and close ---------- */
+const SEP=1180000;
+function deltas(){const acc=decisions.acc&&decisions.acc.a!=='reject'?-38400:0,wip=decisions.wip&&decisions.wip.a!=='reject'?214000:0;
+  return [['Project revenue, 3 progress invoices',296000],['Work in progress, Kv. Tallen',wip],['Materials',-186000],['Payroll incl. retro pay and contributions',-104414],['Equipment rental accrual',acc],['Depreciation, new excavator',-21250]];}
+function result(){return SEP+deltas().reduce((s,d)=>s+d[1],0);}
+function wf(dl,end){
+  let c=0;const rows=dl.map(d=>{const a=c;c+=d[1];return {l:d[0],v:d[1],a,b:c};});
+  const lo=Math.min(0,...rows.map(r=>Math.min(r.a,r.b))),hi=Math.max(0,...rows.map(r=>Math.max(r.a,r.b)));
+  const span=(hi-lo)||1,x=v=>((v-lo)/span*100),z=x(0).toFixed(2)+'%';
+  const bar=(a,b,cls,tip)=>`<i class="${cls}" style="left:${x(Math.min(a,b))}%;width:${Math.max(.4,Math.abs(b-a)/span*100)}%" title="${esc(tip)}"></i>`;
+  const step=span>400000?100000:50000;const ticks=[];for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step)ticks.push(v);
+  return `<ul class="bridge">
+    <li><span>September operating result</span><span class="track" style="--zero:${z}"></span><span class="v">${kr(SEP)}</span></li>
+    ${rows.map(r=>`<li><span>${esc(r.l)}</span><span class="track" style="--zero:${z}">${r.v?bar(r.a,r.b,r.v<0?'down':'up',r.l+': '+sgn(r.v)):''}</span><span class="v">${r.v?sgn(r.v):'0'}</span></li>`).join('')}
+    <li class="sum"><span>Total change</span><span class="track" style="--zero:${z}">${bar(0,c,'tot','Total change: '+sgn(c))}</span><span class="v">${sgn(c)}</span></li>
+    <li class="sum"><span>October operating result</span><span class="track" style="--zero:${z}"></span><span class="v">${kr(end)}</span></li>
+    <li class="axis"><span></span><span class="track">${ticks.map(v=>`<span style="left:${x(v)}%">${v===0?'0':sgn(v)}</span>`).join('')}</span><span></span></li>
+  </ul>`;
+}
+const projects=[
+ ['P-2217 Kv. Tallen','Apartment block, Umeå',1530000,62,48,11.8],
+ ['P-2203 Norrbygg school','Subcontract, main contractor Norrbygg',2240000,85,85,9.4],
+ ['P-2231 Kitchen, private','ROT customer',142000,100,100,21.0],
+ ['P-2226 Warehouse roof','Fixed price',684000,40,40,3.1],
+];
+const ANS=[
+ [/result|profit|higher|lower|why/i,['Close agent'],()=>`October's operating result is ${kr(result())}, ${sgn(result()-SEP)} compared with September. Progress invoicing and work in progress at Kv. Tallen are the main reasons.`],
+ [/roof|warehouse|margin|2226/i,['Project agent'],()=>'The warehouse roof has a 3.1% margin, below the 8% target. Materials are 14% over budget, mostly roofing sheet price increases in September.'],
+ [/vat|moms|reverse/i,['VAT agent'],()=>'Output VAT is SEK 1 184 250 and input VAT SEK 612 400. Reverse charge purchases of SEK 185 000 are reported in both boxes, so they net to zero.'],
+];
+function stepReview(){
+  const r=result();
+  $('#main').innerHTML=`
+  <div class="ph"><h2>Review and close</h2>${P('P9 Live progress with reasons')}</div>
+  <div class="totals">
+    <div class="tot"><span>Revenue</span><b class="num">${kr(8214000+(decisions.wip&&decisions.wip.a!=='reject'?214000:0))}</b><em>October</em></div>
+    <div class="tot"><span>Operating result</span><b class="num">${kr(r)}</b><em>${sgn(r-SEP)} vs September</em></div>
+    <div class="tot"><span>VAT to pay</span><b class="num">${kr(571850)}</b><em>Due 26 Nov</em></div>
+    <div class="tot"><span>Cash in bank</span><b class="num">${kr(6348200)}</b><em>31 Oct, reconciled</em></div>
+  </div>
+  <h3 style="font-size:14.5px">What changed since September</h3>
+  <p class="wf-note">Each bar starts where the previous change ended, from September's result to October's.</p>
+  ${wf(deltas(),r)}
+  <h3 style="font-size:14.5px">Projects</h3>
+  <div class="tblwrap"><table class="ptable"><thead><tr><th>Project</th><th class="r">Contract</th><th>Completed · invoiced</th><th class="r">Margin</th><th></th></tr></thead><tbody>
+  ${projects.map(p=>`<tr><td><b>${esc(p[0])}</b><span class="sub">${esc(p[1])}</span></td><td class="r">${kr(p[2])}</td><td><span class="prog"><span class="pb" title="${p[3]}% completed, ${p[4]}% invoiced"><i style="width:${p[4]}%"></i><b style="left:${p[3]}%"></b></span><span class="small">${p[3]}% · ${p[4]}%</span></span></td><td class="r">${p[5].toFixed(1)}%</td><td>${p[5]<8?'<span class="tag alert">below target</span>':'<span class="tag">on target</span>'}</td></tr>`).join('')}
+  </tbody></table></div>
+  <p class="hint">The bar shows how much is invoiced. The black mark shows how much work is done.</p>
+  <div class="ph"><h3 style="font-size:14.5px">Ask about this close</h3>${P('P3 One entry point, routed to specialist agents')}</div>
+  <form class="ask" id="askF"><input id="askI" type="text" placeholder="For example: why is the result higher?" aria-label="Ask about this close" autocomplete="off"><button class="btn p" type="submit">Ask</button></form>
+  <div class="chips">${['Why is the result higher?','Why is the warehouse roof margin low?','How is reverse charge VAT handled?'].map(q=>`<button class="chip" type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+  ${S.chat?`<div class="answer"><div class="routed"><span>Answered by</span>${S.chat.agents.map(a=>`<span class="agent">${esc(a)}</span>`).join('')}</div><p>${esc(S.chat.a)}</p></div>`:''}
+  ${closeHtml()}`;
+  $('#askF').onsubmit=ev=>{ev.preventDefault();const q=$('#askI').value.trim();if(q)ask(q);};
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>ask(c.dataset.q));
+  bindClose();
+}
+const closeItems=[
+ ['Post accruals and work in progress','Rental accrual and Kv. Tallen revenue, both reversed automatically on 1 Nov'],
+ ['Lock October','No one can post to October after this, without reopening it and leaving a log entry'],
+ ['Prepare the VAT return','Boxes filled from the booked invoices, including reverse charge'],
+ ['Prepare the management report','Result, cash and project margins for Anders Berg, CEO'],
+];
+function closeHtml(){const all=S.closing>=closeItems.length;return `
+  <div class="ph" style="border-top:1px solid var(--line);padding-top:14px"><h3 style="font-size:14.5px">Close October</h3>${P('P6 Offer the action, let the person trigger it')}</div>
+  <p class="lead">${S.closed?(all?'October is closed. Here is what happened.':'Closing October…'):'Here is what happens when you close the month. Nothing is locked before that.'}</p>
+  <ul class="plan">${closeItems.map((it,i)=>`<li><span class="ico ${S.closed?(S.closing>i?'ok':'wait'):''}"></span><span><b>${esc(it[0])}</b><small>${esc(it[1])}</small></span></li>`).join('')}</ul>
+  <div class="foot"><span class="hint">${S.closed?(all?'All done.':'Working…'):'You can still go back and change anything.'}</span>${S.closed?`<button class="btn p lg" type="button" id="next" ${all?'':'disabled'}>Continue to reports</button>`:`<button class="btn" type="button" id="back">Back</button><button class="btn p lg" type="button" id="closeBtn">Close October</button>`}</div>`;}
+function bindClose(){
+  const c=$('#closeBtn');if(c)c.onclick=()=>{S.closed=true;log('Close agent',`October close approved, operating result ${kr(result())}`,'Approved by Lena S.');
+    const t=setInterval(()=>{S.closing++;if(S.step===3)stepReview();if(S.closing>=closeItems.length){clearInterval(t);log('Close agent','October locked, accruals posted, reversals scheduled for 1 Nov','Autopilot');}},reduce?80:650);stepReview();};
+  const b=$('#back');if(b)b.onclick=()=>go(2);
+  const n=$('#next');if(n)n.onclick=()=>go(4);
+}
+function ask(q){const m=ANS.find(x=>x[0].test(q));S.chat=m?{agents:m[1],a:m[2]()}:{agents:['Close agent'],a:'I checked the October books for that and found nothing that needs your attention.'};stepReview();}
+
+/* ---------- step 5: report ---------- */
+function rotNeeded(){return decisions.rot&&decisions.rot.a!=='reject';}
+function allReported(){return S.reports.vat&&S.reports.mgmt&&(S.reports.rot||!rotNeeded());}
+function calLabel(d){return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(2026,10,d).getDay()]+' '+d+' Nov';}
+function calHtml(){
+  const off=(new Date(2026,10,1).getDay()+6)%7,cells=[];for(let i=0;i<off;i++)cells.push('<span></span>');
+  for(let d=1;d<=30;d++){const wd=new Date(2026,10,d).getDay(),dis=wd===0||wd===6||d>26||d<2;
+    cells.push(`<button type="button" class="cd${d===26?' dl':''}${S.cal.pick===d?' sel':''}" data-r="cal-day" data-d="${d}" ${dis?'disabled':''} aria-pressed="${S.cal.pick===d}" aria-label="${calLabel(d)}${d===26?', deadline':''}">${d}</button>`);}
+  return `<div class="cal" role="dialog" aria-label="Choose a submission date"><div class="cal-h"><b>November 2026</b><span class="hint">Deadline 26 Nov</span></div>
+    <div class="cal-g">${['Mo','Tu','We','Th','Fr','Sa','Su'].map(x=>`<span class="dw">${x}</span>`).join('')}${cells.join('')}</div>
+    <div class="acts"><span class="btn-pair"><button class="btn sm p" type="button" data-r="cal-ok" ${S.cal.pick?'':'disabled'}>${S.cal.pick?'Schedule '+S.cal.pick+' Nov':'Pick a date'}</button><button class="btn sm" type="button" data-r="cal-cancel">Cancel</button></span></div></div>`;
+}
+const CAL_BTN=`<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Schedule<svg class="chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function stepReport(){
+  if(levels[3][1]===2&&!S.reports.vat)S.reports.vat='Will be submitted automatically on 20 Nov. You get a summary afterwards.';
+  if(levels[4][1]===2&&!S.reports.mgmt)S.reports.mgmt='Sent automatically to Anders Berg on 3 Nov.';
+  const done=allReported(),res=(t)=>`<p class="result small"><span class="ico ok"></span><span>${esc(t)}</span></p>`;
+  $('#main').innerHTML=`
+  <div class="ph"><h2>Report</h2>${P('P1 Event and schedule triggers')}${P('P6 Offer the action, let the person trigger it')}</div>
+  <div class="rep">
+    <div class="rcard"><h3>VAT return to Skatteverket</h3><span class="when">Due 26 Nov</span><p class="small">Output VAT SEK 1 184 250, input VAT SEK 612 400, reverse charge SEK 185 000. To pay: SEK 571 850.</p>
+      ${S.reports.vat?res(S.reports.vat):`<div class="acts"><span class="btn-pair"><button class="btn sm p" type="button" data-r="vat-now">Submit now</button><span class="pop-anchor"><button class="btn sm btn-ico" type="button" data-r="vat-cal" aria-haspopup="dialog" aria-expanded="${!!S.cal}">${CAL_BTN}</button>${S.cal?calHtml():''}</span></span></div>`}</div>
+    <div class="rcard"><h3>ROT claim to Skatteverket</h3><span class="when">${rotNeeded()?'Invoice 3308 · paid by customer':'Not needed this month'}</span><p class="small">${rotNeeded()?'Claim SEK 42 600 for the kitchen renovation. Paid out to the company account in about 2 weeks.':'The ROT case was rejected in Check, so there is nothing to claim.'}</p>
+      ${rotNeeded()?(S.reports.rot?res(S.reports.rot):`<div class="acts"><button class="btn sm p" type="button" data-r="rot-now">Send claim</button></div>`):''}</div>
+    <div class="rcard"><h3>Management report</h3><span class="when">For Anders Berg, CEO</span><p class="small">Operating result ${kr(result())}, cash ${kr(6348200)}, and 1 project below its margin target.</p>
+      ${S.reports.mgmt?res(S.reports.mgmt):`<div class="acts"><button class="btn sm p" type="button" data-r="mgmt-now">Send report</button></div>`}</div>
+  </div>
+  ${done?`<div class="banner"><span class="ico ok"></span><span><b>October is closed and reported.</b> Accruals reverse automatically on 1 November.</span></div>
+  <div class="ph"><h3 style="font-size:14.5px">Recap of this close</h3>${P('P11 Recap of what the agent did')}</div>
+  <div class="recap">
+    <div class="stat"><b>1 h 40 min</b><span>of your time, compared with 2 days in September</span></div>
+    <div class="stat"><b>582 of 587</b><span>transactions booked with no questions</span></div>
+    <div class="stat"><b>${Object.keys(decisions).length}</b><span>decisions made by you</span></div>
+    <div class="stat"><b>SEK 88 850</b><span>caught: wrong VAT and a forgotten ROT claim</span></div>
+  </div>`:''}
+  <div class="foot"><span class="hint">${done?'November close starts automatically on 1 December.':'Finish the reports to complete the close.'}</span><button class="btn" type="button" id="back">Back</button></div>`;
+  $('#back').onclick=()=>go(3);
+  document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=b.dataset.r;
+    if(r==='vat-now'){S.reports.vat='Submitted to Skatteverket at '+now()+'. Receipt saved in the log.';log('VAT agent','October VAT return submitted to Skatteverket','Submitted by Lena S.');}
+    if(r==='vat-cal'){S.cal=S.cal?null:{pick:null};}
+    if(r==='cal-day'){S.cal.pick=+b.dataset.d;}
+    if(r==='cal-cancel'){S.cal=null;}
+    if(r==='cal-ok'&&S.cal&&S.cal.pick){const l=calLabel(S.cal.pick);S.reports.vat='Scheduled for submission on '+l+'. You get a summary when it has gone through.';log('VAT agent','October VAT return scheduled for '+l,'Scheduled by Lena S.');S.cal=null;}
+    if(r==='rot-now'){S.reports.rot='Claim sent to Skatteverket at '+now()+'.';log('Invoice agent','ROT claim of SEK 42 600 sent to Skatteverket','Sent by Lena S.');}
+    if(r==='mgmt-now'){S.reports.mgmt='Sent to Anders Berg at '+now()+'.';log('Close agent','Management report sent to Anders Berg','Sent by Lena S.');}
+    render();});
+}
+document.addEventListener('mousedown',e=>{if(S.cal&&!e.target.closest('.pop-anchor')){S.cal=null;if(S.step===4)render();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.cal){S.cal=null;if(S.step===4)render();const b=document.querySelector('[data-r="vat-cal"]');if(b)b.focus();}});
+
+/* ---------- render ---------- */
+function render(){renderSteps();[stepCollect,stepRecon,stepCheck,stepReview,stepReport][S.step]();}
+$('#patToggle').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);$('#app').classList.toggle('show-pat',on);});
+renderLog();renderLevels();render();runCollect();
+})();
+</script>
+
+</body></html>
