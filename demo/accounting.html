@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>October Close</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -235,7 +235,7 @@ p{margin:0}
     <div class="profile" aria-label="Signed in as Lena Ström, accountant"><span class="avatar" aria-hidden="true">LS</span><span class="who-txt"><b>Lena Ström</b><span>Accountant</span></span></div>
   </header>
 
-  <ol class="steps" id="steps" aria-label="Month-end close steps"></ol>
+  <nav aria-label="Month-end close"><ol class="steps" id="steps" aria-label="Month-end close steps"></ol></nav>
 
   <div class="cols">
     <main class="panel" id="main" aria-live="polite"></main>
@@ -302,7 +302,7 @@ function stepCollect(){
   $('#main').innerHTML=`
   <div class="ph"><h2>Collect and book</h2>${P('P1 Event and schedule triggers')}${P('P9 Live progress with reasons')}</div>
   <p class="lead">The close started by itself on 1 November. The agent booked everything it could match with confidence.</p>
-  <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+  <div class="bar" role="progressbar" aria-label="Booking progress" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
   <ul class="src-list">${sources.map((s,i)=>{const shown=p>=(i+1)*20,isR=s[2]==='rcpt',missing=shown&&isR&&!S.collect.handled;
     const st=!shown?'wait':missing?'alert':'ok';
     const tag=!shown?'<span class="tag n">booking</span>':isR?(S.collect.handled?'<span class="tag">'+(S.collect.handled==='remind'?'reminded':'booked')+'</span>':'<span class="tag alert">needs attention</span>'):'<span class="tag">done</span>';
@@ -333,7 +333,7 @@ function stepRecon(){
   $('#main').innerHTML=`
   <div class="ph"><h2>Reconcile</h2><span class="tag ${done?'':'n'}">${done?'5 of 5 agree':'reconciling'}</span>${P('P9 Live progress with reasons')}</div>
   <p class="lead">Accounts that must agree with an outside source are checked line by line. You only hear about differences.</p>
-  <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+  <div class="bar" role="progressbar" aria-label="Reconciliation progress" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
   <ul class="src-list">${recon.map((r,i)=>{const shown=p>=(i+1)*20;return `<li><span class="ico ${shown?'ok':'wait'}"></span><span class="t"><b>${esc(r[0])}</b><span>${shown?esc(r[1]):'Working…'}</span></span><span class="tag ${shown?'':'n'}">${shown?'agrees':'checking'}</span></li>`;}).join('')}</ul>
   <div class="foot"><span class="hint">${done?'All accounts agree. 5 cases still need your judgment.':'Reconciling 5 account groups…'}</span><button class="btn" type="button" id="back">Back</button><button class="btn p lg" type="button" id="next" ${done?'':'disabled'}>Continue to checks</button></div>`;
   $('#back').onclick=()=>go(0);$('#next').onclick=()=>go(2);

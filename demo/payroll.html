@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>October Payroll Run</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -238,7 +238,7 @@ p{margin:0}
     <div class="profile" aria-label="Signed in as Maria Ek, payroll specialist"><span class="avatar" aria-hidden="true">ME</span><span class="who-txt"><b>Maria Ek</b><span>Payroll specialist</span></span></div>
   </header>
 
-  <ol class="steps" id="steps" aria-label="Payroll run steps"></ol>
+  <nav aria-label="Payroll run"><ol class="steps" id="steps" aria-label="Payroll run steps"></ol></nav>
 
   <div class="cols">
     <main class="panel" id="main" aria-live="polite"></main>
@@ -331,7 +331,7 @@ function stepCollect(){
   $('#main').innerHTML=`
   <div class="ph"><h2>Collect</h2>${P('P1 Event and schedule triggers')}${P('P9 Live progress with reasons')}</div>
   <p class="lead">The run started by itself on 18 October, when time reporting closed. The agent gathered everything payroll needs.</p>
-  <div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
+  <div class="bar" role="progressbar" aria-label="Collection progress" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>
   <ul class="src-list">${sources.map((s,i)=>{const shown=p>=(i+1)*20;const isTime=s[2]==='time';
     const missing=shown&&isTime&&!S.collect.reminded;const st=!shown?'wait':missing?'alert':'ok';
     const tag=!shown?'<span class="tag n">collecting</span>':isTime?(S.collect.reminded?'<span class="tag">reminded</span>':'<span class="tag alert">needs attention</span>'):'<span class="tag">done</span>';

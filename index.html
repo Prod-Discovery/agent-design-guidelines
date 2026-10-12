@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f2433%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23fff%27/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Agent Design Guidelines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -133,7 +133,7 @@ footer div{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:24px
 .lv .typing i{width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.4;animation:lvdot 1s infinite}
 .lv .typing i:nth-child(2){animation-delay:.15s}.lv .typing i:nth-child(3){animation-delay:.3s}
 @keyframes lvdot{50%{opacity:1}}
-.lv h4{margin:0;font-size:15px;font-weight:800}
+.lv h3{margin:0;font-size:15px;font-weight:800}
 .lv .feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .lv .feed li{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
 .lv .feed li:first-child{border-top:0}
@@ -329,7 +329,7 @@ footer div{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:24px
 .lv .never .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
 #lv-ladder .stl li.cur .ico.num{background:var(--ink);color:var(--bg)}
 .lv .fail{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-left:3px solid var(--warn);background:var(--warnbg);color:var(--ink);border-radius:0 10px 10px 0;padding:10px 12px;font-size:14px}
-.lv .fail h4{color:var(--warn)}
+.lv .fail h3{color:var(--warn)}
 .lv .chk2{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13.5px}
 .lv .chk2 .tag{margin-right:4px}
 .lv .opts{display:flex;flex-direction:column;gap:6px}
@@ -759,7 +759,7 @@ function runCli(){LV.client=0;rCli();later('client',()=>{LV.client=1;rCli();late
 /* agents feed */
 const JOBS=[['Close agent','Booking 12 supplier invoices from this morning','Booked 12 supplier invoices from this morning'],['Invoice agent','Matching customer payments','Matched 4 customer payments, SEK 318 000'],['Payroll agent','Checking November time reports','Checked November time reports, all on track'],['VAT agent','Drafting the October VAT return','Drafted October VAT return, SEK 571 850 to pay']];
 function rFeed(){const el=document.getElementById('lv-feed');if(!el)return;const f=LV.feed;
-  el.innerHTML=`<h4>Work in progress</h4><ul class="feed">${f.map(x=>`<li class="${x.fresh?'in':''}"><span class="ico ${x.run?'wait':'ok'}" role="img" aria-label="${x.run?'Working':'Done'}"></span><span><span class="agent">${esc(x.a)}</span> ${esc(x.run?x.doing:x.done)}<small>${x.run?'Working…':esc(x.when)}</small></span></li>`).join('')}</ul>`;f.forEach(x=>x.fresh=false);}
+  el.innerHTML=`<h3>Work in progress</h3><ul class="feed">${f.map(x=>`<li class="${x.fresh?'in':''}"><span class="ico ${x.run?'wait':'ok'}" role="img" aria-label="${x.run?'Working':'Done'}"></span><span><span class="agent">${esc(x.a)}</span> ${esc(x.run?x.doing:x.done)}<small>${x.run?'Working…':esc(x.when)}</small></span></li>`).join('')}</ul>`;f.forEach(x=>x.fresh=false);}
 let jobI=1;
 function tickFeed(){const run=LV.feed.find(x=>x.run);if(run){run.run=false;run.when='Just now';run.fresh=true;}
   const j=JOBS[jobI%JOBS.length];jobI++;LV.feed.forEach(x=>{if(!x.run&&x.when==='Just now'&&x!==run)x.when='A minute ago';});
@@ -769,7 +769,7 @@ function runFeed(){later('feed',tickFeed,3800);}
 /* ---------- triggers examples ---------- */
 const TR={rows:[{id:'r1',when:'Every 5th',what:'Reconcile all bank accounts',last:'5 Oct: 212 of 230 matched, 18 sent to review',next:'Next run 5 Nov, 06:00',on:true,st:'ok'},{id:'r2',when:'On client reply',what:'Match receipts to card purchases',last:'Listening for replies from 42 clients',next:'Runs when a reply arrives',on:true,st:'idle'},{id:'r3',when:'12 Nov',what:'Draft AGI for Skatteverket',last:'Drafted 4 Nov, waiting for your approval',next:'Due 12 Nov',on:true,st:'ready'}],cal:{a:null,b:null,open:null},start:2};
 function rSched(){const el=document.getElementById('lv-sched');if(!el)return;
-  el.innerHTML=`<div class="row"><h4>Running on its own</h4><span class="tag n" style="margin-left:auto">${TR.rows.filter(r=>r.on).length} of 3 active</span></div>
+  el.innerHTML=`<div class="row"><h3>Running on its own</h3><span class="tag n" style="margin-left:auto">${TR.rows.filter(r=>r.on).length} of 3 active</span></div>
   <ul class="trg">${TR.rows.map(r=>`<li class="${r.on?'':'off'}"><span class="when">${esc(r.when)}</span><span class="tx"><b>${esc(r.what)}</b><span class="agent" style="align-self:flex-start;margin:3px 0">${({r1:'Reconciliation agent',r2:'Bookkeeping agent',r3:'Payroll agent'})[r.id]}</span><small>${r.on?esc(r.last):'Paused. Nothing runs until you turn it back on.'}</small>${r.on?`<small class="nx">${esc(r.next)}</small>`:''}</span>
    <span class="stt">${!r.on?'<span class="tag n">paused</span>':r.st==='run'?'<span class="ico wait" role="img" aria-label="Running"></span>':r.st==='ready'?'<span class="tag">ready</span>':r.st==='ok'?'<span class="ico ok" role="img" aria-label="Done"></span>':'<span class="tag n">listening</span>'}</span>
    <button class="sw" type="button" role="switch" aria-checked="${r.on}" aria-label="${r.on?'Pause':'Resume'}: ${esc(r.what)}" data-sw="${r.id}"><i></i></button></li>`).join('')}</ul>`;
@@ -794,9 +794,9 @@ function runCal(){const c=TR.cal;c.a=null;c.b=null;rCal();
   later('cal',()=>{c.a='run';c.open='a';rCal();later('cal',()=>{c.a='done';rCal();later('cal',()=>{c.b='run';c.open='b';rCal();later('cal',()=>{c.b='done';rCal();later('cal',runCal,3000);},1800);},1600);},1800);},900);}
 const SRC=[['Time reports','64 of 64 approved by managers'],['Absence','14 records: sick leave, VAB and vacation'],['Employee changes','1 new employee, 1 leaver'],['Tax tables','Checked against Skatteverket']];
 function rStart(){const el=document.getElementById('lv-start');if(!el)return;const n=TR.start,done=n>=SRC.length;
-  el.innerHTML=`<div class="row"><h4>Collect</h4><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'collected':'collecting'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Collect</h3><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'collected':'collecting'}</span></div>
   <p class="started"><span class="ico ${done?'ok':'wait'}" aria-hidden="true"></span><span><span class="agent">Payroll agent</span> <b>started on its own at 06:00 on 18 October,</b> when time reporting closed.</span></p>
-  <div class="pbar" role="progressbar" aria-valuenow="${Math.round(n/SRC.length*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${n/SRC.length*100}%"></i></div>
+  <div class="pbar" role="progressbar" aria-label="Sources collected" aria-valuenow="${Math.round(n/SRC.length*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${n/SRC.length*100}%"></i></div>
   <ul class="feed">${SRC.map((x,i)=>`<li><span class="ico ${i<n?'ok':i===n?'wait':''}" aria-hidden="true"></span><span><b>${esc(x[0])}</b><small>${i<n?esc(x[1]):i===n?'Working…':'Waiting'}</small></span></li>`).join('')}</ul>
   <p class="hint" style="margin:0">${done?'Done at 06:04. The next run starts on its own on 18 November.':'Collecting from 4 sources…'}</p>`;}
 function runStart(){TR.start=0;rStart();const step=()=>{TR.start++;rStart();if(TR.start<SRC.length)later('start',step,1100);else later('start',runStart,3200);};later('start',step,1100);}
@@ -810,13 +810,13 @@ const AU={tasks:[{t:'Bank reconciliation',v:2,work:'12 new bank lines'},{t:'Payr
 const PL=[['Allowed',''],['Ask every time','n'],['Off for agents','w']];
 function outcome(task){const v=task.v,w=task.work;return v===2?`Did it on its own: ${w} handled, you get a summary`:v===1?`Prepared ${w}, waiting for your approval`:`Answers questions about ${w}, does nothing on its own`;}
 function rLvl(){const el=document.getElementById('lv-lvl');if(!el)return;
-  el.innerHTML=`<h4>Agent level per task</h4>${AU.tasks.map((t,i)=>`<div class="lvrow"><span class="lbl">${esc(t.t)} <span class="agent">${['Reconciliation agent','Payroll agent','VAT agent'][i]}</span></span><div class="seg" role="group" aria-label="${esc(t.t)} level">${LVN.map((n,j)=>`<button type="button" data-t="${i}" data-v="${j}" aria-pressed="${t.v===j}">${n}</button>`).join('')}</div>
+  el.innerHTML=`<h3>Agent level per task</h3>${AU.tasks.map((t,i)=>`<div class="lvrow"><span class="lbl">${esc(t.t)} <span class="agent">${['Reconciliation agent','Payroll agent','VAT agent'][i]}</span></span><div class="seg" role="group" aria-label="${esc(t.t)} level">${LVN.map((n,j)=>`<button type="button" data-t="${i}" data-v="${j}" aria-pressed="${t.v===j}">${n}</button>`).join('')}</div>
   <p class="out ${AU.out===i?'in':''}">${AU.out===i?'<span class="ico wait" aria-hidden="true"></span>':''}<span>${esc(AU.out===i?'New work: '+t.work+'…':outcome(t))}</span></p></div>`).join('')}`;
   el.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;AU.tasks[+b.dataset.t].v=+b.dataset.v;rLvl();};}
 function runLvl(){let i=0;const step=()=>{AU.out=i;rLvl();later('lvl',()=>{AU.out=null;rLvl();i=(i+1)%3;later('lvl',step,1400);},1500);};step();}
 const MODES=[['Ask','answers questions, never acts'],['Plan','prepares everything, you press go'],['Agent','acts within what’s allowed below, and stops at anything new']];
 function rPerm(){const el=document.getElementById('lv-perm');if(!el)return;const P=AU.perm,em=P.rows[1][2];
-  el.innerHTML=`<div class="row"><h4>Permissions</h4><span class="agent">Bookkeeping agent</span><div class="seg sm" role="group" aria-label="Agent mode" style="margin-left:auto">${MODES.map((m,j)=>`<button type="button" data-m="${j}" aria-pressed="${P.mode===j}">${m[0]}</button>`).join('')}</div></div>
+  el.innerHTML=`<div class="row"><h3>Permissions</h3><span class="agent">Bookkeeping agent</span><div class="seg sm" role="group" aria-label="Agent mode" style="margin-left:auto">${MODES.map((m,j)=>`<button type="button" data-m="${j}" aria-pressed="${P.mode===j}">${m[0]}</button>`).join('')}</div></div>
   <p class="hint" style="margin:0">${esc(MODES[P.mode][0])}: ${esc(MODES[P.mode][1])}.</p>
   <ul class="perm">${P.rows.map((r,i)=>`<li><span><b>${esc(r[0])}</b><small>${esc(r[1])}</small></span><button class="tag ${PL[r[2]][1]}" type="button" data-r="${i}" aria-label="${esc(r[0])}: ${PL[r[2]][0]}. Change permission">${PL[r[2]][0]}</button></li>`).join('')}</ul>
   ${P.st==='ask'?`<div class="askbox"><span><b>The agent wants to send 3 overdue reminders.</b> Emails to customers are set to “Ask every time”.</span><span class="acts"><button class="b p" type="button" data-a="yes">Send</button><button class="b" type="button" data-a="no">Not now</button><span class="by">Asked by <span class="agent">Bookkeeping agent</span></span></span></div>`:
@@ -837,7 +837,7 @@ function LVT(n){const k={Assistant:1,Copilot:2,Autopilot:3}[n]||0;return `<span 
 const AGN={'Bank reconciliation':'Reconciliation agent','Payroll run':'Payroll agent','VAT filing':'VAT agent'};
 let logI=3;
 function rLog(){const el=document.getElementById('lv-levlog');if(!el)return;
-  el.innerHTML=`<h4>Activity log</h4><ul class="feed">${AU.log.map(x=>`<li class="${x.fresh?'in':''}"><span class="mono">${esc(x[0])}</span><span><b>${esc(x[1])}</b> ${esc(x[2])}<small><span class="agent">${AGN[x[1]]}</span> ${LVT(esc(x[3].split(' · ')[0]))}${x[3].includes(' · ')?' '+esc(x[3].split(' · ')[1]):''}</small></span></li>`).join('')}</ul>`;AU.log.forEach(x=>x.fresh=false);}
+  el.innerHTML=`<h3>Activity log</h3><ul class="feed">${AU.log.map(x=>`<li class="${x.fresh?'in':''}"><span class="mono">${esc(x[0])}</span><span><b>${esc(x[1])}</b> ${esc(x[2])}<small><span class="agent">${AGN[x[1]]}</span> ${LVT(esc(x[3].split(' · ')[0]))}${x[3].includes(' · ')?' '+esc(x[3].split(' · ')[1]):''}</small></span></li>`).join('')}</ul>`;AU.log.forEach(x=>x.fresh=false);}
 function runLog(){later('levlog',()=>{const x=LOGS[logI%LOGS.length].slice();logI++;x.fresh=true;AU.log.unshift(x);AU.log=AU.log.slice(0,4);rLog();runLog();},2200);}
 function initAuto(){if(!document.getElementById('lv-lvl'))return;AU.out=null;AU.perm.mode=2;AU.perm.rows[1][2]=1;AU.perm.st=null;AU.log=LOGS.slice(0,3).reverse().map(x=>x.slice());logI=3;rLvl();rPerm();rLog();}
 
@@ -845,7 +845,7 @@ function initAuto(){if(!document.getElementById('lv-lvl'))return;AU.out=null;AU.
 const SG={offer:'idle',n:0,versus:0,next:'idle'};
 const CARDS=[['02 Oct','Circle K, Sibbhult','812,40 kr'],['01 Oct','Byggmax, Hässleholm','3 450,00 kr'],['30 Sep','Bauhaus, Malmö','1 290,00 kr']];
 function rOffer(){const el=document.getElementById('lv-offer');if(!el)return;const st=SG.offer;
-  el.innerHTML=`<div class="row"><h4>Card payments without a receipt</h4><span class="tag ${st==='done'||st==='booked'?'':'w'}" style="margin-left:auto">${st==='booked'?'0 left':st==='done'?'12 matched':'12'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Card payments without a receipt</h3><span class="tag ${st==='done'||st==='booked'?'':'w'}" style="margin-left:auto">${st==='booked'?'0 left':st==='done'?'12 matched':'12'}</span></div>
   ${st==='idle'?`<div class="offerbox"><span><b>12 of these have receipts in your inbox.</b> Match them? You check each match before it is booked.</span><span class="acts"><button class="b p" type="button" data-o="go">Match 12</button><button class="b" type="button" data-o="no">Not now</button><span class="by">Suggested by <span class="agent">Bookkeeping agent</span></span></span></div>`:
    st==='run'?`<div class="offerbox"><span class="res"><span class="ico wait" aria-hidden="true"></span><span>Matching receipts… ${SG.n} of 12</span></span></div>`:
    st==='done'?`<div class="offerbox"><span class="res"><span class="ico ok" aria-hidden="true"></span><span><b>12 receipts matched.</b> Check them below, then book.</span></span><span class="acts"><button class="b p" type="button" data-o="book">Book all 12</button><button class="b" type="button" data-o="reset">Undo matching</button></span></div>`:
@@ -880,7 +880,7 @@ function initSug(){if(!document.getElementById('lv-offer'))return;SG.offer='idle
 const RECL=[['Matched “ACME AB” to invoice 2291','rule 4','Rule 4: amount and OCR reference match exactly.'],['Split payment across 2 invoices','98%','98% confidence: the total matches invoices 2288 and 2290, paid on the same day.'],['Booked card fee, SEK 45','rule 2','Rule 2: monthly card fee from the same bank, booked to 6570.'],['Matched “Lund El AB” to invoice 5521','rule 4','Rule 4: amount and OCR reference match exactly.'],['Flagged payment from unknown sender','needs a look','No rule fits and confidence is below 80%, so a person checks it.'],['Matched Swish payment to invoice 1093','91%','91% confidence: same amount and customer, reference missing.']];
 const LP={n:212,feed:[0,1],open:null,src:'done',cite:null,step:2,state:'working',ann:[]};
 function rRec(){const el=document.getElementById('lv-rec');if(!el)return;
-  el.innerHTML=`<div class="row"><span class="ico ${LP.n>=230?'ok':'wait'}" aria-hidden="true"></span><h4>Reconciling bank feed</h4><span class="agent">Reconciliation agent</span><span class="tag ${LP.n>=230?'':'n'}" style="margin-left:auto">${LP.n>=230?'done':'working'}</span></div>
+  el.innerHTML=`<div class="row"><span class="ico ${LP.n>=230?'ok':'wait'}" aria-hidden="true"></span><h3>Reconciling bank feed</h3><span class="agent">Reconciliation agent</span><span class="tag ${LP.n>=230?'':'n'}" style="margin-left:auto">${LP.n>=230?'done':'working'}</span></div>
   <div class="pbar" role="progressbar" aria-valuenow="${LP.n}" aria-valuemin="0" aria-valuemax="230" aria-label="Bank lines matched"><i style="width:${LP.n/230*100}%"></i></div>
   <p class="mono" style="margin:0;font-size:12px;color:var(--muted)">${LP.n} of 230 matched · ${Math.max(0,230-LP.n-0)>0?18:18} need a look</p>
   <ul class="recf">${LP.feed.map((i,k)=>{const r=RECL[i];return `<li class="${k===0&&LP.fresh?'in':''}"><span>${esc(r[0])}</span><button class="tag ${r[1]==='needs a look'?'w':r[1].includes('%')?'n':''}" type="button" data-rr="${i}" aria-expanded="${LP.open===i}">${esc(r[1])}</button>${LP.open===i?`<small>${esc(r[2])}</small>`:''}</li>`;}).join('')}</ul>`;LP.fresh=false;
@@ -899,7 +899,7 @@ const STEPS2=[['Match bank lines','212 of 230 matched'],['Post accruals','Rental
 const STW={working:'Agent working',waiting:'Waiting for you',paused:'Paused',done:'Done'};
 function announce(){const s=LP.step,st=LP.state;const msg=st==='done'?'Month-end close done. 4 of 4 steps finished.':`Step ${s+1} of 4. ${STEPS2[s][0]}. ${STW[st]}${st==='waiting'?': approve 3 payments':''}.`;LP.ann.unshift(msg);LP.ann=LP.ann.slice(0,3);const live=document.getElementById('srLive');if(live)live.textContent=msg;}
 function rStates(){const el=document.getElementById('lv-states');if(!el)return;const s=LP.step,st=LP.state;
-  el.innerHTML=`<div class="row"><h4>Month-end close</h4><span class="tag ${st==='done'?'':st==='waiting'?'w':'n'}" style="margin-left:auto">${st==='done'?'Done':'Step '+(s+1)+' of 4 · '+STW[st]}</span></div>
+  el.innerHTML=`<div class="row"><h3>Month-end close</h3><span class="tag ${st==='done'?'':st==='waiting'?'w':'n'}" style="margin-left:auto">${st==='done'?'Done':'Step '+(s+1)+' of 4 · '+STW[st]}</span></div>
   <div class="pbar"><i style="width:${(st==='done'?4:s)/4*100}%"></i></div>
   <ol class="stl">${STEPS2.map((x,i)=>{const d=st==='done'||i<s,cur=i===s&&st!=='done';return `<li class="${cur?'cur':''}"><span class="ico ${d?'ok':cur&&st==='working'?'wait':'num'}" aria-hidden="true">${!d&&!(cur&&st==='working')?i+1:''}</span><span><b>${esc(x[0])}</b><small>${d?'Done · '+esc(x[1]):cur?STW[st]+(st==='waiting'?' · approve 3 payments':'')+' · '+esc(x[1]):'Not started'}</small></span></li>`;}).join('')}</ol>
   <div class="acts">${st==='waiting'?'<button class="b p" type="button" data-st="approve">Approve 3 payments</button>':''}${st==='done'?'':`<button class="b" type="button" data-st="${st==='paused'?'resume':'pause'}">${st==='paused'?'Resume run':'Pause run'}</button>`}<span class="by">Run by <span class="agent">Close agent</span></span></div>
@@ -918,7 +918,7 @@ function initLP(){if(!document.getElementById('lv-rec'))return;LP.n=212;LP.feed=
 const AC={vat:'idle',acct:'6540',chg:[null,null,null],saved:false,draft:'idle',txt:''};
 const ACCTS={'6540':'6540 Software · reverse charge','6550':'6550 IT services · reverse charge','6150':'6150 Office supplies · 25%'};
 function rVat(){const el=document.getElementById('lv-vat');if(!el)return;const st=AC.vat;
-  el.innerHTML=`<div class="row"><h4>Suggested correction · VAT code</h4><span class="rule">Invoice 4471 · Figma Inc · SEK 2 940</span></div>
+  el.innerHTML=`<div class="row"><h3>Suggested correction · VAT code</h3><span class="rule">Invoice 4471 · Figma Inc · SEK 2 940</span></div>
   ${st==='idle'||st==='edit'?`<p style="margin:0"><b>Change the VAT code on this invoice?</b></p><dl class="cmp"><dt class="now">Booked now</dt><dd class="now">6150 Office supplies · 25%</dd><dt class="new">Proposed</dt><dd class="new">${esc(ACCTS[st==='edit'?AC.acct:'6540'])}</dd></dl>
    <p class="hint" style="margin:0">Supplier is outside Sweden, so reverse charge applies. Rule: EU and non-EU services, VAT Act ch. 5.</p>
    ${st==='edit'?`<label class="lvrow"><span class="lbl">Account</span><select class="sel" data-v="acct">${Object.keys(ACCTS).map(k=>`<option value="${k}" ${k===AC.acct?'selected':''}>${esc(ACCTS[k])}</option>`).join('')}</select></label>
@@ -932,7 +932,7 @@ function rVat(){const el=document.getElementById('lv-vat');if(!el)return;const s
 function runVat(){AC.vat='idle';AC.acct='6540';rVat();later('vat',()=>{AC.vat='edit';rVat();later('vat',()=>{AC.acct='6550';rVat();later('vat',()=>{AC.vat='saved';rVat();later('vat',runVat,2800);},1400);},1400);},1800);}
 const CHG=[['Bank account','BG 5521-0098','BG 7740-1123','New bankgiro on invoice 8812 and in the supplier’s letter of 2 Oct.',true],['Payment terms','30 days','20 days','Matches the framework agreement signed 1 Oct.'],['Address','Box 112, 971 04 Luleå','Hamngatan 4, 972 38 Luleå','From the header on invoice 8812.']];
 function rChg(){const el=document.getElementById('lv-chg');if(!el)return;const d=AC.chg,pend=d.filter(x=>x===null).length;
-  el.innerHTML=`<div class="row"><h4>Supplier · Nordic Steel AB</h4><span class="tag ${AC.saved?'':'w'}" style="margin-left:auto">${AC.saved?'saved':pend?pend+' pending':'ready to save'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Supplier · Nordic Steel AB</h3><span class="tag ${AC.saved?'':'w'}" style="margin-left:auto">${AC.saved?'saved':pend?pend+' pending':'ready to save'}</span></div>
   <p style="margin:0"><b>Update the supplier details?</b> Decide on each change. Nothing is saved until you press Save.</p>
   <ul class="chgl">${CHG.map((c,i)=>`<li class="${d[i]?'dec '+d[i]:''}"><div class="row"><b>${c[0]}</b>${c[4]?'<span class="tag w">high stakes</span>':''}<span class="rule">${d[i]==='acc'?'Accepted':d[i]==='rej'?'Rejected':''}</span></div>
     ${d[i]===null?`<dl class="cmp"><dt class="now">Now</dt><dd class="now">${esc(c[1])}</dd><dt class="new">Proposed</dt><dd class="new">${esc(c[2])}</dd></dl><small>${esc(c[3])}</small>
@@ -946,7 +946,7 @@ function runChg(){AC.chg=[null,null,null];AC.saved=false;rChg();const seq=[[0,'a
   const step=()=>{if(k<seq.length){AC.chg[seq[k][0]]=seq[k][1];k++;rChg();later('chg',step,1300);}else{AC.saved=true;rChg();later('chg',runChg,3000);}};later('chg',step,1600);}
 const DRAFT='Hi Erik,\n\nInvoice 1047 for the roof work at Storgatan 12 (48 750,00 kr) was due on 20 September and is now 14 days overdue.\n\nCould you let us know when we can expect payment? If it is already on its way, please ignore this message.\n\nBest regards,\nLena Ström, Berg Bygg AB';
 function rDraft(){const el=document.getElementById('lv-draft');if(!el)return;const st=AC.draft,ed=AC.txt!==DRAFT;
-  el.innerHTML=`<div class="row"><h4>Reminder · Nordström Fastighet AB</h4>${st==='sent'?'<span class="tag">sent</span>':ed?'<span class="tag n">edited by you</span>':''}</div>
+  el.innerHTML=`<div class="row"><h3>Reminder · Nordström Fastighet AB</h3>${st==='sent'?'<span class="tag">sent</span>':ed?'<span class="tag n">edited by you</span>':''}</div>
   ${st==='sent'?`<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminder sent to erik.nordstrom@nordstromfast.se. Drafted by Invoice agent, ${ed?'edited and ':''}sent by you.</span></p><div class="acts"><button class="b" type="button" data-d="reset">Start over</button></div>`:
   `<div class="mail"><small>To erik.nordstrom@nordstromfast.se · Invoice 1047</small>${st==='edit'?`<textarea class="ta" rows="9" aria-label="Reminder text">${esc(AC.txt)}</textarea>`:`<div class="pre">${esc(AC.txt)}</div>`}</div>
   <div class="acts"><button class="b ink" type="button" data-d="send">Send reminder</button>${st==='edit'?'<button class="b" type="button" data-d="done">Done editing</button>':'<button class="b" type="button" data-d="edit">Edit</button>'}${ed?'<button class="lnk" type="button" data-d="back">Back to the agent draft</button>':''}<span class="by">Drafted by <span class="agent">Invoice agent</span></span></div>`}`;
@@ -962,7 +962,7 @@ const EXQ=[{t:'Amount 40% above usual',who:'Nordic Steel AB · invoice 8840 · S
  {t:'New bank account for supplier',who:'Lund El AB · invoice 5530 · SEK 24 600',prop:'Call Lund El AB on the number in the supplier register to confirm the new account before paying.',prob:'The invoice asks for payment to a bankgiro that is not in the supplier register.',why:'Flagged by rule: bank details changed. Always checked by a person.',ok:'I called, it’s correct',no:'Block payment'}];
 const EX={q:[null,null],open:null,bulk:[null,null,null,null],risk:null,sel:true,inbox:[true,true,true],seen:false};
 function rQueue(){const el=document.getElementById('lv-queue');if(!el)return;const left=EX.q.filter(x=>x===null).length;
-  el.innerHTML=`<div class="row"><h4>Today · supplier invoices</h4></div>
+  el.innerHTML=`<div class="row"><h3>Today · supplier invoices</h3></div>
   <p class="res" style="margin:0"><span class="dot ok"></span><span>214 approved automatically by <span class="agent">Invoice agent</span>${2-left?`, ${2-left} decided by you`:''}</span></p>
   ${left?`<p class="res" style="margin:0"><span class="dot ac"></span><b>${left} need${left===1?'s':''} you</b></p>
   <ul class="exq">${EXQ.map((x,i)=>EX.q[i]?'':`<li><div class="row"><span>${esc(x.t)}</span>${EX.open===i?'':`<button class="b" type="button" data-q="open" data-i="${i}" style="margin-left:auto">Check</button>`}</div>
@@ -974,7 +974,7 @@ function rQueue(){const el=document.getElementById('lv-queue');if(!el)return;con
 function runQueue(){EX.q=[null,null];EX.open=null;rQueue();later('queue',()=>{EX.open=0;rQueue();later('queue',()=>{EX.q[0]='ok';EX.open=null;rQueue();later('queue',()=>{EX.open=1;rQueue();later('queue',()=>{EX.q[1]='ok';EX.open=null;rQueue();later('queue',runQueue,3000);},2200);},1200);},2200);},1400);}
 const BULK=[['Circle K, Sibbhult','812,40 kr'],['Byggmax, Hässleholm','3 450,00 kr'],['Bauhaus, Malmö','1 290,00 kr'],['Ahlsell, Kristianstad','2 118,00 kr']];
 function rBulk(){const el=document.getElementById('lv-bulk');if(!el)return;const open=EX.bulk.filter(x=>x===null).length+(EX.risk?0:1);
-  el.innerHTML=`<div class="row"><h4>Expenses · exceptions</h4><span class="tag ${open?'w':''}" style="margin-left:auto">${open?open+' need you':'all handled'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Expenses · exceptions</h3><span class="tag ${open?'w':''}" style="margin-left:auto">${open?open+' need you':'all handled'}</span></div>
   ${EX.bulk.some(x=>x===null)?`<div class="offerbox"><span><b>4 card payments are missing a receipt.</b> Receipts with the same amount and date were found in the inbox.</span>
    <span class="acts"><button class="b p" type="button" data-k="all">Match all 4</button><span class="by">Suggested by <span class="agent">Expense agent</span></span></span></div>`:''}
   <ul class="cards">${BULK.map((c,i)=>`<li><span class="mono">Easy</span><span>${esc(c[0])}${EX.bulk[i]?'<small class="rc">✓ Receipt matched</small>':'<small class="hint">Receipt found: same amount and date</small>'}</span><span class="amt">${c[1]}</span></li>`).join('')}
@@ -986,7 +986,7 @@ function rBulk(){const el=document.getElementById('lv-bulk');if(!el)return;const
 function runBulk(){EX.bulk=[null,null,null,null];EX.risk=null;rBulk();later('bulk',()=>{EX.bulk=EX.bulk.map(()=>'ok');rBulk();later('bulk',()=>{EX.risk='ok';rBulk();later('bulk',runBulk,3000);},2200);},1800);}
 const INB=[['Invoice agent','3 invoices need you','09:12'],['Reminder agent','3 reminders ready to send','08:40'],['Reconciliation agent','Done: 211 of 214 matched, 3 need a look','08:31']];
 function rInbox(){const el=document.getElementById('lv-inbox');if(!el)return;const n=EX.inbox.filter(Boolean).length;
-  el.innerHTML=`<div class="row"><h4>Agent inbox</h4><span class="tag ${n?'w':''}" style="margin-left:auto">${n?n+' need you':'all caught up'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Agent inbox</h3><span class="tag ${n?'w':''}" style="margin-left:auto">${n?n+' need you':'all caught up'}</span></div>
   ${n?`<ul class="inb">${INB.map((x,i)=>EX.inbox[i]?`<li><span><span class="agent">${esc(x[0])}</span><small>${esc(x[1])}</small></span><span class="mono">${x[2]}</span><button class="b" type="button" data-ib="${i}" aria-label="Mark ${esc(x[0])} done">Done</button></li>`:'').join('')}</ul>
   <p class="hint" style="margin:0">Newest first, like email.</p>`:
   `<div class="empty"><span class="ico ok"></span><span><b>Nothing needs you right now.</b> Your agents handled 428 items today.</span><button class="b" type="button" data-ib="reset">Start over</button></div>`}`;
@@ -997,7 +997,7 @@ function initExc(){if(!document.getElementById('lv-queue'))return;EX.q=[null,nul
 /* ---------- hand-over examples ---------- */
 const HO={c:'new',open:false,f:'idle',vat:'25',o:0};
 function rCase(){const el=document.getElementById('lv-case');if(!el)return;const st=HO.c;
-  el.innerHTML=`<div class="row"><h4>Handed to Anders Holm</h4><span class="tag ${st==='done'?'':'w'}" style="margin-left:auto">${st==='done'?'done':st==='taken'?'with Anders':'new case'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Handed to Anders Holm</h3><span class="tag ${st==='done'?'':'w'}" style="margin-left:auto">${st==='done'?'done':st==='taken'?'with Anders':'new case'}</span></div>
   <dl class="kv"><dt>Case</dt><dd>Excavator, SEK 780 000 · invoice 9910 from Maskin Syd AB</dd>
   <dt>Checked</dt><dd><button class="lnk" type="button" data-h="chk" aria-expanded="${HO.open}">Invoice, asset register</button>${HO.open?`<ul class="chk"><li>✓ Invoice text: “Excavator CAT 308, reconditioned, incl. new tracks”</li><li>✓ Asset register: an excavator CAT 308 bought in 2019</li><li>✓ Drafts ready for both: asset 1220 or repair 5500</li></ul>`:''}</dd>
   <dt>Why you</dt><dd>Asset or repair is a judgement call. The rules allow both, and the choice changes this year’s result by SEK 624 000.</dd></dl>
@@ -1008,7 +1008,7 @@ function rCase(){const el=document.getElementById('lv-case');if(!el)return;const
     if(a==='chk')HO.open=!HO.open;else if(a==='take')HO.c='taken';else if(a==='reset'){HO.c='new';HO.open=false;}else{HO.c='done';HO.as=a;}rCase();};}
 function runCase(){HO.c='new';HO.open=false;rCase();later('case',()=>{HO.open=true;rCase();later('case',()=>{HO.c='taken';rCase();later('case',()=>{HO.c='done';HO.as='asset';rCase();later('case',runCase,3000);},1800);},2000);},1400);}
 function rFail(){const el=document.getElementById('lv-fail');if(!el)return;const st=HO.f;
-  el.innerHTML=`<div class="row"><h4>INV-2244 · Nord Konsult AB</h4><span class="amt" style="margin-left:auto;font-weight:600">15 000,00 kr</span></div>
+  el.innerHTML=`<div class="row"><h3>INV-2244 · Nord Konsult AB</h3><span class="amt" style="margin-left:auto;font-weight:600">15 000,00 kr</span></div>
   ${st==='idle'?`<div class="answer"><span><b>No VAT code suggested.</b> The invoice says “Services and materials, see attached” and the attachment can’t be read, so I can’t tell how much is goods.</span></div>
    <div class="acts"><button class="b ink" type="button" data-f="self">Enter it myself</button><button class="b" type="button" data-f="ask">Ask Erik</button><button class="lnk" type="button" data-f="up">Upload a readable copy</button><span class="by"><span class="agent">Invoice agent</span></span></div>`:
   st==='self'?`<label class="lvrow"><span class="lbl">VAT code</span><select class="sel">${[['25','25% · services and materials'],['12','12% · reduced rate'],['0','0% · reverse charge']].map(o=>`<option value="${o[0]}" ${HO.vat===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></label>
@@ -1039,14 +1039,14 @@ function initHO(){if(!document.getElementById('lv-case'))return;HO.c='new';HO.op
 const UD={t:580,sent:'sent',w:'ask',held:8,rows:null};
 const mmss=t=>Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
 function rSent(){const el=document.getElementById('lv-sent');if(!el)return;const st=UD.sent;
-  el.innerHTML=`<div class="row"><h4>Sent by <span class="agent">Reminder agent</span> · 09:12</h4></div>
+  el.innerHTML=`<div class="row"><h3>Sent by <span class="agent">Reminder agent</span> · 09:12</h3></div>
   <div class="cardrow"><span>Nordström Fastigheter · invoice 1047</span>${st==='sent'?'<button class="b" type="button" data-u="undo">Undo</button>':st==='undone'?'<span class="tag n">recalled</span>':'<span class="tag">sent</span>'}</div>
   ${st==='sent'?`<p class="hint" style="margin:0">You can undo for ${mmss(UD.t)}</p>`:st==='undone'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminder recalled at 09:14 before it reached Nordström. Undone by you, logged like the send.</span></p><div class="acts"><button class="b" type="button" data-u="reset">Start over</button></div>':'<p class="hint" style="margin:0">The undo window has closed. Send a correction if something was wrong.</p><div class="acts"><button class="b" type="button" data-u="reset">Start over</button></div>'}
   <p class="hint" style="margin:0;border-top:1px solid var(--line);padding-top:8px">Can’t be undone: payments once they leave the bank.</p>`;
   el.onclick=e=>{const b=e.target.closest('button[data-u]');if(!b)return;if(PLAY.sent)toggle('sent');const a=b.dataset.u;if(a==='reset'){UD.sent='sent';UD.t=580;}else UD.sent='undone';rSent();};}
 function runSent(){UD.sent='sent';UD.t=580;rSent();const tick=()=>{UD.t-=1;if(UD.t<=574){UD.sent='undone';rSent();later('sent',runSent,3200);return;}rSent();later('sent',tick,1000);};later('sent',tick,1000);}
 function rWarn(){const el=document.getElementById('lv-warn');if(!el)return;const st=UD.w;
-  el.innerHTML=`<div class="row"><h4>Pay suppliers</h4><span class="rule">3 payments · SEK 148 200</span></div>
+  el.innerHTML=`<div class="row"><h3>Pay suppliers</h3><span class="rule">3 payments · SEK 148 200</span></div>
   <ul class="cards">${[['Nordic Steel AB','96 400 kr'],['Lund El AB','24 600 kr'],['Maskin Syd AB','27 200 kr']].map(c=>`<li><span class="mono">31 Oct</span><span>${c[0]}</span><span class="amt">${c[1]}</span></li>`).join('')}</ul>
   ${st==='ask'?`<div class="offerbox"><span><b>Payments can’t be undone once they leave the bank.</b> You can stop them until 14:00 today, when the bank file is sent.</span><span class="acts"><button class="b p" type="button" data-w="go">Schedule payments</button><button class="b" type="button" data-w="no">Not yet</button><span class="by">Prepared by <span class="agent">Close agent</span></span></span></div>`:
    st==='sched'?`<p class="res" style="margin:0"><span class="ico wait"></span><span>Scheduled for 14:00. You can stop them until then.</span></p><div class="acts"><button class="b" type="button" data-w="stop">Stop payments</button><span class="by">Scheduled by you</span></div>`:
@@ -1058,7 +1058,7 @@ function runWarn(){UD.w='ask';rWarn();later('warn',()=>{UD.w='sched';rWarn();lat
 const ULOG0=()=>[{t:'10:46',who:'Bookkeeping agent',what:'booked 12 accruals for September',k:'undo'},{t:'10:44',who:'Bookkeeping agent',what:'sent a reminder to Holm & Dotter AB',k:'fix'},{t:'10:31',who:'Lena Ström',what:'approved the plan',k:'person'}];
 function rUlog(){const el=document.getElementById('lv-ulog');if(!el)return;if(!UD.rows)UD.rows=ULOG0();
   el.innerHTML=`${UD.held>0?`<div class="toast"><span>Reminder to Nordström Fastigheter: held for ${UD.held} seconds before it sends</span><button class="b" type="button" data-l="hold">Undo</button></div>`:''}
-  <h4>What the agent changed today</h4>
+  <h3>What the agent changed today</h3>
   <ul class="ulog">${UD.rows.map((r,i)=>`<li class="${r.fresh?'in':''} ${r.k==='done'?'gone':''}"><span class="mono">${r.t}</span><span>${/agent$/.test(r.who)?`<span class="agent">${esc(r.who)}</span>`:`<b>${esc(r.who)}</b>`} ${esc(r.what)}</span><span class="end">${r.k==='undo'?`<button class="b" type="button" data-l="u" data-i="${i}">Undo</button>`:r.k==='fix'?`<span class="tag w">Can’t be unsent</span><button class="lnk" type="button" data-l="fix" data-i="${i}">Send a correction</button>`:r.k==='done'?'<span class="tag n">undone</span>':r.k==='fixd'?'<span class="tag">correction sent</span>':'<span class="hint">person</span>'}</span></li>`).join('')}</ul>`;
   UD.rows.forEach(r=>r.fresh=false);
   el.onclick=e=>{const b=e.target.closest('button[data-l]');if(!b)return;if(PLAY.ulog)toggle('ulog');const a=b.dataset.l,i=+b.dataset.i;
@@ -1074,14 +1074,14 @@ function initUndo(){if(!document.getElementById('lv-sent'))return;UD.sent='sent'
 const RUNL=[['06:00','Reconciliation run started','Started on its own: every Monday at 06:00. Run by Reconciliation agent.'],['06:02','Read 230 bank lines, 2 accounts','Read: Handelsbanken 1234 and Swedbank 5678, 1–4 Oct.'],['06:04','Posted 212 entries (rules 1–7)','Changed: 212 entries on 1930 and 1510. Rules 1–7: OCR, amount and date matches.'],['06:04','18 sent to review by Lisa K.','No rule fitted, or confidence was below 80%. Assigned to Lisa Karlsson.'],['09:20','Lisa K. approved 16, changed 2','Reviewed by Lisa Karlsson. Changed: 2 lines moved from 3010 to 3041.']];
 const AL={n:5,open:null,f:'all',ev:null,pl:0};
 function rRun(){const el=document.getElementById('lv-run');if(!el)return;
-  el.innerHTML=`<div class="row"><h4>Audit trail · Client: Berg AB</h4><span class="tag ${AL.n>=5?'':'n'}" style="margin-left:auto">${AL.n>=5?'reviewed':'running'}</span></div>
+  el.innerHTML=`<div class="row"><h3>Audit trail · Client: Berg AB</h3><span class="tag ${AL.n>=5?'':'n'}" style="margin-left:auto">${AL.n>=5?'reviewed':'running'}</span></div>
   <ol class="tl">${RUNL.slice(0,AL.n).map((r,i)=>`<li class="${i===AL.n-1&&AL.fresh?'in':''} ${i===4?'per':''}"><span class="mono">${r[0]}</span><span>${i<4?'<span class="agent">Reconciliation agent</span> ':''}<button class="lnk plain" type="button" data-rl="${i}" aria-expanded="${AL.open===i}">${esc(r[1])}</button>${AL.open===i?`<small>${esc(r[2])}</small>`:''}</span></li>`).join('')}</ol>`;AL.fresh=false;
   el.onclick=e=>{const b=e.target.closest('[data-rl]');if(!b)return;if(PLAY.run)toggle('run');const i=+b.dataset.rl;AL.open=AL.open===i?null:i;rRun();};}
 function runRun(){AL.n=0;AL.open=null;rRun();const step=()=>{AL.n++;AL.fresh=true;rRun();if(AL.n<5)later('run',step,1100);else later('run',()=>{AL.open=2;rRun();later('run',runRun,2600);},1200);};later('run',step,800);}
 const EVL0=()=>[{d:'Yesterday',t:'14:02',who:'a',x:'Created salary run: October, 14 employees'},{d:'Yesterday',t:'14:05',who:'ME',x:'Provided preferences: pay date 23 Oct'},{d:'Yesterday',t:'14:06',who:'a',x:'Calculated 14 payslips'},{d:'Yesterday',t:'14:07',who:'w',x:'Flagged Johan Ek: overtime rate'},{d:'Today',t:'09:12',who:'ME',x:'Fixed overtime rate for Johan Ek'},{d:'Today',t:'09:13',who:'a',x:'Recalculated 1 payslip'},{d:'Today',t:'09:15',who:'a',x:'Created bank file: 412 968 kr',u:true}];
 function rEvent(){const el=document.getElementById('lv-event');if(!el)return;if(!AL.ev)AL.ev=EVL0();const f=AL.f;
   const rows=AL.ev.filter(r=>f==='all'||(f==='me'?r.who==='ME':r.who!=='ME'));let last='';
-  el.innerHTML=`<div class="row"><h4>Event log · October payroll</h4><div class="seg sm" role="group" aria-label="Filter" style="margin-left:auto;grid-template-columns:repeat(3,auto)">${[['all','All'],['agent','Agent'],['me','You']].map(o=>`<button type="button" data-ef="${o[0]}" aria-pressed="${f===o[0]}">${o[1]}</button>`).join('')}</div></div>
+  el.innerHTML=`<div class="row"><h3>Event log · October payroll</h3><div class="seg sm" role="group" aria-label="Filter" style="margin-left:auto;grid-template-columns:repeat(3,auto)">${[['all','All'],['agent','Agent'],['me','You']].map(o=>`<button type="button" data-ef="${o[0]}" aria-pressed="${f===o[0]}">${o[1]}</button>`).join('')}</div></div>
   <ul class="evl">${rows.map(r=>{const h=r.d!==last?`<li class="dh">${r.d}</li>`:'';last=r.d;return h+`<li class="${r.fresh?'in':''} ${r.gone?'gone':''}"><span class="mono">${r.t}</span><span class="who">${r.who==='ME'?'<span class="ini">ME</span>':'<span class="agent">Payroll agent</span>'}</span><span>${esc(r.x)}</span><span class="end">${r.u&&!r.gone?`<button class="b" type="button" data-eu="1">Undo</button>`:r.gone?'<span class="tag n">undone</span>':''}</span></li>`;}).join('')}</ul>
   <p class="hint" style="margin:0">Past tense, newest at the bottom. Your own actions carry your initials.</p>`;
   AL.ev.forEach(r=>r.fresh=false);
@@ -1106,7 +1106,7 @@ const WEEKS={41:[['4.5 h','saved on reviews','Reviews you didn’t have to do: 2
 const WEAK={41:'Weaker this week: you changed 4 of 12 VAT codes on foreign invoices.',40:'Weaker this week: 9 receipts were matched to the wrong card payment.'};
 const RC={wk:41,tile:null,cite:null,show:false,need:[true,true,true]};
 function rWeek(){const el=document.getElementById('lv-week');if(!el)return;const w=WEEKS[RC.wk];
-  el.innerHTML=`<div class="row"><h4>This week with your agents</h4><div class="seg sm" role="group" aria-label="Week" style="margin-left:auto;grid-template-columns:auto auto">${[40,41].map(n=>`<button type="button" data-wk="${n}" aria-pressed="${RC.wk===n}">Week ${n}</button>`).join('')}</div></div>
+  el.innerHTML=`<div class="row"><h3>This week with your agents</h3><div class="seg sm" role="group" aria-label="Week" style="margin-left:auto;grid-template-columns:auto auto">${[40,41].map(n=>`<button type="button" data-wk="${n}" aria-pressed="${RC.wk===n}">Week ${n}</button>`).join('')}</div></div>
   <p class="by" style="margin:0">From <span class="agent">Reconciliation agent</span><span class="agent">Expense agent</span><span class="agent">Reminder agent</span><span class="agent">Payroll agent</span></p>
   <div class="tiles">${w.map((t,i)=>`<button type="button" class="tile" data-tl="${i}" aria-expanded="${RC.tile===i}"><b>${t[0]}</b><span>${t[1]}</span></button>`).join('')}</div>
   ${RC.tile!==null?`<div class="srcbox"><b>${esc(w[RC.tile][0])} ${esc(w[RC.tile][1])}</b><span>${esc(w[RC.tile][2])}</span></div>`:''}
@@ -1116,7 +1116,7 @@ function runWeek(){let i=0;const step=()=>{RC.tile=i%4;if(i%4===0)RC.wk=RC.wk===
 const MSGS=[['Jonas, Ahlsell · 24 Sep','Price list changes from 1 October, plywood +4%.'],['Lena · 25 Sep','Asked if the old price holds for the Villa Ek order.'],['Jonas · 26 Sep','Yes, old price for orders placed before 30 Sep.'],['Jonas · 2 Oct','INV-2231 sent, plywood at the new price.']];
 function rThread(){const el=document.getElementById('lv-thread');if(!el)return;const c=RC.cite;
   const ct=n=>`<button class="cite" type="button" data-tc="${n}" aria-label="Message ${n}" aria-expanded="${c===n}">${n}</button>`;
-  el.innerHTML=`<div class="row"><h4>Thread with Ahlsell · 4 messages</h4></div>
+  el.innerHTML=`<div class="row"><h3>Thread with Ahlsell · 4 messages</h3></div>
   <div class="answer"><span class="routed"><span>Summary by</span><span class="agent">Invoice agent</span></span>
    <ul class="sum"><li>Ahlsell raised plywood 4% from 1 Oct ${ct(1)}</li><li>The old price was promised for orders before 30 Sep ${ct(3)}</li><li>INV-2231 still uses the new price ${ct(4)}</li></ul></div>
   <ul class="msgs">${MSGS.map((m,i)=>`<li class="${c===i+1?'hl':''}"><b>${esc(m[0])}</b><span>${esc(m[1])}</span></li>`).join('')}</ul>`;
@@ -1124,7 +1124,7 @@ function rThread(){const el=document.getElementById('lv-thread');if(!el)return;c
 function runThread(){const seq=[1,3,4,null];let i=0;const step=()=>{RC.cite=seq[i%4];rThread();i++;later('thread',step,1500);};later('thread',step,600);}
 const NEEDS=[['Failed','Lund El AB · bank sync failed','The bank didn’t answer on Saturday at 06:00. Last good sync: Friday 18:00','Retry','w'],['Check','Holm & Dotter AB · 4 lines without a match','SEK 12 300 in payments with no invoice to match','Review','w'],['Check','Nordström Fastigheter · split payment','One payment may cover 2 invoices. Confidence 71%, below the 80% limit','Review','w']];
 function rBack(){const el=document.getElementById('lv-back');if(!el)return;const n=RC.need.filter(Boolean).length;
-  el.innerHTML=`<div class="row"><h4>Welcome back, Anders</h4><span class="rule">Since Friday</span></div>
+  el.innerHTML=`<div class="row"><h3>Welcome back, Anders</h3><span class="rule">Since Friday</span></div>
   <p class="by" style="margin:0">From <span class="agent">Reconciliation agent</span><span class="agent">Bank agent</span><span class="agent">Close agent</span></p>
   <p style="margin:0">Since Friday, <b>38 of 41 clients reconciled on their own.</b> ${n?`${n} need${n===1?'s':''} you.`:'Nothing needs you now.'}</p>
   ${RC.show?`<div class="lbl hint">Needs you</div><ul class="inb">${NEEDS.map((x,i)=>`<li class="${RC.need[i]?'':'gone'}"><span class="tag ${RC.need[i]?x[4]:''}">${RC.need[i]?x[0]:'Done'}</span><span><b>${esc(x[1])}</b><small>${esc(x[2])}</small></span>${RC.need[i]?`<button class="b" type="button" data-bk="${i}">${x[3]}</button>`:'<span></span>'}</li>`).join('')}</ul>
@@ -1139,8 +1139,8 @@ function initRec(){if(!document.getElementById('lv-week'))return;RC.wk=41;RC.til
 /* ---------- autonomy evolution examples ---------- */
 const EV={n:12,st:'offer',sb:[0,0,0,0,0],k:5,lv:1};
 function rEarn(){const el=document.getElementById('lv-earn');if(!el)return;const n=EV.n,st=EV.st;
-  el.innerHTML=`<div class="row"><h4>Payment reminders</h4><span class="agent">Reminder agent</span><span style="margin-left:auto">${LVT(st==='auto'?'Autopilot':'Copilot')}</span></div>
-  <div class="track" aria-label="${n} of 12 approved unchanged">${Array.from({length:12},(_,i)=>`<span class="${i<n?'on':''} ${i===9?'th':''}"></span>`).join('')}</div>
+  el.innerHTML=`<div class="row"><h3>Payment reminders</h3><span class="agent">Reminder agent</span><span style="margin-left:auto">${LVT(st==='auto'?'Autopilot':'Copilot')}</span></div>
+  <div class="track" role="img" aria-label="${n} of 12 approved unchanged">${Array.from({length:12},(_,i)=>`<span class="${i<n?'on':''} ${i===9?'th':''}"></span>`).join('')}</div>
   <p class="mono" style="margin:0;font-size:12px;color:var(--muted)">${n} approved, 0 changed · offer at 10 with 85% unchanged</p>
   ${st==='offer'&&n>=10?`<div class="offerbox"><span><b>Send reminders like these on your own?</b> You can switch it back any time.</span><span class="acts"><button class="b p" type="button" data-e="yes">Yes, from now on</button><button class="b" type="button" data-e="no">Keep asking</button><span class="by">Suggested by <span class="agent">Reminder agent</span></span></span></div>`:
    st==='auto'?'<p class="res" style="margin:0"><span class="ico ok"></span><span>Reminders now run on Autopilot. You get a weekly recap, and can switch back in Settings.</span></p><div class="acts"><button class="b" type="button" data-e="reset">Switch back</button></div>':
@@ -1151,7 +1151,7 @@ function runEarn(){EV.n=0;EV.st='offer';rEarn();const step=()=>{EV.n++;rEarn();i
 const SBFIX=['6550 IT services','5410 Tools','6211 Landline','5410 Tools','5615 Vehicle leasing'];
 const SBR=[['INV-4471','Figma Inc','6540 Software'],['INV-4472','Byggmax','4010 Materials'],['INV-4473','Telia','6212 Mobile phone'],['INV-4474','Ahlsell','4010 Materials'],['INV-4475','Circle K','5611 Fuel']];
 function rStep(){const el=document.getElementById('lv-stepback');if(!el)return;const c=EV.sb.filter(x=>x===1).length,back=c>=2;
-  el.innerHTML=`<div class="row"><h4>Account coding</h4><span class="agent">Account agent</span><span style="margin-left:auto">${LVT(back?'Copilot':'Autopilot')}</span></div>
+  el.innerHTML=`<div class="row"><h3>Account coding</h3><span class="agent">Account agent</span><span style="margin-left:auto">${LVT(back?'Copilot':'Autopilot')}</span></div>
   <ul class="sbl">${SBR.slice(0,EV.k).map((r,i)=>`<li><span class="mono">${r[0]}</span><span>${r[1]}${EV.sb[i]?`<small style="color:var(--warn)">Corrected by you: ${r[2]} → ${SBFIX[i]}</small>`:`<small class="rc">Coded by <span class="agent">Account agent</span>: ${r[2]}</small>`}</span>${!EV.sb[i]&&!back?`<button class="b" type="button" data-sb="${i}">Correct</button>`:'<span></span>'}</li>`).join('')}</ul>
   ${back?`<div class="offerbox"><span><b>I’ve stepped back to Copilot.</b> You corrected 2 of the last 5 codings. I’ll suggest and you choose, until 10 more are approved unchanged.</span><span class="acts"><button class="b p" type="button" data-sb="ok">Okay</button><button class="b" type="button" data-sb="keep">Keep Autopilot</button><span class="by"><span class="agent">Account agent</span></span></span></div>`:`<p class="hint" style="margin:0">${c} correction${c===1?'':'s'} · steps back after 2</p>`}`;
   el.onclick=e=>{const b=e.target.closest('button[data-sb]');if(!b)return;if(PLAY.stepback)toggle('stepback');const a=b.dataset.sb;
@@ -1159,7 +1159,7 @@ function rStep(){const el=document.getElementById('lv-stepback');if(!el)return;c
 function runStep(){EV.sb=[0,0,0,0,0];EV.k=5;rStep();later('stepback',()=>{EV.sb[1]=1;rStep();later('stepback',()=>{EV.sb[4]=1;rStep();later('stepback',runStep,3600);},1800);},1800);}
 const LVS=[['No automation','You pick the account from the list.'],['Partial','It suggests, you choose.'],['Full','It codes invoices. You can take control back.']];
 function rLadder(){const el=document.getElementById('lv-ladder');if(!el)return;const v=EV.lv;
-  el.innerHTML=`<div class="row"><h4>Level of automation</h4><span class="agent">Account agent</span></div>
+  el.innerHTML=`<div class="row"><h3>Level of automation</h3><span class="agent">Account agent</span></div>
   <ol class="stl">${LVS.map((l,i)=>`<li class="${i===v?'cur':''}"><span class="ico num" aria-hidden="true">${i+1}</span><span><b>${l[0]}</b><small>${l[1]}${i===v?' · current':''}</small></span></li>`).join('')}</ol>
   <div class="acts"><button class="b" type="button" data-lv="-1" ${v===0?'disabled':''}>Step down</button><button class="b ink" type="button" data-lv="1" ${v===2?'disabled':''}>Step up</button><span class="hint">${v===0?'Everyone starts here.':v===1?'Earned: 11 of 12 suggestions accepted unchanged.':'You can step down at any time.'}</span></div>
   <div class="never"><span class="lbl">Never graduate</span>${['Pay suppliers','VAT filing','Salary changes'].map(x=>`<span class="tag w">${x} · always asks</span>`).join('')}</div>`;
@@ -1170,8 +1170,8 @@ function initEvo(){if(!document.getElementById('lv-earn'))return;EV.n=12;EV.st='
 /* ---------- failure disclosure examples ---------- */
 const FD={b:'failed',e:'done',c:0};
 function rBfile(){const el=document.getElementById('lv-bfile');if(!el)return;const st=FD.b;
-  el.innerHTML=`${st==='try'?'<div class="row"><span class="ico wait" aria-hidden="true"></span><h4>Sending bank file to Handelsbanken</h4><span class="tag n" style="margin-left:auto">working</span></div><p class="hint" style="margin:0">3 payments, SEK 148 200</p>':
-  st==='failed'?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h4>Bank file rejected</h4><span class="tag w" style="margin-left:auto">failed</span></div>
+  el.innerHTML=`${st==='try'?'<div class="row"><span class="ico wait" aria-hidden="true"></span><h3>Sending bank file to Handelsbanken</h3><span class="tag n" style="margin-left:auto">working</span></div><p class="hint" style="margin:0">3 payments, SEK 148 200</p>':
+  st==='failed'?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h3>Bank file rejected</h3><span class="tag w" style="margin-left:auto">failed</span></div>
    <p style="margin:0"><b>Why:</b> Handelsbanken rejected the file because the payment to Hamburg Stahl GmbH has no BIC code.</p>
    <p style="margin:0"><b>Not done:</b> No payments were sent. SEK 148 200 is still in your account.</p></div>
    <div class="acts"><button class="b ink" type="button" data-bf="fix">Add BIC and resend</button><button class="b" type="button" data-bf="two">Send the other 2</button><button class="b" type="button" data-bf="hand">Hand to Anders</button><span class="by"><span class="agent">Close agent</span></span></div>`:
@@ -1189,7 +1189,7 @@ function rEmpty(){const el=document.getElementById('lv-empty');if(!el)return;con
 function runEmpty(){FD.e='ask';rEmpty();later('empty',()=>{FD.e='think';rEmpty();later('empty',()=>{FD.e='done';rEmpty();later('empty',()=>{FD.e='asked';rEmpty();later('empty',runEmpty,2600);},2600);},1400);},900);}
 function rCover(){const el=document.getElementById('lv-cover');if(!el)return;const v=FD.c;
   el.innerHTML=`<div class="seg vs" role="group" aria-label="Compare">${['Disclosed','Covered up'].map((n,j)=>`<button type="button" data-cv="${j}" aria-pressed="${v===j}">${n}</button>`).join('')}</div>
-  ${v===0?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h4>Payroll run stopped at step 3 of 5</h4></div>
+  ${v===0?`<div class="fail"><div class="row"><span class="ico rej" aria-hidden="true"></span><h3>Payroll run stopped at step 3 of 5</h3></div>
    <p style="margin:0"><b>Why:</b> Skatteverket’s 2027 tax tables were not available, so tax can’t be calculated.</p>
    <p style="margin:0"><b>Not done:</b> No payslips were created and no bank file was made.</p>
    <p style="margin:0"><b>Next:</b> I’ll try once more at 13:00. If it still fails, the run goes to you.</p></div>
@@ -1216,7 +1216,7 @@ function rQ(){const el=document.getElementById('lv-q');if(!el)return;const a=UN.
     if(a==='ok'){UN.ans=UN.sel;UN.asked=false;}else if(a==='ask'){UN.asked=true;}else{UN.ans=null;UN.asked=false;}rQ();};}
 function runQ(){UN.ans=null;UN.asked=false;UN.sel='sick';rQ();const seq=['vac','unpaid','sick'];let i=0;const step=()=>{if(i<3){UN.sel=seq[i];i++;rQ();later('q',step,1300);}else{UN.ans='sick';rQ();later('q',runQ,3000);}};later('q',step,1400);}
 function rPart(){const el=document.getElementById('lv-part');if(!el)return;const done=UN.pa!==null;
-  el.innerHTML=`<div class="row"><h4>October payroll</h4><span class="agent">Payroll agent</span><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'64 of 64 ready':UN.n+' of 64 ready'}</span></div>
+  el.innerHTML=`<div class="row"><h3>October payroll</h3><span class="agent">Payroll agent</span><span class="tag ${done?'':'n'}" style="margin-left:auto">${done?'64 of 64 ready':UN.n+' of 64 ready'}</span></div>
   <div class="pbar"><i style="width:${(done?64:UN.n)/64*100}%"></i></div>
   <ul class="cards">${[['Erik Nilsson','Final salary with vacation pay','41 220 kr'],['Maria Ek','Overtime 6 h added','38 960 kr']].map(r=>`<li><span class="mono">Ready</span><span>${r[0]}<small class="rc">✓ ${r[1]}</small></span><span class="amt">${r[2]}</span></li>`).join('')}
   <li class="${done?'':'q'}"><span class="mono">${done?'Ready':'Ask'}</span><span>Anna Karlsson${done?`<small class="rc">✓ Monday booked as ${UN.pa}</small>`:'<small>11 of 12 lines ready. Monday 6 Oct has no absence reason.</small>'}</span><span class="amt">${done?(UN.pa==='unpaid leave'?'32 560 kr':UN.pa==='sick leave'?'33 812 kr':'34 400 kr'):'–'}</span>
