@@ -168,6 +168,34 @@ midnight UTC; the questionnaire keeps working. If Firestore can't be read, calls
 ahead (fail open) and `--max-instances=3` still limits spend. To see today's spend,
 open Firestore in the Google Cloud console, collection `assess_spend`.
 
+## Usage tracking and /stats
+
+Counted on our own server, no Google Analytics and no cookies (`usage.py`):
+
+- The page sends a small event to `POST /api/event` for page views, demo and plug-in
+  clicks, answers in Assess (and whether someone changed Claude's suggested answer),
+  completed assessments, opening the improvements, and copying the summary. Only the
+  event names and fields in `usage.EVENTS` are accepted.
+- Claude reviews, failed reviews and ideas are recorded by the server itself.
+- The feedback card on Assess ("How useful was this assessment?", stars and a comment)
+  posts to `POST /api/feedback`.
+- An optional "Your role" picker on Assess is remembered in the visitor's browser and
+  sent with their events. The roles are listed in both `usage.ROLES` and `ROLES` in
+  `index.html`; keep them the same.
+- Each event stores the company domain from the sign-in email and an anonymous visitor
+  id (a keyed hash of the email; the key is in Firestore, `assess_config/visitor_salt`).
+  No email, name or uploaded material is stored. Events expire after 90 days through
+  Firestore TTL on `expire_at` (collections `usage_events` and `usage_feedback`).
+- Runs on a laptop write to `dev_usage_events` and `dev_usage_feedback` instead, so
+  tests never show up in the real numbers.
+
+**`/stats`** shows the numbers for the last 7, 30 or 90 days: visitors, companies, roles,
+the Assess funnel, how often Claude's answers are changed, review modes, domains,
+verdicts, most viewed pages, demo clicks, feedback and Claude cost per day. Only emails
+in `STATS_VIEWERS` (set in `deploy.yml`) can open it; the email comes from IAP's signed
+token, so the page stays closed even if the site is made public. Content editors don't
+change who can see `/stats`: tell Cristina.
+
 ## Running locally
 
 ```bash

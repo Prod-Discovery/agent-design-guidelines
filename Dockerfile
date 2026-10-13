@@ -4,7 +4,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py review.py patterns.json index.html ./
+COPY app.py review.py usage.py stats_page.py patterns.json index.html ./
 COPY demo ./demo
 COPY scripts/build_patterns.py scripts/ids.json ./scripts/
 # Checks patterns.json and writes patterns.md. A broken patterns.json fails the build,

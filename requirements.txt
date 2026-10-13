@@ -9,3 +9,5 @@ google-auth==2.61.0
 # api-core 2.35.0 broke every Firestore call on 2026-08-24.
 google-cloud-firestore==2.28.1
 google-api-core==2.34.0
+# Used by google-auth to check the sign-in token on /stats.
+requests==2.34.2

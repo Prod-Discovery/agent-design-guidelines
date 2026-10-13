@@ -4,6 +4,9 @@
     GET  /, /patterns.json, /patterns.md, /demo/*.html   the site
     POST /api/review   {mode: "instructions" | "spec", text}
     POST /api/ideas    {domain, description, answers: {key: 0 | 1 | 2}}
+    POST /api/event    {name, props, role}       usage tracking, see usage.py
+    POST /api/feedback {rating, text, role, score, verdict}
+    GET  /stats        usage numbers, only for STATS_VIEWERS
     GET  /health
 
 There is no Anthropic API key. Claude runs on Vertex AI in the GCP project,
@@ -21,9 +24,13 @@ import time
 import anthropic
 from anthropic import AnthropicVertex
 from flask import Flask, jsonify, request, send_from_directory
+from google.auth.transport import requests as google_requests
 from google.cloud import firestore
+from google.oauth2 import id_token as google_id_token
 
 import review
+import stats_page
+import usage
 
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "prod-vpepf-cm")
 # "eu" keeps processing in the EU. Single regions such as europe-west1 have no quota.
@@ -50,6 +57,8 @@ FALLBACK = {"claude-opus-5-5": "claude-sonnet-5-5", "claude-sonnet-5-5": "claude
 DAILY_BUDGET_USD = float(os.environ.get("DAILY_BUDGET_USD", 15))
 # Firestore in the same project (DiscoveryBot uses other collections there).
 SPEND = "assess_spend"
+# Who may open /stats: comma-separated Visma sign-in emails.
+STATS_VIEWERS = {e.strip().lower() for e in os.environ.get("STATS_VIEWERS", "cristina.iftode@visma.com").split(",") if e.strip()}
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("assess-agent")
@@ -182,14 +191,27 @@ def too_large(_):
     return jsonify({"code": "too_large"}), 413
 
 
+def _role(body):
+    r = body.get("role")
+    return r if r in usage.ROLES else None
+
+
 @app.post("/api/review")
 def api_review():
     body = request.get_json(silent=True) or {}
     mode, text = body.get("mode"), body.get("text")
+    domain = body.get("domain") if body.get("domain") in review.DOMAINS else None
     if mode not in review.MODES or not isinstance(text, str) or not text.strip():
         return jsonify({"code": "bad_request"}), 400
     log.info("review request mode=%s bytes=%d", mode, len(text.encode()))
-    result, _ = run_review(mode, text)
+    try:
+        result, _ = run_review(mode, text)
+    except ReviewError as e:
+        usage.record(db, request.headers, "review_error", {"mode": mode, "code": e.code}, _role(body))
+        raise
+    filled = [a["k"] for a in result["answers"] if a.get("level") is not None]
+    usage.record(db, request.headers, "review_run",
+                 {"mode": mode, "domain": domain, "filled": filled, "truncated": result["truncated"]}, _role(body))
     return jsonify(result)
 
 
@@ -204,7 +226,67 @@ def api_ideas():
         return jsonify({"code": "bad_request"}), 400
     answers = {k: v for k, v in answers.items() if k in review.KEYS and v in (0, 1, 2)}
     result, _ = run_ideas(domain, description[:600], answers)
+    usage.record(db, request.headers, "ideas_run", {"domain": domain}, _role(body))
     return jsonify(result)
+
+
+@app.post("/api/event")
+def api_event():
+    body = request.get_json(silent=True, force=True) or {}
+    props = usage.clean(body.get("name"), body.get("props") or {})
+    if props is None:
+        return jsonify({"code": "bad_request"}), 400
+    usage.record(db, request.headers, body["name"], props, _role(body))
+    return ("", 204)
+
+
+@app.post("/api/feedback")
+def api_feedback():
+    body = request.get_json(silent=True) or {}
+    rating, text = body.get("rating"), body.get("text") or ""
+    if rating not in (1, 2, 3, 4, 5) or not isinstance(text, str):
+        return jsonify({"code": "bad_request"}), 400
+    props = {"rating": rating, "text": text.strip()[:1000]}
+    for k, fix in (("score", int), ("verdict", lambda v: str(v)[:80])):
+        try:
+            if body.get(k) is not None:
+                props[k] = fix(body[k])
+        except (TypeError, ValueError):
+            pass
+    usage.record(db, request.headers, "feedback", props, _role(body), collection=usage.FEEDBACK)
+    return ("", 204)
+
+
+def signed_in_email():
+    """The email from IAP's signed token, or None. Unlike the plain email header, it
+    can't be faked, so it still protects /stats if the site is ever made public."""
+    token = request.headers.get("X-Goog-IAP-JWT-Assertion")
+    if not token:
+        return None
+    try:
+        claims = google_id_token.verify_token(
+            token, google_requests.Request(), certs_url="https://www.gstatic.com/iap/verify/public_key"
+        )
+    except Exception as e:  # noqa: BLE001
+        log.warning("stats: IAP token not valid: %s", e)
+        return None
+    if claims.get("iss") != "https://cloud.google.com/iap":
+        return None
+    return (claims.get("email") or "").lower() or None
+
+
+@app.get("/stats")
+def stats():
+    email = signed_in_email()
+    local = request.remote_addr in ("127.0.0.1", "::1") and "X-Goog-IAP-JWT-Assertion" not in request.headers
+    if email not in STATS_VIEWERS and not local:
+        return ("The usage numbers are only for the site's owners. Ask Cristina for access.", 403)
+    days = 30
+    try:
+        days = max(1, min(90, int(request.args.get("days", 30))))
+    except ValueError:
+        pass
+    return stats_page.render(usage.summary(db, days))
 
 
 @app.get("/health")
