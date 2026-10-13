@@ -1342,7 +1342,7 @@ async function setupTailor(gaps){
     try{const r=await aApi('api/ideas',{domain:aDom.value,description:d,answers:ans});const ideas=(r&&r.ideas)||[];out.innerHTML='';
       ideas.slice(0,5).forEach(x=>{const d2=document.createElement('div');d2.className='tidea';const b=document.createElement('b');b.textContent=x.title||'';const s=document.createElement('span');s.textContent=x.detail||'';const sm=document.createElement('small');sm.textContent=[x.principle,x.pattern].filter(Boolean).join(' · ');d2.append(b,s,sm);out.appendChild(d2)});
       msg.textContent=ideas.length?'Suggested by Claude. Treat as a starting point.':'No ideas came back. Try describing the agent in more detail.'}
-    catch(e){const c=e&&e.code;msg.textContent=c==='rate_limited'?'Too many requests. Try again in a minute.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t get ideas. Try again.'}
+    catch(e){const c=e&&e.code;msg.textContent=c==='daily_limit'?'Claude has reached today’s limit for ideas. Try again tomorrow.':c==='rate_limited'?'Too many requests. Try again in a minute.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t get ideas. Try again.'}
     go.disabled=false});
 }
 compute();
@@ -1373,7 +1373,7 @@ async function run(){const msg=$('#rvMsg'),go=$('#rvGo');
   const m=material();if(!m){msg.textContent=mode==='instructions'?'Upload or paste the agent instructions first.':'Upload or paste a prototype first.';return}
   go.disabled=true;msg.textContent='Reviewing… this can take a minute.';
   try{const r=await aApi('api/review',{mode,text:m.text});apply(r,r&&r.truncated);msg.textContent=''}
-  catch(e){const c=e&&e.code;msg.textContent=c==='rate_limited'?'Too many requests. Try again in a minute.':c==='invalid_json'?'The review came back incomplete. Try again, or share less at once.':c==='too_large'?'That’s too much to review at once. Share fewer or smaller files.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t complete the review. Try again.'}
+  catch(e){const c=e&&e.code;msg.textContent=c==='daily_limit'?'The Claude review has reached today’s limit. Try again tomorrow, or answer the questions yourself below.':c==='rate_limited'?'Too many requests. Try again in a minute.':c==='invalid_json'?'The review came back incomplete. Try again, or share less at once.':c==='too_large'?'That’s too much to review at once. Share fewer or smaller files.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t complete the review. Try again.'}
   go.disabled=false}
 function apply(r,trunc){const A=(r&&r.answers)||[],P=(r&&r.patterns)||[];let filled=0;
   document.querySelectorAll('.aiev').forEach(e=>e.remove());

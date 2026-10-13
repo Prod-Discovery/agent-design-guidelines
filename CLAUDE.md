@@ -17,9 +17,9 @@ Every push to `main` publishes to two places:
 | Where | Workflow | What people get |
 |---|---|---|
 | GitHub Pages, public | `.github/workflows/pages.yml` | The whole site. "Assess your agent" works as a questionnaire only: the page calls `health`, gets no answer, and hides the Claude review. |
-| Cloud Run service `agent-design-guidelines`, private | `.github/workflows/deploy.yml` | The whole site plus the Claude review. |
+| Cloud Run service `agent-design-guidelines`, behind Google sign-in for `@visma.com` | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
 
-Pages goes away once login for Visma accounts is added on Cloud Run.
+Pages can be turned off once everyone who needs the site can sign in on Cloud Run (see Login).
 
 ## Where things live
 
@@ -39,6 +39,7 @@ Pages goes away once login for Visma accounts is added on Cloud Run.
 - GCP project `prod-vpepf-cm` (also hosts DiscoveryBot), Cloud Run in `europe-west2`.
 - The service runs as `assess-agent@prod-vpepf-cm.iam.gserviceaccount.com`, which has `roles/aiplatform.user` and nothing else.
 - GitHub deploys as `github-deployer@prod-vpepf-cm.iam.gserviceaccount.com` through Workload Identity Federation (pool `github`, provider `agent-design-guidelines`). Google only accepts tokens from **`main` of `Prod-Discovery/agent-design-guidelines`**: other branches, forks and PRs cannot deploy. There is no key or secret anywhere.
+- The runtime account also has `roles/datastore.user`, for the daily budget in Firestore.
 - Claude runs on **Vertex AI, `eu` multi-region**: Opus 5.5 for reviews, Sonnet 5.5 for ideas, enabled in Model Garden on 2026-10-12. No Anthropic API key.
 
 ## Decisions, not accidents
@@ -50,6 +51,36 @@ Pages goes away once login for Visma accounts is added on Cloud Run.
 5. **A refusal is retried once on the other model**, since Vertex has no server-side fallbacks.
 6. **`/health`, not `/healthz`**: Cloud Run's front end reserves paths ending in `z`.
 7. **API paths are relative** (`api/review`, `health`), so the page works at any base path.
+
+## Login
+
+Identity-Aware Proxy (IAP) on the Cloud Run service, turned on 2026-10-13 with
+`gcloud run services update agent-design-guidelines --iap`. Anyone with a
+`@visma.com` Google account can open the site (`roles/iap.httpsResourceAccessor`
+for `domain:visma.com`). Deploys keep IAP on; the deploy workflow doesn't touch it.
+
+To let in another domain or a person:
+
+```bash
+gcloud iap web add-iam-policy-binding --resource-type=cloud-run --service=agent-design-guidelines \
+    --region=europe-west2 --project=prod-vpepf-cm --role=roles/iap.httpsResourceAccessor \
+    --member=domain:example.com      # or user:name@example.com
+```
+
+**Not everyone at Visma has a Google account; most sign in with Microsoft Entra ID.**
+IAP supports that through Identity Platform with Entra as an OIDC provider, but it
+needs an app registration in Visma's Entra tenant (client id and secret), which only
+Visma IT can create. Until then, people without a Google account use GitHub Pages.
+
+## Daily budget
+
+`DAILY_BUDGET_USD` (10, set in `deploy.yml`) is a hard stop on Claude spend per UTC
+day, across everyone. Each call's cost is added to Firestore, collection
+`assess_spend`, one document per day (`cost_usd`, `calls`). When the day's total
+reaches the budget, the Claude review and ideas answer "reached today's limit" until
+midnight UTC; the questionnaire keeps working. If Firestore can't be read, calls go
+ahead (fail open) and `--max-instances=3` still limits spend. To see today's spend,
+open Firestore in the Google Cloud console, collection `assess_spend`.
 
 ## Running locally
 
@@ -75,7 +106,7 @@ Run it after changing `review.py`, the questions in `patterns.json`, or the mode
 
 ## Not done yet
 
-- **Login** for Visma accounts on Cloud Run. Then turn off `pages.yml` and make the repo internal.
-- **Budget**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. `--max-instances=3` caps spend meanwhile.
-- **Per-user daily limit**, after login.
+- **Entra ID sign-in**, for people without a Google account (see Login). Then turn off `pages.yml` and make the repo internal.
+- **Billing budget alert**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. The daily budget above is the hard stop meanwhile.
+- **Per-user daily limit**: IAP passes the signed-in email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.
 - The old test service `assess-agent` in the same project can be deleted once `agent-design-guidelines` is live.
