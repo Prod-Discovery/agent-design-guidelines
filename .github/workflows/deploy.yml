@@ -5,6 +5,9 @@
 #
 # Sign-in to Google Cloud is keyless (Workload Identity Federation, set up once with
 # scripts/setup_github_deploy.sh). Google only accepts runs from main of this repo.
+#
+# Who can open the site (public, or Visma sign-in) is not set here: deploys keep
+# whatever is set on the service. See "Who can open the site" in CLAUDE.md.
 name: Deploy to Cloud Run
 
 on:
@@ -49,12 +52,11 @@ jobs:
             --region=europe-west2 \
             --source=. \
             --service-account=assess-agent@prod-vpepf-cm.iam.gserviceaccount.com \
-            --no-allow-unauthenticated \
             --memory=512Mi \
             --timeout=120 \
             --concurrency=8 \
             --max-instances=3 \
-            --set-env-vars=GCP_PROJECT_ID=prod-vpepf-cm,VERTEX_REGION=eu,REVIEW_MODEL=claude-opus-5-5,IDEAS_MODEL=claude-sonnet-5-5,DAILY_BUDGET_USD=10 \
+            --set-env-vars=GCP_PROJECT_ID=prod-vpepf-cm,VERTEX_REGION=eu,REVIEW_MODEL=claude-opus-5-5,IDEAS_MODEL=claude-sonnet-5-5,DAILY_BUDGET_USD=15 \
             --quiet
 
       - name: Show the live address
