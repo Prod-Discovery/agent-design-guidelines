@@ -62,6 +62,8 @@ this file. If a request needs one of those, say it waits for Cristina.
    - Examples may be added, changed or removed.
    - Principles, groups, assessment questions and domains are never deleted; if
      someone asks, say it waits for Cristina.
+   - Never change `"site"` at the top of `patterns.json`: the Discovery Engine plugin
+     builds every link to the guidelines from it. The check refuses a change.
 6. **Change only what was asked**, and keep the style: plain British English,
    sentence case, short sentences, curly quotes and apostrophes (’ “ ”) in text.
 
@@ -106,6 +108,8 @@ The rules above keep the server, workflows and scripts out of reach on purpose. 
    `gh variable set PROTECTED_LOCK_SHA --repo Prod-Discovery/agent-design-guidelines --body "$(shasum -a 256 scripts/protected-files.sha256 | cut -d' ' -f1)"`.
    If you forget, the workflows fail safely; set it and rerun them from the Actions tab.
 4. If ids were intentionally removed, updates `scripts/ids.json`.
+5. When the site's address changes (for example a custom domain), changes `"site"` in
+   both `patterns.json` and `scripts/ids.json`, and tells whoever maintains the plugin.
 
 ## The one rule
 

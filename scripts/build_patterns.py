@@ -153,6 +153,12 @@ def validate(d):
             "assessment_questions": question_ids,
             "assessment_domains": {dm.get("id") for dm in a.get("domains") or []},
         }
+        # The Discovery Engine plugin builds its links as site + "#patterns-<id>".
+        if locked.get("site") and d.get("site") != locked["site"]:
+            errors.append(
+                f"'site' was changed to '{d.get('site')}'. The Discovery Engine plugin uses it for every link to "
+                f"the guidelines, so it stays '{locked['site']}'. Only Cristina changes it."
+            )
         old_names = locked.get("pattern_names", {})
         new_patterns = {p.get("id"): (p.get("name") or "") for p in patterns if p.get("id") not in locked.get("patterns", [])}
         for kind, have in now.items():
