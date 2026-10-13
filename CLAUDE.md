@@ -83,7 +83,7 @@ Every push to `main` publishes to two places:
 | Where | Workflow | What people get |
 |---|---|---|
 | GitHub Pages, public | `.github/workflows/pages.yml` | **Only the three demos** (since 2026-10-13). `index.html` and `404.html` there are `pages/redirect.html`, which forwards every old guidelines link to the same path and `#anchor` on Cloud Run. |
-| Cloud Run service `agent-design-guidelines`, **public until about 2026-10-27** (see below) | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
+| Cloud Run service `agent-design-guidelines`, **behind Visma sign-in** (see below) | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
 
 The guidelines are on Cloud Run only, so they can go behind sign-in. The demos stay on Pages. If the Cloud Run address changes, update `site` in `patterns.json` and `SITE` in `pages/redirect.html`.
 
@@ -120,14 +120,24 @@ The guidelines are on Cloud Run only, so they can go behind sign-in. The demos s
 
 ## Who can open the site
 
-**Public since 2026-10-13, on purpose, while Cristina is away (back about 2026-10-27).**
-Anyone with the link can open the Cloud Run site and run the Claude review. The
-content is in the public repo anyway; the daily budget below caps what strangers
-can spend. Deploys don't change this setting: `deploy.yml` has no
-`--allow-unauthenticated` / `--no-allow-unauthenticated` flag on purpose, so the
-service keeps whatever is set here.
+**Only people signed in with a Visma Google account** (Identity-Aware Proxy), since
+2026-10-13, agreed with Amanda and Diana. `domain:visma.com` is allowed; Cristina is
+adding the other Visma companies' domains. Anyone else is sent to Google sign-in. The
+demos on GitHub Pages stay public. Deploys don't change this setting: `deploy.yml`
+has no `--allow-unauthenticated` / `--no-allow-unauthenticated` flag on purpose.
 
-How it was made public:
+If someone can't get in, they're probably on a domain that isn't allowed yet. Don't
+change access yourself: tell Cristina which address they sign in with.
+
+Maintainers, to allow another domain or one person:
+
+```bash
+gcloud iap web add-iam-policy-binding --resource-type=cloud-run --service=agent-design-guidelines \
+    --region=europe-west2 --project=prod-vpepf-cm --role=roles/iap.httpsResourceAccessor \
+    --member=domain:example.com      # or user:name@example.com
+```
+
+To make the site public again (it was public for a few hours on 2026-10-13):
 
 ```bash
 gcloud run services update agent-design-guidelines --region=europe-west2 --project=prod-vpepf-cm --no-iap
@@ -135,22 +145,18 @@ gcloud run services add-iam-policy-binding agent-design-guidelines --region=euro
     --project=prod-vpepf-cm --member=allUsers --role=roles/run.invoker
 ```
 
-**To put the Visma sign-in back** (Google accounts on `@visma.com`; it was tested and
-worked on 2026-10-13):
+and to undo that, `remove-iam-policy-binding` with the same member and role, then
+`--iap` instead of `--no-iap`.
 
-```bash
-gcloud run services remove-iam-policy-binding agent-design-guidelines --region=europe-west2 \
-    --project=prod-vpepf-cm --member=allUsers --role=roles/run.invoker
-gcloud run services update agent-design-guidelines --region=europe-west2 --project=prod-vpepf-cm --iap
-gcloud iap web add-iam-policy-binding --resource-type=cloud-run --service=agent-design-guidelines \
-    --region=europe-west2 --project=prod-vpepf-cm --role=roles/iap.httpsResourceAccessor \
-    --member=domain:visma.com      # repeat for other domains, or user:name@example.com
-```
+**Microsoft Entra ID:** people without a Visma Google account would need sign-in
+through Entra ID, via Identity Platform with Entra as an OIDC provider. That needs an
+app registration from Visma IT. According to Visma, the Google sign-in covers all
+Visma companies, so this may not be needed.
 
-**Not everyone at Visma has a Google account; most sign in with Microsoft Entra ID.**
-IAP supports that through Identity Platform with Entra as an OIDC provider, but it
-needs an app registration in Visma's Entra tenant (client id and secret), which only
-Visma IT can create.
+`patterns.md` on Cloud Run is behind sign-in too. Tools that fetch the patterns by URL
+should read `patterns.json` from GitHub instead (the repo is public), as the Discovery
+Engine plugin does:
+https://raw.githubusercontent.com/Prod-Discovery/agent-design-guidelines/main/patterns.json
 
 ## Daily budget
 
@@ -186,6 +192,6 @@ Run it after changing `review.py`, the questions in `patterns.json`, or the mode
 
 ## Not done yet
 
-- **Sign-in**: the site is public until Cristina is back. Then put the Visma sign-in back, ideally with Entra ID (see "Who can open the site"), and make the repo internal. Keep `pages.yml`: it only serves the demos now.
+- **Sign-in for every Visma company**: add their domains (see "Who can open the site"). Then consider making the repo internal. Keep `pages.yml`: it serves the demos.
 - **Billing budget alert**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. The daily budget above is the hard stop meanwhile.
-- **Per-user daily limit**: once sign-in is back, IAP passes the email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.
+- **Per-user daily limit**: IAP passes the email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.

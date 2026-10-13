@@ -2,7 +2,7 @@
 
 Principles and patterns for designing AI agents in Visma products, with three interactive demos set in a fictional construction company, Berg Bygg AB.
 
-**Live site, with the Claude review (public for now):** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app
+**Live site, with the Claude review (sign in with your Visma account):** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app
 **AI-readable version:** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app/patterns.md
 **Demos (GitHub Pages):** https://prod-discovery.github.io/agent-design-guidelines/demo/front-door.html
 
@@ -116,7 +116,7 @@ A run that failed for another reason (for example Google Cloud was briefly unava
 
 The repo and the GitHub Pages demos are public: anyone with the link can open them. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
 
-The Cloud Run copy is also public for now, until Cristina is back (about 27 October). The Claude review there stops for the day once it has cost $15. After that, sign-in for Visma accounts comes back and the repo is made internal. GitHub Pages keeps serving only the demos, and its redirect then leads to the sign-in.
+The site on Cloud Run needs a Visma sign-in. The Claude review there stops for the day once it has cost $15. GitHub Pages serves only the demos, and its redirect for old links leads to the sign-in.
 
 ## Related
 
