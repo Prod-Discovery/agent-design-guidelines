@@ -41,6 +41,9 @@ for role in roles/run.sourceDeveloper roles/serviceusage.serviceUsageConsumer; d
 done
 gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SA" \
     --member="serviceAccount:$DEPLOYER_SA" --role=roles/iam.serviceAccountUser >/dev/null
+# Cloud Build builds the container as the project's default compute account.
+gcloud iam service-accounts add-iam-policy-binding "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --member="serviceAccount:$DEPLOYER_SA" --role=roles/iam.serviceAccountUser >/dev/null
 gcloud iam service-accounts add-iam-policy-binding "$DEPLOYER_SA" \
     --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL}/attribute.repository/${REPO}" \
     --role=roles/iam.workloadIdentityUser >/dev/null

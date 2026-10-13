@@ -12,6 +12,7 @@ credential. Uploaded material is never logged or stored: only sizes, token
 counts and cost are.
 """
 
+import datetime
 import json
 import logging
 import os
@@ -20,6 +21,7 @@ import time
 import anthropic
 from anthropic import AnthropicVertex
 from flask import Flask, jsonify, request, send_from_directory
+from google.cloud import firestore
 
 import review
 
@@ -42,10 +44,18 @@ PRICES = {
 # If a model declines a request, it is retried once on the other one.
 FALLBACK = {"claude-opus-5-5": "claude-sonnet-5-5", "claude-sonnet-5-5": "claude-opus-5-5"}
 
+# Hard stop on Claude spend per UTC day, across everyone. When it's reached, the
+# Claude review and ideas pause until midnight UTC; the questionnaire keeps working.
+# $10 is about 180 reviews a day, and at most about $300 a month.
+DAILY_BUDGET_USD = float(os.environ.get("DAILY_BUDGET_USD", 10))
+# Firestore in the same project (DiscoveryBot uses other collections there).
+SPEND = "assess_spend"
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("assess-agent")
 
 client = AnthropicVertex(project_id=PROJECT_ID, region=VERTEX_REGION)
+db = firestore.Client(project=PROJECT_ID)
 app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_BYTES + 10_000
 
@@ -54,6 +64,37 @@ class ReviewError(Exception):
     def __init__(self, code, status):
         super().__init__(code)
         self.code, self.status = code, status
+
+
+def _today():
+    return db.collection(SPEND).document(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"))
+
+
+def check_budget():
+    """Refuses the call once today's spend has reached the daily budget.
+
+    If Firestore can't be read, the call goes ahead: --max-instances still caps
+    spend, and a Firestore hiccup shouldn't take the review down.
+    """
+    try:
+        snap = _today().get()
+        spent = (snap.to_dict() or {}).get("cost_usd", 0) if snap.exists else 0
+    except Exception as e:  # noqa: BLE001 - any Firestore failure fails open
+        log.error("daily budget: could not read today's spend: %s", e)
+        return
+    if spent >= DAILY_BUDGET_USD:
+        log.warning("daily budget reached: $%.2f of $%.2f", spent, DAILY_BUDGET_USD)
+        raise ReviewError("daily_limit", 429)
+
+
+def record_spend(report):
+    try:
+        _today().set(
+            {"cost_usd": firestore.Increment(report["cost_usd"]), "calls": firestore.Increment(1)},
+            merge=True,
+        )
+    except Exception as e:  # noqa: BLE001
+        log.error("daily budget: could not record spend: %s", e)
 
 
 def cost(model, usage):
@@ -67,8 +108,25 @@ def ask_claude(endpoint, model, effort, system, user, max_tokens):
     Tries twice: a refusal moves to the other model, and a reply that isn't
     valid JSON is asked again once.
     """
+    check_budget()
     started = time.monotonic()
     report = {"model": model, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "attempts": 0}
+    data = None
+    try:
+        data, model = _ask(endpoint, model, effort, system, user, max_tokens, report)
+    finally:
+        # Recorded even when the call fails halfway, so a retry loop can't overspend.
+        if report["cost_usd"]:
+            record_spend(report)
+    report["cost_usd"] = round(report["cost_usd"], 4)
+    report["seconds"] = round(time.monotonic() - started, 1)
+    log.info("%s %s", endpoint, json.dumps(report))
+    if data is None:
+        raise ReviewError("invalid_json", 502)
+    return data, report
+
+
+def _ask(endpoint, model, effort, system, user, max_tokens, report):
     data = None
     for _ in range(2):
         report["attempts"] += 1
@@ -97,13 +155,7 @@ def ask_claude(endpoint, model, effort, system, user, max_tokens):
             break
         except ValueError:
             log.warning("%s reply was not valid JSON (stop_reason=%s)", endpoint, r.stop_reason)
-
-    report["cost_usd"] = round(report["cost_usd"], 4)
-    report["seconds"] = round(time.monotonic() - started, 1)
-    log.info("%s %s", endpoint, json.dumps(report))
-    if data is None:
-        raise ReviewError("invalid_json", 502)
-    return data, report
+    return data, model
 
 
 def run_review(mode, text, model=REVIEW_MODEL, effort=REVIEW_EFFORT):
