@@ -17,9 +17,9 @@ Every push to `main` publishes to two places:
 | Where | Workflow | What people get |
 |---|---|---|
 | GitHub Pages, public | `.github/workflows/pages.yml` | The whole site. "Assess your agent" works as a questionnaire only: the page calls `health`, gets no answer, and hides the Claude review. |
-| Cloud Run service `agent-design-guidelines`, behind Google sign-in for `@visma.com` | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
+| Cloud Run service `agent-design-guidelines`, **public until about 2026-10-27** (see below) | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
 
-Pages can be turned off once everyone who needs the site can sign in on Cloud Run (see Login).
+Pages can be turned off once everyone who needs the site can sign in on Cloud Run (see "Who can open the site").
 
 ## Where things live
 
@@ -52,29 +52,43 @@ Pages can be turned off once everyone who needs the site can sign in on Cloud Ru
 6. **`/health`, not `/healthz`**: Cloud Run's front end reserves paths ending in `z`.
 7. **API paths are relative** (`api/review`, `health`), so the page works at any base path.
 
-## Login
+## Who can open the site
 
-Identity-Aware Proxy (IAP) on the Cloud Run service, turned on 2026-10-13 with
-`gcloud run services update agent-design-guidelines --iap`. Anyone with a
-`@visma.com` Google account can open the site (`roles/iap.httpsResourceAccessor`
-for `domain:visma.com`). Deploys keep IAP on; the deploy workflow doesn't touch it.
+**Public since 2026-10-13, on purpose, while Cristina is away (back about 2026-10-27).**
+Anyone with the link can open the Cloud Run site and run the Claude review. The
+content is public on GitHub Pages anyway; the daily budget below caps what strangers
+can spend. Deploys don't change this setting: `deploy.yml` has no
+`--allow-unauthenticated` / `--no-allow-unauthenticated` flag on purpose, so the
+service keeps whatever is set here.
 
-To let in another domain or a person:
+How it was made public:
 
 ```bash
+gcloud run services update agent-design-guidelines --region=europe-west2 --project=prod-vpepf-cm --no-iap
+gcloud run services add-iam-policy-binding agent-design-guidelines --region=europe-west2 \
+    --project=prod-vpepf-cm --member=allUsers --role=roles/run.invoker
+```
+
+**To put the Visma sign-in back** (Google accounts on `@visma.com`; it was tested and
+worked on 2026-10-13):
+
+```bash
+gcloud run services remove-iam-policy-binding agent-design-guidelines --region=europe-west2 \
+    --project=prod-vpepf-cm --member=allUsers --role=roles/run.invoker
+gcloud run services update agent-design-guidelines --region=europe-west2 --project=prod-vpepf-cm --iap
 gcloud iap web add-iam-policy-binding --resource-type=cloud-run --service=agent-design-guidelines \
     --region=europe-west2 --project=prod-vpepf-cm --role=roles/iap.httpsResourceAccessor \
-    --member=domain:example.com      # or user:name@example.com
+    --member=domain:visma.com      # repeat for other domains, or user:name@example.com
 ```
 
 **Not everyone at Visma has a Google account; most sign in with Microsoft Entra ID.**
 IAP supports that through Identity Platform with Entra as an OIDC provider, but it
 needs an app registration in Visma's Entra tenant (client id and secret), which only
-Visma IT can create. Until then, people without a Google account use GitHub Pages.
+Visma IT can create.
 
 ## Daily budget
 
-`DAILY_BUDGET_USD` (10, set in `deploy.yml`) is a hard stop on Claude spend per UTC
+`DAILY_BUDGET_USD` (15, set in `deploy.yml`; about 240 reviews a day) is a hard stop on Claude spend per UTC
 day, across everyone. Each call's cost is added to Firestore, collection
 `assess_spend`, one document per day (`cost_usd`, `calls`). When the day's total
 reaches the budget, the Claude review and ideas answer "reached today's limit" until
@@ -106,7 +120,6 @@ Run it after changing `review.py`, the questions in `patterns.json`, or the mode
 
 ## Not done yet
 
-- **Entra ID sign-in**, for people without a Google account (see Login). Then turn off `pages.yml` and make the repo internal.
+- **Sign-in**: the site is public until Cristina is back. Then put the Visma sign-in back, ideally with Entra ID (see "Who can open the site"), turn off `pages.yml` and make the repo internal.
 - **Billing budget alert**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. The daily budget above is the hard stop meanwhile.
-- **Per-user daily limit**: IAP passes the signed-in email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.
-- The old test service `assess-agent` in the same project can be deleted once `agent-design-guidelines` is live.
+- **Per-user daily limit**: once sign-in is back, IAP passes the email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.

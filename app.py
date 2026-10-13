@@ -46,8 +46,8 @@ FALLBACK = {"claude-opus-5-5": "claude-sonnet-5-5", "claude-sonnet-5-5": "claude
 
 # Hard stop on Claude spend per UTC day, across everyone. When it's reached, the
 # Claude review and ideas pause until midnight UTC; the questionnaire keeps working.
-# $10 is about 180 reviews a day, and at most about $300 a month.
-DAILY_BUDGET_USD = float(os.environ.get("DAILY_BUDGET_USD", 10))
+# $15 is about 240 reviews a day (each with an ideas call), and at most about $450 a month.
+DAILY_BUDGET_USD = float(os.environ.get("DAILY_BUDGET_USD", 15))
 # Firestore in the same project (DiscoveryBot uses other collections there).
 SPEND = "assess_spend"
 

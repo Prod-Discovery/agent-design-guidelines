@@ -4,7 +4,7 @@ Principles and patterns for designing AI agents in Visma products, with three in
 
 **Live site:** https://prod-discovery.github.io/agent-design-guidelines/
 **AI-readable version:** https://prod-discovery.github.io/agent-design-guidelines/patterns.md
-**With the Claude review, sign in with your @visma.com Google account:** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app
+**With the Claude review (public for now):** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app
 
 The site is published to both places from the same push. The GitHub Pages copy has everything except the Claude review on "Assess your agent"; people answer the six questions themselves there. Once login is added on Cloud Run, GitHub Pages will be turned off.
 
@@ -113,7 +113,7 @@ A run that failed for another reason (for example Google Cloud was briefly unava
 
 The repo and the GitHub Pages site are public: anyone with the link can open them. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
 
-The Cloud Run copy needs a `@visma.com` Google sign-in. People who sign in with Microsoft Entra ID only can't open it yet; once Entra sign-in is added, GitHub Pages will be turned off and the repo made internal.
+The Cloud Run copy is also public for now, until Cristina is back (about 27 October). The Claude review there stops for the day once it has cost $15. After that, sign-in for Visma accounts comes back, GitHub Pages will be turned off and the repo made internal.
 
 ## Related
 
