@@ -753,5 +753,294 @@
         "recap"
       ]
     }
-  ]
+  ],
+  "assessment": {
+    "about": "The \"Assess your agent\" page and its Claude review. One question per principle; each answer has three levels.",
+    "levels": [
+      "Not yet",
+      "Partly",
+      "Yes"
+    ],
+    "questions": [
+      {
+        "id": "lead",
+        "principle": "lead-with-the-work",
+        "question": "How does work with the agent start?",
+        "answers": [
+          "People type into a prompt box or chat",
+          "There’s a summary or suggestions, but chat is the main way in",
+          "The agent starts on its own at the right moment and brings what needs attention"
+        ],
+        "why": "If people have to know what to ask, most of the agent’s value stays hidden.",
+        "fixes": [
+          {
+            "title": "Let the agent start the work",
+            "ideas": [
+              "Start the agent on dates and events people already work to: time reporting closing, month-end, a client replying.",
+              "Open on a queue of what needs a person, each with the problem, the proposal and the reason.",
+              "Lead with a briefing: what happened and what needs you, before any list."
+            ]
+          },
+          {
+            "title": "Make the queue the front door",
+            "ideas": [
+              "Make the queue the default view, not a tab next to chat.",
+              "Say when the agent started on its own and why: “Started at 06:00, when time reporting closed.”",
+              "Show the next run date, and a way to pause the trigger."
+            ]
+          }
+        ],
+        "patterns": [
+          "triggers",
+          "exceptions",
+          "recap"
+        ]
+      },
+      {
+        "id": "stakes",
+        "principle": "higher-stakes-tighter-control",
+        "question": "How is it decided what the agent may do on its own?",
+        "answers": [
+          "One on/off switch for everything",
+          "Some actions need approval, but people can’t see which or why",
+          "A visible level per task: routine work runs alone; money, pay and filings wait for a person, and it stops at the edge of its rules"
+        ],
+        "why": "When autonomy isn’t predictable, people either check everything or trust too much.",
+        "fixes": [
+          {
+            "title": "Set a level per task",
+            "ideas": [
+              "Give each task its own level, such as Assistant, Copilot or Autopilot, so reconciliation can run alone while payroll waits for approval.",
+              "Keep bank payments, payroll and filings on approval only, with a named sign-off.",
+              "Show the current level on screen, next to the task."
+            ]
+          },
+          {
+            "title": "Make each level visible, and offer before acting",
+            "ideas": [
+              "Show the level on every task, and say why approval is needed.",
+              "For anything that leaves the company, let the agent prepare it and offer it as a button. Nothing is sent until the tap.",
+              "When a case falls outside the rules, stop and hand it to a named person instead of guessing."
+            ]
+          }
+        ],
+        "patterns": [
+          "autonomy-levels",
+          "suggestions",
+          "hand-over"
+        ]
+      },
+      {
+        "id": "visible",
+        "principle": "never-hide-the-agent",
+        "question": "When the agent acts, what do people see?",
+        "answers": [
+          "Just the result",
+          "A one-time “AI” banner or a confidence score",
+          "A lasting “Agent” label on everything it did, the reason behind each step, and an honest account when something fails"
+        ],
+        "why": "Without a label and a reason, people can’t tell what the agent did, so they check everything. Saying it’s AI is also a legal requirement in the EU.",
+        "fixes": [
+          {
+            "title": "Label the agent and show the reason",
+            "ideas": [
+              "Put a plain role label, such as “Payroll agent”, on every action, on screen and in the log.",
+              "Show progress while it works: “48 of 64 employees”, each finished check with the rule it used.",
+              "Announce each step to screen readers: “Step 3 of 5. Calculate depreciation. Agent working.”"
+            ]
+          },
+          {
+            "title": "Replace banners and scores with labels and reasons",
+            "ideas": [
+              "Replace one-time banners with a marker that stays on each field the agent filled.",
+              "Replace bare percentages with the rule or source behind each step.",
+              "When something fails, say what failed, why, what didn’t happen, and what to do next."
+            ]
+          }
+        ],
+        "patterns": [
+          "say-its-an-agent",
+          "live-progress",
+          "failure-disclosure"
+        ]
+      },
+      {
+        "id": "control",
+        "principle": "control-one-step-away",
+        "question": "Can people step in while and after the agent works?",
+        "answers": [
+          "No: once it acts, it’s done",
+          "They can stop it, undo from a log, or correct it somewhere else",
+          "They can accept, edit or reject each proposal in one tap, undo right where the result shows, and take over a case at any point"
+        ],
+        "why": "People trust an agent more when they know they can stop it, and know what can’t be reversed.",
+        "fixes": [
+          {
+            "title": "Add ways to step in",
+            "ideas": [
+              "Show every proposal as a before-and-after, with Accept, Edit and Reject.",
+              "Add undo right where the result appears, with how long it’s still possible.",
+              "Say before acting what can’t be undone: “Payments can’t be undone once they leave the bank.”"
+            ]
+          },
+          {
+            "title": "Bring control to where the work is",
+            "ideas": [
+              "Move undo out of the log and onto the result: “Sent 09:12. Undo for 10 minutes.”",
+              "Replace “Accept all” with a decision per change, and a diff on high-stakes fields such as a bank account.",
+              "Make correcting one action, in place, not a form somewhere else."
+            ]
+          }
+        ],
+        "patterns": [
+          "actions",
+          "undo"
+        ]
+      },
+      {
+        "id": "unfamiliar",
+        "principle": "flag-whats-new",
+        "question": "What happens when something new or unusual comes in?",
+        "answers": [
+          "It’s treated like everything else",
+          "It’s flagged only when an anomaly rule fires",
+          "New and unusual items go to an exceptions queue with the reason, and when it’s unsure it asks one specific question with a best guess"
+        ],
+        "why": "Agents drift towards the familiar. In finance, the new supplier or the new rate is where the risk is.",
+        "fixes": [
+          {
+            "title": "Route the unusual to a person",
+            "ideas": [
+              "Summarise routine work in one line, and list only the items that need judgement.",
+              "Give each exception one card: the problem, the proposal and the reason.",
+              "Show a count, “3 need you”, and an empty state when nothing does."
+            ]
+          },
+          {
+            "title": "Raise what’s new, not just what’s wrong",
+            "ideas": [
+              "Raise first occurrences too: a new supplier, a new VAT rate, a changed bank account.",
+              "When it’s unsure, ask one specific question with its best guess and one-tap answers, instead of guessing.",
+              "Check that flags don’t single out groups of employees, for example people on sick leave."
+            ]
+          }
+        ],
+        "patterns": [
+          "exceptions",
+          "uncertainty"
+        ]
+      },
+      {
+        "id": "earned",
+        "principle": "autonomy-is-earned",
+        "question": "How does the agent gain more autonomy over time?",
+        "answers": [
+          "It’s fixed: it always asks, or it runs fully automatic from day one",
+          "Someone changes the setting by hand, with no track record to go on",
+          "It offers more after a track record of unchanged approvals, steps back after corrections, and pay and filings never graduate"
+        ],
+        "why": "Autonomy granted all at once is either useless or reckless. A track record is what makes more autonomy safe.",
+        "fixes": [
+          {
+            "title": "Let autonomy be earned",
+            "ideas": [
+              "Keep a plain-language activity log: who did what, which rules were used, and undo from the log.",
+              "Track approvals without changes, per task.",
+              "Start everyone at “it suggests, you choose”."
+            ]
+          },
+          {
+            "title": "Base autonomy on the track record",
+            "ideas": [
+              "Offer more at a threshold, such as 85% unchanged over 10 approvals, and let people say “Keep asking”.",
+              "Step back after two corrections, and say so.",
+              "Recap what was accepted without checking, decision time, what was caught and where it was weaker. Never graduate pay, filings or salary changes."
+            ]
+          }
+        ],
+        "patterns": [
+          "autonomy-evolution",
+          "activity-log",
+          "recap"
+        ]
+      }
+    ],
+    "domains": [
+      {
+        "id": "payroll",
+        "name": "Payroll",
+        "label": "payroll",
+        "weights": {
+          "stakes": 1.6,
+          "control": 1.3
+        },
+        "note": "Weighted higher for payroll: mistakes land in people’s pay."
+      },
+      {
+        "id": "invoicing",
+        "name": "Invoicing and payments",
+        "label": "invoicing and payments",
+        "weights": {
+          "unfamiliar": 1.5,
+          "stakes": 1.3,
+          "visible": 1.2
+        },
+        "note": "Weighted higher for invoicing and payments: payment fraud starts with small changes."
+      },
+      {
+        "id": "tax",
+        "name": "Tax and VAT",
+        "label": "tax and VAT",
+        "weights": {
+          "stakes": 1.6,
+          "visible": 1.3
+        },
+        "note": "Weighted higher for tax: errors turn into penalties."
+      },
+      {
+        "id": "close",
+        "name": "Bookkeeping and month-end close",
+        "label": "bookkeeping and close",
+        "weights": {
+          "control": 1.4,
+          "visible": 1.2,
+          "earned": 1.2
+        },
+        "note": "Weighted higher for bookkeeping and close: long, multi-step jobs need visible control."
+      },
+      {
+        "id": "advisory",
+        "name": "Advisory and insights",
+        "label": "advisory",
+        "weights": {
+          "lead": 1.4,
+          "visible": 1.4,
+          "unfamiliar": 1.2
+        },
+        "note": "Weighted higher for advisory: the value depends on surfacing insight, not waiting to be asked."
+      }
+    ],
+    "verdicts": [
+      {
+        "from": 0,
+        "name": "An assistant bolted on",
+        "meaning": "Expect people to check everything the agent does, or not use it at all."
+      },
+      {
+        "from": 40,
+        "name": "Useful, not yet trusted",
+        "meaning": "People will use it, but most of its work will still be checked by hand."
+      },
+      {
+        "from": 65,
+        "name": "Trustworthy in parts",
+        "meaning": "Some workflows can run with a glance. Close the gaps before giving the agent more autonomy."
+      },
+      {
+        "from": 85,
+        "name": "Best-in-class",
+        "meaning": "On paper, this is ahead of every competitor we studied. Now prove it with measured acceptance."
+      }
+    ]
+  }
 }

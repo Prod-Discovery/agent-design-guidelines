@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>October payroll</title>
+<style>body{font-family:system-ui,sans-serif;margin:0;background:#f5f5f7;color:#151515}.app{max-width:900px;margin:30px auto;background:#fff;border:1px solid #ddd;border-radius:14px;padding:20px}h1{font-size:22px;margin:0}.sub{color:#666;font-size:14px;margin:4px 0 16px}.tag{background:#5b4bd6;color:#fff;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:6px}.feed{border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:16px;font-size:14px}.bar{height:6px;background:#eee;border-radius:6px;margin:8px 0}.bar i{display:block;height:100%;width:75%;background:#5b4bd6;border-radius:6px}.case{border:1px solid #e3e3e8;border-radius:12px;padding:12px;margin-bottom:10px;font-size:14px}.diff{background:#f6f6f8;border-radius:8px;padding:8px;font-family:monospace;font-size:13px;margin:6px 0}.rm{color:#b3261e}.ad{color:#1e7a4a}button{padding:6px 12px;border-radius:999px;border:1px solid #ccc;background:#fff;margin-right:6px}button.p{background:#5b4bd6;color:#fff;border-color:#5b4bd6}.log{font-size:13px;color:#555;border-top:1px solid #eee;padding-top:12px;margin-top:16px}</style></head>
+<body><div class="app">
+<h1>October payroll · Berg Bygg AB</h1>
+<p class="sub">64 employees. <span class="tag">Agent</span>Payroll agent started this run on its own when time reporting closed.</p>
+<div class="feed"><b>Collecting for 48 of 64 employees</b><div class="bar"><i></i></div>
+  ✓ Absence: 14 records, rule: Sick Pay Act days 2–14<br>✓ Tax tables: checked against the tax authority, 1 update</div>
+<h3>Changes to review</h3>
+<div class="case"><span class="tag">Agent</span><b>Johan Eriksson</b>: 38 h overtime, 3× usual. Flagged: pay changes more than 20%.
+  <div class="diff"><div class="rm">− Pay 38 h overtime (SEK 14 826)</div><div class="ad">+ Hold until manager approves</div></div>
+  <button class="p">Accept</button><button>Edit</button><button>Reject</button></div>
+<div class="case"><span class="tag">Agent</span><b>Mikael Svensson</b>: new employee without tax details.
+  <div class="diff"><div class="rm">− No tax table</div><div class="ad">+ Default 30% tax applied</div></div>
+  <button class="p">Accept</button><button>Edit</button><button>Reject</button></div>
+<div class="case"><span class="tag">Agent</span><b>41 employees</b>: new agreement rates from 1 September.
+  <div class="diff"><div class="rm">− Old rates</div><div class="ad">+ Retro pay SEK 48 360</div></div>
+  <button class="p">Accept</button><button>Edit</button><button>Reject</button></div>
+<p><button class="p">Approve October payroll</button> Sends the payment file and the employer declaration.</p>
+<div class="log"><b>Event log</b> (undo available here)<br>06:00 Payroll agent started the run<br>06:04 Payroll agent collected 64 employees<br>06:09 Payroll agent proposed 3 changes</div>
+
+</div></body></html>

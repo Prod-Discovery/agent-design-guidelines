@@ -1,0 +1,65 @@
+# Deploys the site and the "Assess your agent" backend to Cloud Run on every push to main.
+#
+# patterns.json is checked first. If it has a problem, nothing is deployed and the
+# live site keeps its last good version. Pull requests run the check only.
+#
+# Sign-in to Google Cloud is keyless (Workload Identity Federation, set up once with
+# scripts/setup_github_deploy.sh). Google only accepts runs from main of this repo.
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: cloud-run
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check patterns.json
+        run: python3 scripts/build_patterns.py --check
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/100550016775/locations/global/workloadIdentityPools/github/providers/agent-design-guidelines
+          service_account: github-deployer@prod-vpepf-cm.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy
+        run: |
+          gcloud run deploy agent-design-guidelines \
+            --project=prod-vpepf-cm \
+            --region=europe-west2 \
+            --source=. \
+            --service-account=assess-agent@prod-vpepf-cm.iam.gserviceaccount.com \
+            --no-allow-unauthenticated \
+            --memory=512Mi \
+            --timeout=120 \
+            --concurrency=8 \
+            --max-instances=3 \
+            --set-env-vars=GCP_PROJECT_ID=prod-vpepf-cm,VERTEX_REGION=eu,REVIEW_MODEL=claude-opus-5-5,IDEAS_MODEL=claude-sonnet-5-5 \
+            --quiet
+
+      - name: Show the live address
+        run: |
+          URL=$(gcloud run services describe agent-design-guidelines --project=prod-vpepf-cm \
+                --region=europe-west2 --format='value(status.url)')
+          echo "Live at $URL"
+          echo "### Deployed: $URL" >> "$GITHUB_STEP_SUMMARY"

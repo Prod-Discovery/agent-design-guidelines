@@ -1,0 +1,7 @@
+# Pinned on purpose: an unpinned rebuild once took DiscoveryBot down when a
+# Google library release broke it. Upgrade explicitly, then rerun
+# scripts/run_test_pack.py before deploying.
+anthropic[vertex]==1.13.0
+Flask==3.1.3
+gunicorn==26.2.0
+google-auth==2.61.0
