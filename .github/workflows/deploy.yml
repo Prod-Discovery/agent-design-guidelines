@@ -25,6 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check that only patterns.json changed
+        env:
+          EXPECTED_LOCK_SHA: ${{ vars.PROTECTED_LOCK_SHA }}
+        run: python3 scripts/check_protected.py
+
       - name: Check patterns.json
         run: python3 scripts/build_patterns.py --check
 

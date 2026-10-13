@@ -1,8 +1,74 @@
-# Agent Design Guidelines: orientation
+# Agent Design Guidelines
 
-The guidelines site (principles, patterns, demos, "Assess your agent") and the small
-server that runs the Claude review on "Assess your agent". Read this and `README.md`
-before changing anything.
+## Rules for content changes: read these first
+
+Most people working in this repo only change content. Until Cristina is back (about
+2026-10-27), Daniel makes those changes for Amanda, Diana and Nico. The person asking
+is usually not technical: explain in plain words, and never ask them to edit files,
+run commands or fix git themselves.
+
+**Before you start**, run `git pull` so you work on the latest version.
+
+**What you may change:** only `patterns.json`. All other files are blocked in
+`.claude/settings.json`, and the publish check refuses anything else, so the site
+would not update.
+
+1. **Only edit `patterns.json`.** If a request needs another file (layout, colours,
+   the demos, the live examples, the Claude review, the workflows, README or this
+   file), don't do it. Tell the person it has to wait for Cristina, and suggest they
+   write it down.
+2. **Never change, reuse or delete an `"id"`.** That includes pattern, principle and
+   group ids, example ids, and the assessment question and domain ids. Ids are used in
+   links, the Discovery Engine plugin and PRDs. To rename something, change its
+   `"name"` and keep the id. `scripts/ids.json` lists the ids that must stay; never
+   edit it.
+3. **Never delete anything**: no pattern, principle, group, example, question, domain
+   or verdict. If someone asks to remove one, explain it waits for Cristina.
+4. **Change only what was asked.** Don't reword, reorder, shorten or "improve" any
+   other text, and don't fix things nobody mentioned.
+5. **Keep the style:** plain British English, sentence case, short sentences, the
+   same tone as the entries around it. Use curly quotes and apostrophes (’ “ ”) in
+   text, as the file does.
+6. **A new pattern:** copy the shape of an existing pattern in the same group. Give it
+   a new id (lowercase words joined by hyphens, not used before). Set
+   `"examples": {"intro": "", "items": []}`: live examples need code in `index.html`,
+   which waits for Cristina. Add it to a principle's `"patterns"` list or to an
+   assessment question only if the person asks.
+7. **Assess your agent questions** (`assessment`): every question keeps exactly 3
+   `answers` (Not yet, Partly, Yes) and 2 `fixes` (for Not yet and Partly), each fix
+   with a `title` and its `ideas`. The Claude review reads these too, so a change here
+   changes what Claude checks.
+8. **Check before committing**, and only commit when both pass:
+   `python3 scripts/build_patterns.py --check` and `python3 scripts/check_protected.py`.
+   Then show the person what changed, as a short before and after in plain words, and
+   ask them to confirm.
+9. **Publish** by committing with a clear one-line message (for example "Reword the
+   Undo rule, asked by Amanda") and running `git push origin main`. Publishing is
+   automatic: two workflows run, "Publish site" and "Deploy to Cloud Run". Wait with
+   `gh run watch` until both are green (about 4 minutes), then give the person the link:
+   https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app (refresh with Cmd+Shift+R).
+10. **If a run is red,** nothing was published and both sites still show the last good
+    version. Read the error with `gh run view <id> --log-failed`, explain it in one
+    plain sentence, fix it in `patterns.json` only, and push again.
+11. **Never** run `gcloud`, change GitHub settings or variables, force-push, rebase,
+    reset or rewrite history, and never run `scripts/check_protected.py --update`.
+    If `git push` is rejected because someone else pushed first, run `git pull` (a
+    normal merge) and push again.
+
+Everything below is for maintainers (Cristina) and explains how the site works.
+
+## Maintainers: changing code
+
+The rules above block code changes on purpose. To change code, a maintainer:
+
+1. Temporarily moves `.claude/settings.json` aside, or edits files outside Claude Code.
+2. After the change, runs `python3 scripts/check_protected.py --update` and commits
+   `scripts/protected-files.sha256` with the change.
+3. Before pushing, updates the admin-only repository variable to the new fingerprint
+   file (Daniel can't change it):
+   `gh variable set PROTECTED_LOCK_SHA --repo Prod-Discovery/agent-design-guidelines --body "$(shasum -a 256 scripts/protected-files.sha256 | cut -d' ' -f1)"`.
+   If you forget, the workflows fail safely; set it and rerun them from the Actions tab.
+4. If ids were intentionally removed, updates `scripts/ids.json`.
 
 ## The one rule
 

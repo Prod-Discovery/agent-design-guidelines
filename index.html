@@ -654,11 +654,11 @@ function patternPage(p){const x=PD(p.id);return `
     ${x.intro.map((t,i)=>`<p${i===0?' class="law"':''}>${esc(t)}</p>`).join('\n    ')}
   </div>
   <a class="demo" href="${DEMO_URL}" target="_blank" rel="noopener">View demo ${EXT}</a>
-  <section class="sec" aria-labelledby="exH">
+  ${x.examples.items.length?`<section class="sec" aria-labelledby="exH">
     <h2 id="exH">Examples</h2>
     <p>${esc(x.examples.intro)}</p>
     ${examplesHtml(x.examples.items)}
-  </section>`;}
+  </section>`:''}`;}
 function examplesHtml(list){return `<div class="examples">${list.map(e=>`<figure class="ex ${e.wide?'wide':''}"><div class="shot"><button class="pp" type="button" data-pp="${e.id}"></button><div class="lv ${e.narrow?'narrow':''}" id="lv-${e.id}"></div></div><figcaption><span class="marker"><code>${esc(e.marker)}</code></span><p class="what">${esc(e.what)}</p></figcaption></figure>`).join('')}</div>`;}
 const OV=D.groups.map(g=>[g.name,g.summary,D.patterns.filter(p=>p.group===g.id).map(p=>[p.id,p.rule])]);
 function protoHtml(){return `  <section class="proto" aria-labelledby="protoH">
