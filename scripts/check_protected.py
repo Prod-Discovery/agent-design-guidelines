@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Refuses to publish if anything other than patterns.json changed.
+"""Refuses to publish if a protected file changed.
 
-Content changes only go in patterns.json. Every other tracked file (the site
-code, the server, the demos, the workflows, these scripts) is fingerprinted in
-scripts/protected-files.sha256. If one of them changes, or a new file appears,
-this check fails and neither GitHub Pages nor Cloud Run is updated.
+Content editors may change patterns.json, index.html (the site's pages and live
+examples) and the demos in demo/ (including adding new demo .html files).
+Every other tracked file (the server, the Claude review, usage tracking, the
+workflows, these scripts, the rules) is fingerprinted in
+scripts/protected-files.sha256. If one of them changes, or a new file appears
+outside demo/, this check fails and nothing is published.
 
     python3 scripts/check_protected.py            # check (runs on every push)
     python3 scripts/check_protected.py --update   # maintainers only: accept code changes
@@ -27,14 +29,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOCK = ROOT / "scripts" / "protected-files.sha256"
-# The one file content editors may change.
-EDITABLE = {"patterns.json"}
+def editable(path):
+    """Files content editors may change or add."""
+    return path in ("patterns.json", "index.html") or (
+        path.startswith("demo/") and path.count("/") == 1 and path.endswith(".html")
+    )
 
 
 def tracked_files():
     out = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True)
-    files = {f for f in out.stdout.splitlines() if f}
-    return sorted(files - EDITABLE - {LOCK.relative_to(ROOT).as_posix()})
+    files = {f for f in out.stdout.splitlines() if f and not editable(f)}
+    return sorted(files - {LOCK.relative_to(ROOT).as_posix()})
 
 
 def fingerprint(path):
@@ -54,8 +59,8 @@ def main():
     if expected and hashlib.sha256(LOCK.read_bytes()).hexdigest() != expected:
         print(
             "The list of protected files (scripts/protected-files.sha256) was changed. Nothing was published.\n"
-            "Only patterns.json can be changed. Ask Claude: \"Put back scripts/protected-files.sha256 and every "
-            "file except patterns.json exactly as they were on the last green run, and push again.\"",
+            "Only patterns.json, index.html and demo/*.html can be changed. Ask Claude: \"Put back scripts/protected-files.sha256 and every "
+            "protected file exactly as they were on the last green run, and push again.\"",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -68,10 +73,10 @@ def main():
     added = sorted(f for f in current if f not in locked)
     removed = sorted(f for f in locked if f not in current)
     if not (changed or added or removed):
-        print(f"Protected files OK: only patterns.json may change ({len(current)} files checked).")
+        print(f"Protected files OK: only patterns.json, index.html and demo/*.html changed ({len(current)} protected files checked).")
         return
 
-    print("Only patterns.json can be changed. Nothing was published.", file=sys.stderr)
+    print("Only patterns.json, index.html and demo/*.html can be changed. Nothing was published.", file=sys.stderr)
     for label, files in (("Changed", changed), ("New", added), ("Deleted", removed)):
         for f in files:
             print(f"  {label}: {f}", file=sys.stderr)

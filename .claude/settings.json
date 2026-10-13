@@ -1,7 +1,6 @@
 {
   "permissions": {
     "deny": [
-      "Edit(/index.html)",
       "Edit(/app.py)",
       "Edit(/review.py)",
       "Edit(/Dockerfile)",
@@ -14,7 +13,6 @@
       "Edit(/.github/**)",
       "Edit(/.claude/**)",
       "Edit(/scripts/**)",
-      "Edit(/demo/**)",
       "Edit(/test-pack/**)",
       "Bash(gcloud *)",
       "Bash(gh api *)",

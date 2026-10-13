@@ -30,6 +30,9 @@ jobs:
           EXPECTED_LOCK_SHA: ${{ vars.PROTECTED_LOCK_SHA }}
         run: python3 scripts/check_protected.py
 
+      - name: Check the site's pages and demos
+        run: python3 scripts/check_site.py
+
       - name: Check patterns.json
         run: python3 scripts/build_patterns.py --check
 
