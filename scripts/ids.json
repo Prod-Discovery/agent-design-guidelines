@@ -1,5 +1,5 @@
 {
-  "about": "Every pattern, principle, group, assessment question and domain id that existed on 2026-10-13. scripts/build_patterns.py fails if one of them disappears from patterns.json, because these ids are used in links, the Discovery Engine plugin and PRDs. New ids are fine. Examples can be removed. Never edit this file to make the check pass.",
+  "about": "Ids that existed on 2026-10-13, checked by scripts/build_patterns.py. Patterns may be removed, but their ids may never change: a pattern that disappears while a new id appears with the same or a similar name is refused. Principle, group, assessment question and domain ids must all stay. Examples can be removed. Never edit this file to make the check pass.",
   "groups": [
     "before",
     "while",
@@ -44,5 +44,21 @@
     "tax",
     "close",
     "advisory"
-  ]
+  ],
+  "pattern_names": {
+    "say-its-an-agent": "Agent disclosure",
+    "autonomy-levels": "Autonomy levels",
+    "triggers": "Triggers",
+    "suggestions": "Suggestions",
+    "live-progress": "Live progress",
+    "failure-disclosure": "Failure disclosure",
+    "exceptions": "Exceptions",
+    "actions": "Review and approve",
+    "uncertainty": "Clarifying questions",
+    "hand-over": "Escalation",
+    "undo": "Undo",
+    "activity-log": "Audit trail",
+    "recap": "Recap",
+    "autonomy-evolution": "Earned autonomy"
+  }
 }

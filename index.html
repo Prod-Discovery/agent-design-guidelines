@@ -654,7 +654,7 @@ const NAV=[
  ...D.groups.map(g=>[g.name,D.patterns.filter(p=>p.group===g.id).map(p=>[p.id,p.name])]),
  ['Resources',[['claude-plugin','Claude plug-in','ext'],['contact','Contact']]],
 ];
-const DEFAULT='say-its-an-agent';
+const DEFAULT=(D.patterns.find(p=>p.id==='say-its-an-agent')||D.patterns[0]).id;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function find(id){for(const g of NAV)for(const it of g[1])if(it[0]===id)return {group:g[0],id,label:it[1],ext:it[2]};return null;}

@@ -51,11 +51,17 @@ this file. If a request needs one of those, say it waits for Cristina.
      `<meta name="robots" content="noindex, nofollow">`.
    - A new live example in `index.html` needs a matching entry in that pattern's
      `examples.items` in `patterns.json` (same `id`), and the other way round.
-5. **Ids:** never change or reuse a pattern, principle, group, assessment question or
-   domain id, and never delete a pattern, principle, group, question or domain (the
-   plugin, links and PRDs use them; `scripts/ids.json` lists them). Rename by changing
-   `"name"`. Examples may be added, changed or removed. A new pattern gets a new id
-   (lowercase words joined by hyphens).
+5. **Ids:** never change or reuse an id. Ids connect the site, the plugin, links and
+   PRDs; `scripts/ids.json` lists them. To rename something, change its `"name"` and
+   keep the id. A new pattern gets a new id (lowercase words joined by hyphens).
+   - **Patterns may be removed** when the team asks. Remove the pattern from
+     `patterns.json` and from every `"patterns"` list that mentions it (principles and
+     assessment questions); its live example code in `index.html` can go too. The check
+     refuses a removal that leaves links behind, and refuses a removed id that comes
+     back under a new id with the same or a similar name.
+   - Examples may be added, changed or removed.
+   - Principles, groups, assessment questions and domains are never deleted; if
+     someone asks, say it waits for Cristina.
 6. **Change only what was asked**, and keep the style: plain British English,
    sentence case, short sentences, curly quotes and apostrophes (’ “ ”) in text.
 

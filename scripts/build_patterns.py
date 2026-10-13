@@ -9,6 +9,7 @@ Usage:
   python3 scripts/build_patterns.py            # validate + write patterns.md
   python3 scripts/build_patterns.py --check    # validate only
 """
+import difflib
 import json
 import os
 import re
@@ -152,13 +153,29 @@ def validate(d):
             "assessment_questions": question_ids,
             "assessment_domains": {dm.get("id") for dm in a.get("domains") or []},
         }
+        old_names = locked.get("pattern_names", {})
+        new_patterns = {p.get("id"): (p.get("name") or "") for p in patterns if p.get("id") not in locked.get("patterns", [])}
         for kind, have in now.items():
             for old_id in locked.get(kind, []):
-                if old_id not in have:
-                    errors.append(
-                        f"{kind[:-1].replace('_', ' ')} id '{old_id}' is gone. Ids never change and nothing "
-                        f"is deleted: put '{old_id}' back exactly as it was (you can still change its name and text)"
-                    )
+                if old_id in have:
+                    continue
+                if kind == "patterns":
+                    # Removing a pattern is allowed. Changing its id is not: that shows up
+                    # as a removed id plus a new id with the same or a similar name.
+                    old_name = old_names.get(old_id, old_id).lower()
+                    for new_id, new_name in new_patterns.items():
+                        close = difflib.SequenceMatcher(None, old_name, new_name.lower()).ratio() >= 0.75
+                        if close or difflib.SequenceMatcher(None, old_id, new_id).ratio() >= 0.75:
+                            errors.append(
+                                f"pattern id '{old_id}' seems to have been changed to '{new_id}'. Ids never change, "
+                                f"because links, the plugin and PRDs use them: keep the id '{old_id}' and change "
+                                f"only the name. (Removing a pattern is fine; renaming its id isn't.)"
+                            )
+                    continue
+                errors.append(
+                    f"{kind[:-1].replace('_', ' ')} id '{old_id}' is gone. These ids never change and these "
+                    f"entries aren't deleted: put '{old_id}' back exactly as it was (you can still change its name and text)"
+                )
     return errors
 
 
