@@ -56,6 +56,7 @@ The live, interactive examples themselves (their code) stay in `index.html`.
 | `demo/front-door.html` | Berg Bygg Overview, the front door that links to the other two demos |
 | `scripts/build_patterns.py` | Checks `patterns.json` for mistakes and generates `patterns.md` |
 | `app.py`, `review.py` | The Cloud Run server: serves the site and runs the Claude review through Vertex AI. See [CLAUDE.md](CLAUDE.md) |
+| `usage.py`, `stats_page.py` | Anonymous usage tracking, the Assess feedback card's storage, and the `/stats` page |
 | `scripts/run_test_pack.py`, `test-pack/` | Checks the Claude review against six test agents with known answers |
 | `.github/workflows/pages.yml` | Publishes the demos to GitHub Pages on every push to `main`, plus the redirect for old links |
 | `pages/redirect.html` | The redirect GitHub Pages shows for every old guidelines link. Holds the Cloud Run address, like `site` in `patterns.json` |

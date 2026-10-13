@@ -543,6 +543,17 @@ footer div{max-width:1360px;margin:0 auto;padding-inline:24px;padding-block:24px
 .pchip:hover{background:var(--raise)}
 .strong{display:flex;flex-wrap:wrap;gap:6px}
 .strong span{font-size:13.5px;font-weight:600;background:var(--okbg);color:var(--ok);border-radius:99px;padding:3px 10px}
+.afeed{border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;margin-top:24px;max-width:560px}
+.afeed .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.afeed h3{margin:0;font-size:17px}
+.stars{display:flex;gap:4px;border:0;margin:0;padding:0}
+.stars input{position:absolute;opacity:0;width:1px;height:1px}
+.stars label{font-size:30px;line-height:1;cursor:pointer;color:var(--line);padding:0 2px}
+.stars label.on{color:#e0a100}
+.stars input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.afeed textarea{min-height:96px}
+.as-role{display:flex;flex-direction:column;gap:6px;max-width:420px}
+.as-role select{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--ink);border-radius:8px;padding:9px 10px}
 .tailor{border:1px solid var(--accent);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .tailor .row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .tideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
@@ -630,6 +641,12 @@ async function loadPatterns(){
 }
 (async function(){
 const D=await loadPatterns();
+// Usage tracking: anonymous, see usage.py. Never sends what people type or upload.
+const ROLES=['Designer','Product manager','Developer','Researcher','Manager','Other'];
+const getRole=()=>{try{return localStorage.getItem('adg-role')||''}catch(e){return ''}};
+function track(name,props){try{const b=JSON.stringify({name,props:props||{},role:getRole()||undefined});
+  if(navigator.sendBeacon&&navigator.sendBeacon('api/event',new Blob([b],{type:'application/json'})))return;
+  fetch('api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:b,keepalive:true}).catch(()=>{})}catch(e){}}
 const EXT='<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const DEMO_URL='demo/payroll.html';
 const PLUGIN_URL='https://prod-discovery.github.io/discovery-engine-guide/';
@@ -1267,11 +1284,19 @@ function assessHtml(){return `<main class="asx" id="main">
    <p class="as-lede">Six principles describe how agents should behave, so that people stay in control while the agents do the work. Check your agent against them, or let Claude review its instructions or prototype first.</p>
    <p class="as-note">A quick check against six principles and fourteen patterns. It gives you ideas to improve your agent. It isn’t a full review or a certification.</p></header>
   <div class="as-ctx"><span class="as-lbl" id="aDomL">What does the agent do?</span><div class="dsel" id="dsel"><button type="button" class="dsel-btn" id="dselBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aDomL dselV"><span id="dselV">${esc(D.assessment.domains[0].name)}</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.5 4.75 6 7.25l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><ul class="dsel-list" id="dselList" role="listbox" aria-labelledby="aDomL" tabindex="-1" hidden>${D.assessment.domains.map((d,i)=>`<li role="option" data-v="${d.id}" aria-selected="${i===0}">${esc(d.name)}</li>`).join('')}</ul></div><select id="aDomain" hidden tabindex="-1" aria-hidden="true">${D.assessment.domains.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select></div>
+  <div class="as-role"><label class="as-lbl" for="aRole">Your role <span class="hint">(optional, helps us improve the guidelines)</span></label><select id="aRole"><option value="">Choose…</option>${ROLES.map(r=>`<option${getRole()===r?' selected':''}>${esc(r)}</option>`).join('')}</select></div>
   <section class="aireview" id="aiReview" aria-label="Review with Claude"></section>
   <div class="assess"><div id="aqs"></div>
    <aside class="ascore" aria-live="polite"><div class="n"><span id="aN">&ndash;</span><small id="aOf"></small></div><p class="band" id="aBand">Answer the questions to get your score.</p><p class="ascore-note">This score reflects your answers. Use it to find what to improve, not as a grade to share.</p><div class="bar"><i id="aBar"></i></div><p class="prog" id="aProg"></p><button class="abtn" type="button" id="aJump" hidden>See your improvements</button></aside>
   </div>
   <section id="aResults" class="aresults" hidden></section>
+  <section class="afeed" id="aFeedback" aria-labelledby="fbH" hidden><span class="eyebrow">Share your thoughts</span>
+   <h3 id="fbH">How useful was this assessment?</h3>
+   <fieldset class="stars" id="fbStars"><legend class="hint">Choose from 1 to 5 stars</legend>${[1,2,3,4,5].map(n=>`<input type="radio" name="fbRating" id="fbR${n}" value="${n}"><label for="fbR${n}" title="${n} of 5" aria-label="${n} of 5 stars">★</label>`).join('')}</fieldset>
+   <label class="as-lbl" for="fbText">How will you use these insights?</label>
+   <textarea id="fbText" maxlength="1000" placeholder="Which recommendations will you act on? Any upcoming roadmap items where these insights could help?"></textarea>
+   <div class="row2"><button type="button" class="abtn p" id="fbGo">Submit feedback</button><span class="hint" id="fbMsg" aria-live="polite"></span></div>
+  </section>
   <p class="as-foot">Based on 6 principles and 14 patterns, grouped by when they apply: before, while and after the agent acts, and over time. Claude reviews run on Visma’s Google Cloud, in the EU; nothing you share is stored.</p>
 </main>`;}
 let aApiOk;
@@ -1294,11 +1319,13 @@ const AQ=A.questions.map(q=>({k:q.id,p:APR.indexOf(q.principle),q:q.question,o:q
 const DOM=Object.fromEntries(A.domains.map(d=>[d.id,{w:d.weights,note:d.note,label:d.label}]));
 const BANDS=A.verdicts.map(v=>[v.from,v.name,v.meaning]);
 const LVL=A.levels;
-const ans={};const aqs=$('#aqs'),aDom=$('#aDomain');
+const ans={},claude={};let wasComplete=false,lastScore=null;const aqs=$('#aqs'),aDom=$('#aDomain');
 const plink=p=>'<a href="#principles-'+APR[p]+'">'+PR[p].t+'</a>';
 AQ.forEach((q,i)=>{const w=document.createElement('div');w.className='aq';w.id='aq-'+q.k;
   w.innerHTML='<fieldset><legend><span class="qn">'+(i+1)+'</span><span class="qt">'+q.q+'<small>Principle '+(q.p+1)+': '+plink(q.p)+'. '+PR[q.p].m+'</small></span></legend><div class="opts">'+q.o.map((t,l)=>'<label class="opt l'+l+'"><input type="radio" name="aq'+i+'" value="'+l+'"><span><b>'+LVL[l]+'</b>'+t+'</span></label>').join('')+'</div></fieldset>';
-  w.querySelectorAll('input').forEach(r=>r.addEventListener('change',()=>{ans[q.k]=+r.value;compute()}));aqs.appendChild(w)});
+  w.querySelectorAll('input').forEach(r=>r.addEventListener('change',()=>{const v=+r.value;ans[q.k]=v;
+    if(claude[q.k]!=null&&claude[q.k]!==v)track('review_override',{question:q.k,claude:claude[q.k],person:v});else track('assess_answer',{question:q.k,level:v});
+    compute()}));aqs.appendChild(w)});
 aDom.addEventListener('change',compute);
 (function(){const btn=$('#dselBtn'),list=$('#dselList'),val=$('#dselV');if(!btn)return;const items=[...list.querySelectorAll('li')];let act=0;
  const hl=i=>{act=(i+items.length)%items.length;items.forEach((x,j)=>x.classList.toggle('act',j===act));items[act].scrollIntoView({block:'nearest'});list.setAttribute('aria-activedescendant','dopt'+act)};
@@ -1309,12 +1336,15 @@ aDom.addEventListener('change',compute);
  btn.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();open(true)}});
  list.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();hl(act+1)}else if(e.key==='ArrowUp'){e.preventDefault();hl(act-1)}else if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(act)}else if(e.key==='Escape'||e.key==='Tab'){open(false);if(e.key==='Escape')btn.focus()}});
  document.addEventListener('click',e=>{if(!list.hidden&&!e.target.closest('#dsel'))open(false)});})();
-$('#aJump').addEventListener('click',()=>scrollTo($('#aResults')));
+$('#aJump').addEventListener('click',()=>{track('results_view');scrollTo($('#aResults'))});
 const weight=q=>DOM[aDom.value].w[q.k]||1;
 function compute(){const done=AQ.filter(q=>ans[q.k]!=null);const tw=done.reduce((s,q)=>s+weight(q),0),got=done.reduce((s,q)=>s+weight(q)*ans[q.k]/2,0);
   const score=done.length?Math.round(got/tw*100):null;$('#aProg').textContent=done.length+' of '+AQ.length+' answered.';
-  if(score==null){$('#aN').textContent='–';$('#aOf').textContent='';$('#aBand').textContent='Answer the questions to get your score.';$('#aBar').style.width='0';$('#aJump').hidden=true;$('#aResults').hidden=true;return}
-  const band=BANDS.filter(b=>score>=b[0]).pop();$('#aN').textContent=score;$('#aOf').textContent='/100';$('#aBand').textContent=(done.length<AQ.length?'So far: ':'')+band[1];$('#aBar').style.width=score+'%';$('#aJump').hidden=false;renderResults(score,band,done)}
+  if(score==null){$('#aFeedback').hidden=true;$('#aN').textContent='–';$('#aOf').textContent='';$('#aBand').textContent='Answer the questions to get your score.';$('#aBar').style.width='0';$('#aJump').hidden=true;$('#aResults').hidden=true;return}
+  const band=BANDS.filter(b=>score>=b[0]).pop();
+  const complete=done.length===AQ.length;if(complete&&!wasComplete)track('assess_complete',{domain:aDom.value,score,verdict:band[1],used_review:Object.keys(claude).length>0});wasComplete=complete;
+  lastScore=[score,band[1]];$('#aFeedback').hidden=false;
+  $('#aN').textContent=score;$('#aOf').textContent='/100';$('#aBand').textContent=(done.length<AQ.length?'So far: ':'')+band[1];$('#aBar').style.width=score+'%';$('#aJump').hidden=false;renderResults(score,band,done)}
 function renderResults(score,band,done){const R=$('#aResults');R.hidden=false;
   const gaps=done.filter(q=>ans[q.k]<2).map(q=>({q,imp:weight(q)*(2-ans[q.k])})).sort((a,b)=>b.imp-a.imp||AQ.indexOf(a.q)-AQ.indexOf(b.q));
   const strong=done.filter(q=>ans[q.k]===2);const missing=AQ.length-done.length;
@@ -1329,7 +1359,7 @@ function renderResults(score,band,done){const R=$('#aResults');R.hidden=false;
   h+='<div class="rfoot"><button type="button" class="abtn" id="aCopy">Copy summary</button><span class="hint" id="aCopied"></span></div>';
   R.innerHTML=h;
   R.querySelectorAll('.brow').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById('aq-'+b.dataset.k);el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});const f=el.querySelector('input');if(f)f.focus({preventScroll:true})}));
-  $('#aCopy').addEventListener('click',()=>{let t='Agent assessment: '+DOM[aDom.value].label+'\nScore: '+score+'/100, '+band[1]+'\n\n'+AQ.map((q,i)=>'- '+(i+1)+'. '+PR[q.p].t+' '+(ans[q.k]==null?'not answered':['not yet','partly','yes'][ans[q.k]])).join('\n');
+  $('#aCopy').addEventListener('click',()=>{track('copy_summary');let t='Agent assessment: '+DOM[aDom.value].label+'\nScore: '+score+'/100, '+band[1]+'\n\n'+AQ.map((q,i)=>'- '+(i+1)+'. '+PR[q.p].t+' '+(ans[q.k]==null?'not answered':['not yet','partly','yes'][ans[q.k]])).join('\n');
     if(gaps.length)t+='\n\nFix these first:\n'+gaps.slice(0,3).map((g,i)=>(i+1)+'. '+g.q.fix[ans[g.q.k]]+'\n   '+g.q.ideas[ans[g.q.k]].join('\n   ')).join('\n');
     const ok=()=>{$('#aCopied').textContent='Copied. Paste it into Slack or a doc.'};
     const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(e){$('#aCopied').textContent='Couldn’t copy automatically. Select the results and copy them.'}ta.remove()};
@@ -1339,12 +1369,22 @@ function renderResults(score,band,done){const R=$('#aResults');R.hidden=false;
 async function setupTailor(gaps){
   const box=document.getElementById('tailor');if(!box||!(await aApiAvailable()))return;box.hidden=false;const go=$('#tGo'),msg=$('#tMsg'),out=$('#tOut');
   go.addEventListener('click',async()=>{const d=$('#tDesc').value.trim();if(!d){msg.textContent='Describe the agent first.';return}go.disabled=true;msg.textContent='Thinking…';out.innerHTML='';
-    try{const r=await aApi('api/ideas',{domain:aDom.value,description:d,answers:ans});const ideas=(r&&r.ideas)||[];out.innerHTML='';
+    try{const r=await aApi('api/ideas',{domain:aDom.value,description:d,answers:ans,role:getRole()||undefined});const ideas=(r&&r.ideas)||[];out.innerHTML='';
       ideas.slice(0,5).forEach(x=>{const d2=document.createElement('div');d2.className='tidea';const b=document.createElement('b');b.textContent=x.title||'';const s=document.createElement('span');s.textContent=x.detail||'';const sm=document.createElement('small');sm.textContent=[x.principle,x.pattern].filter(Boolean).join(' · ');d2.append(b,s,sm);out.appendChild(d2)});
       msg.textContent=ideas.length?'Suggested by Claude. Treat as a starting point.':'No ideas came back. Try describing the agent in more detail.'}
     catch(e){const c=e&&e.code;msg.textContent=c==='daily_limit'?'Claude has reached today’s limit for ideas. Try again tomorrow.':c==='rate_limited'?'Too many requests. Try again in a minute.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t get ideas. Try again.'}
     go.disabled=false});
 }
+$('#aRole').addEventListener('change',e=>{const r=e.target.value;try{localStorage.setItem('adg-role',r)}catch(x){}if(r)track('role_set',{role:r})});
+(function(){const box=$('#fbStars');let rating=0;
+  const paint=()=>box.querySelectorAll('label').forEach((l,i)=>l.classList.toggle('on',i<rating));
+  box.querySelectorAll('input').forEach(i=>i.addEventListener('change',()=>{rating=+i.value;paint()}));
+  $('#fbGo').addEventListener('click',async()=>{const msg=$('#fbMsg'),go=$('#fbGo');if(!rating){msg.textContent='Choose a number of stars first.';return}
+    go.disabled=true;msg.textContent='Sending…';
+    try{const r=await fetch('api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating,text:$('#fbText').value,role:getRole()||undefined,score:lastScore&&lastScore[0],verdict:lastScore&&lastScore[1]})});
+      if(!r.ok)throw 0;msg.textContent='Thank you! Your feedback was sent.';$('#fbText').value='';rating=0;paint();box.querySelectorAll('input').forEach(i=>i.checked=false)}
+    catch(e){msg.textContent='Couldn’t send your feedback. Try again.'}
+    go.disabled=false})})();
 compute();
 /* review with Claude */
 (function(){
@@ -1372,14 +1412,14 @@ function material(){
 async function run(){const msg=$('#rvMsg'),go=$('#rvGo');
   const m=material();if(!m){msg.textContent=mode==='instructions'?'Upload or paste the agent instructions first.':'Upload or paste a prototype first.';return}
   go.disabled=true;msg.textContent='Reviewing… this can take a minute.';
-  try{const r=await aApi('api/review',{mode,text:m.text});apply(r,r&&r.truncated);msg.textContent=''}
+  try{const r=await aApi('api/review',{mode,text:m.text,domain:aDom.value,role:getRole()||undefined});apply(r,r&&r.truncated);msg.textContent=''}
   catch(e){const c=e&&e.code;msg.textContent=c==='daily_limit'?'The Claude review has reached today’s limit. Try again tomorrow, or answer the questions yourself below.':c==='rate_limited'?'Too many requests. Try again in a minute.':c==='invalid_json'?'The review came back incomplete. Try again, or share less at once.':c==='too_large'?'That’s too much to review at once. Share fewer or smaller files.':c==='network'?'Couldn’t reach the server. Check your connection and try again.':'Couldn’t complete the review. Try again.'}
   go.disabled=false}
 function apply(r,trunc){const A=(r&&r.answers)||[],P=(r&&r.patterns)||[];let filled=0;
   document.querySelectorAll('.aiev').forEach(e=>e.remove());
   A.forEach(a=>{const q=AQ.find(x=>x.k===a.k);if(!q)return;const el=document.getElementById('aq-'+q.k);if(!el)return;
     const ev=document.createElement('div');ev.className='aiev';
-    if(a.level===0||a.level===1||a.level===2){const inp=el.querySelector('input[value="'+a.level+'"]');if(inp){inp.checked=true;ans[q.k]=a.level;filled++}
+    if(a.level===0||a.level===1||a.level===2){const inp=el.querySelector('input[value="'+a.level+'"]');if(inp){inp.checked=true;ans[q.k]=a.level;claude[q.k]=a.level;filled++}
       ev.innerHTML='<span class="aitag">Claude suggests: '+LVL[a.level]+(a.confidence?' · '+resc(a.confidence)+' confidence':'')+'</span>'+resc(a.evidence||'')}
     else ev.innerHTML='<span class="aitag none">Claude can’t tell from this</span>'+resc(a.evidence||'Answer this one yourself.');
     el.querySelector('fieldset').appendChild(ev)});
@@ -1388,8 +1428,8 @@ function apply(r,trunc){const A=(r&&r.answers)||[],P=(r&&r.patterns)||[];let fil
   $('#rvOut').innerHTML='<div class="rv-res"><p><b>Claude filled in '+filled+' of '+AQ.length+' answers.</b> '+resc(r.summary||'')+' Check each answer below: yours are the ones that count.'+(trunc?' The material was long, so only the first part was reviewed.':'')+'</p><p class="rv-note2">'+(mode==='instructions'?'Instructions show what the agent is told to do, not what people see. Undo, autonomy settings and progress messages need to exist in the product too. Review your prototype to check them.':'A prototype shows what people see, not what the agent does behind the scenes. Review your agent’s instructions to check when it acts alone, asks or hands over.')+'</p>'+
    (P.length?'<p class="sublabel">Patterns found</p><div class="rvpats">'+P.filter(x=>PT[x.n]).sort((a,b)=>a.n-b.n).map(x=>{const s=st[x.status]||st.unclear;return '<div class="rvp"><span class="rvs '+s[1]+'">'+s[0]+'</span><a href="#patterns-'+APT[x.n]+'">'+resc(pname(x.n))+'</a>'+(x.note?'<span>'+resc(x.note)+'</span>':'')+'</div>'}).join('')+'</div>':'')+
    '<div class="rv-go"><button class="abtn" type="button" id="rvClear">Clear Claude’s answers</button><button class="abtn" type="button" id="rvJump">See your improvements</button></div></div>';
-  $('#rvClear').addEventListener('click',()=>{document.querySelectorAll('.aiev').forEach(e=>e.remove());document.querySelectorAll('#aqs input').forEach(i=>i.checked=false);Object.keys(ans).forEach(k=>delete ans[k]);compute();$('#rvOut').innerHTML=''});
-  $('#rvJump').addEventListener('click',()=>scrollTo($('#aResults')));
+  $('#rvClear').addEventListener('click',()=>{Object.keys(claude).forEach(k=>delete claude[k]);document.querySelectorAll('.aiev').forEach(e=>e.remove());document.querySelectorAll('#aqs input').forEach(i=>i.checked=false);Object.keys(ans).forEach(k=>delete ans[k]);compute();$('#rvOut').innerHTML=''});
+  $('#rvJump').addEventListener('click',()=>{track('results_view');scrollTo($('#aResults'))});
 }
 aApiAvailable().then(ok=>{if(ok)draw();else box.innerHTML='<p class="rv-ask">The Claude review isn’t available on this copy of the site. Answer the six questions yourself below.</p>'});
 })();
@@ -1399,6 +1439,7 @@ function route(){
   let h=(location.hash||'').slice(1);
   if(!h||h==='demo')h='home';
   if(h==='patterns-contact')h='contact';
+  track('page_view',{route:h});
   const top=h.startsWith('patterns-')?'patterns':h.startsWith('principles-')?'principles':h;
   document.querySelectorAll('[data-top]').forEach(a=>{if(a.dataset.top===top)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
   const pg=$('#page');
@@ -1421,6 +1462,8 @@ function route(){
     pg.innerHTML=`<main class="blank" id="main"><h1>${esc(n)}</h1><div class="soon">This page is coming soon.</div></main>`;
   }
 }
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const h=a.getAttribute('href');
+  const m=h.match(/(?:^|\/)demo\/([a-z0-9-]+)\.html/);if(m)track('demo_click',{demo:m[1]});else if(h===PLUGIN_URL)track('plugin_click');},true);
 (function(){const b=document.getElementById('ddBtn'),m=document.getElementById('ddDemo');if(!b||!m)return;
  const set=o=>{b.setAttribute('aria-expanded',o);m.hidden=!o;b.closest('.nav').classList.toggle('dd-open',o);};
  b.addEventListener('click',e=>{e.stopPropagation();set(m.hidden);});
