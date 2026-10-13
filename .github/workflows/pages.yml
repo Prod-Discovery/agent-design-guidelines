@@ -1,8 +1,9 @@
-# Publishes the site to GitHub Pages on every push to main.
-# patterns.json is validated and patterns.md is generated from it first.
-# If patterns.json has a problem, the run fails and the live site keeps
-# its last good version.
-name: Publish site
+# Publishes the demos to GitHub Pages on every push to main. The guidelines
+# themselves live on Cloud Run (deploy.yml); here, index.html and 404.html are
+# a redirect so old guidelines links keep working.
+# patterns.json is still checked first: if it has a problem, the run fails and
+# nothing is published.
+name: Publish demos
 
 on:
   push:
@@ -29,14 +30,23 @@ jobs:
           EXPECTED_LOCK_SHA: ${{ vars.PROTECTED_LOCK_SHA }}
         run: python3 scripts/check_protected.py
 
-      - name: Validate patterns.json and generate patterns.md
-        run: python3 scripts/build_patterns.py
+      - name: Check patterns.json
+        run: python3 scripts/build_patterns.py --check
+
+      # Only the demos live on GitHub Pages. The guidelines are on Cloud Run;
+      # the redirect page sends every old guidelines link there.
+      - name: Collect the demos and the redirect
+        run: |
+          mkdir -p _site
+          cp -R demo .nojekyll _site/
+          cp pages/redirect.html _site/index.html
+          cp pages/redirect.html _site/404.html
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
   deploy:
     needs: build
