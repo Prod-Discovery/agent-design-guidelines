@@ -3,7 +3,7 @@
 Every event is one Firestore document in `usage_events`, with the visitor's
 company domain (from the Visma sign-in) and an anonymous visitor id. The email
 itself, and anything people upload to the Claude review, are never stored.
-Events expire after 90 days (Firestore TTL on `expire_at`).
+Events are kept (no automatic deletion), so trends can be compared over time.
 
 The page sends events to POST /api/event. Only the names and fields listed in
 EVENTS are accepted, so the endpoint can't be used to store anything else.
@@ -26,7 +26,6 @@ log = logging.getLogger("assess-agent")
 _PREFIX = "" if os.environ.get("K_SERVICE") else "dev_"
 COLLECTION = _PREFIX + "usage_events"
 FEEDBACK = _PREFIX + "usage_feedback"
-RETENTION_DAYS = 90
 ROLES = ["Designer", "Product manager", "Developer", "Researcher", "Manager", "Other"]
 
 # Event name -> allowed fields and how to clean each one.
@@ -98,7 +97,6 @@ def record(db, headers, name, props=None, role=None, collection=COLLECTION):
             "company": domain,
             "day": now.strftime("%Y-%m-%d"),
             "ts": now,
-            "expire_at": now + datetime.timedelta(days=RETENTION_DAYS),
         }
         if role in ROLES:
             doc["role"] = role

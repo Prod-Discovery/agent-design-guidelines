@@ -122,5 +122,5 @@ footer{{margin-top:20px;color:var(--muted);font-size:13px}}
 <div class="tiles">{tiles}</div>
 <div class="grid">{"".join(cards)}</div>
 <footer>Visitors are counted anonymously: no names or emails are stored, only the company domain. Nothing people upload
-is stored. Events are deleted after 90 days.</footer>
+is stored.</footer>
 </main></body></html>"""

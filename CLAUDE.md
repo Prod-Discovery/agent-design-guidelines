@@ -184,8 +184,9 @@ Counted on our own server, no Google Analytics and no cookies (`usage.py`):
   `index.html`; keep them the same.
 - Each event stores the company domain from the sign-in email and an anonymous visitor
   id (a keyed hash of the email; the key is in Firestore, `assess_config/visitor_salt`).
-  No email, name or uploaded material is stored. Events expire after 90 days through
-  Firestore TTL on `expire_at` (collections `usage_events` and `usage_feedback`).
+  No email, name or uploaded material is stored. Events are kept, with no automatic
+  deletion (Cristina's decision, 2026-10-13), in `usage_events` and `usage_feedback`.
+  Older events have an unused `expire_at` field; no deletion rule reads it.
 - Runs on a laptop write to `dev_usage_events` and `dev_usage_feedback` instead, so
   tests never show up in the real numbers.
 
