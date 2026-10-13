@@ -60,5 +60,6 @@
     "activity-log": "Audit trail",
     "recap": "Recap",
     "autonomy-evolution": "Earned autonomy"
-  }
+  },
+  "site": "https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app/"
 }
