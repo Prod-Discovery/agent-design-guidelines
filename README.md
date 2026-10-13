@@ -62,9 +62,11 @@ The live, interactive examples themselves (their code) stay in `index.html`.
 | `.github/workflows/deploy.yml` | Deploys the site and the Claude review to Cloud Run on every push to `main` |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. Keep it. |
 
-## Changing a pattern in the browser (no Python, no terminal)
+## Changing a pattern
 
-This is all you need to edit content. The checks and publishing run by themselves.
+**With Claude Code (recommended):** open this repo in Claude Code and say what to change, for example *"Amanda wants the Undo rule to say … Make the change, check it, and publish it."* Claude follows the rules in [CLAUDE.md](CLAUDE.md): it only edits `patterns.json`, never changes ids, checks the file, shows you the change, and publishes.
+
+**In the browser (no Python, no terminal):** the checks and publishing run by themselves.
 
 1. Open [patterns.json on GitHub](https://github.com/Prod-Discovery/agent-design-guidelines/blob/main/patterns.json) and click the pencil icon (Edit this file).
 2. Make the change. Keep the quotes, commas and brackets as they are; only change the text between the quotes. Use `Cmd+F` to find the pattern by its name.

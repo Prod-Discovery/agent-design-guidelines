@@ -6,7 +6,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py review.py patterns.json index.html ./
 COPY demo ./demo
-COPY scripts/build_patterns.py ./scripts/
+COPY scripts/build_patterns.py scripts/ids.json ./scripts/
 # Checks patterns.json and writes patterns.md. A broken patterns.json fails the build,
 # so a bad edit never reaches the live site.
 RUN python scripts/build_patterns.py

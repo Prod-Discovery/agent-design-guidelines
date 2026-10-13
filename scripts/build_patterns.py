@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "patterns.json"
 OUT = ROOT / "patterns.md"
+IDS = ROOT / "scripts" / "ids.json"
 ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
 
@@ -66,9 +67,15 @@ def validate(d):
         if not isinstance(ex, dict):
             errors.append(f"{where}: 'examples' is missing")
             continue
-        need(ex, "intro", f"{where} examples")
+        # A new pattern may have no live examples yet (they need code in index.html).
+        items = ex.get("items")
+        if not isinstance(items, list):
+            errors.append(f"{where} examples: 'items' is missing (use [] if there are no examples yet)")
+            items = []
+        if items:
+            need(ex, "intro", f"{where} examples")
         seen = set()
-        for e in need(ex, "items", f"{where} examples", list) or []:
+        for e in items:
             eid = need(e, "id", f"{where} example")
             need(e, "marker", f"{where} example '{eid}'")
             need(e, "what", f"{where} example '{eid}'")
@@ -132,6 +139,26 @@ def validate(d):
     verdicts = need(a, "verdicts", "assessment", list) or []
     if verdicts and verdicts[0].get("from") != 0:
         errors.append("assessment: the first verdict must start 'from' 0")
+
+    # Ids never change: every id in scripts/ids.json must still be here.
+    if IDS.exists():
+        locked = json.loads(IDS.read_text(encoding="utf-8"))
+        now = {
+            "groups": group_ids,
+            "patterns": pattern_ids,
+            "principles": principle_ids,
+            "examples": {f"{p.get('id')}/{e.get('id')}" for p in patterns
+                         for e in (p.get("examples") or {}).get("items", [])},
+            "assessment_questions": question_ids,
+            "assessment_domains": {dm.get("id") for dm in a.get("domains") or []},
+        }
+        for kind, have in now.items():
+            for old_id in locked.get(kind, []):
+                if old_id not in have:
+                    errors.append(
+                        f"{kind[:-1].replace('_', ' ')} id '{old_id}' is gone. Ids never change and nothing "
+                        f"is deleted: put '{old_id}' back exactly as it was (you can still change its name and text)"
+                    )
     return errors
 
 
@@ -196,9 +223,8 @@ def render(d):
                 "",
                 f"Avoid: {p['avoid']}",
                 "",
-                "Examples:",
-                *[f"- {e['marker']}: {e['what']}" for e in p["examples"]["items"]],
-                "",
+                *(["Examples:", *[f"- {e['marker']}: {e['what']}" for e in p["examples"]["items"]], ""]
+                  if p["examples"]["items"] else []),
             ]
             if p["id"] in used_by:
                 out += [
