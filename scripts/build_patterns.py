@@ -93,6 +93,45 @@ def validate(d):
         for ref in need(x, "patterns", where, list) or []:
             if ref not in pattern_ids:
                 errors.append(f"{where}: links to pattern '{ref}', which does not exist")
+
+    a = need(d, "assessment", "top level", dict) or {}
+    levels = need(a, "levels", "assessment", list) or []
+    if len(levels) != 3:
+        errors.append("assessment: 'levels' must have exactly 3 entries (Not yet, Partly, Yes)")
+    question_ids = set()
+    for q in need(a, "questions", "assessment", list) or []:
+        qid = need(q, "id", "assessment question") or "?"
+        where = f"assessment question '{qid}'"
+        if qid in question_ids:
+            errors.append(f"assessment question id '{qid}' is used twice")
+        question_ids.add(qid)
+        if q.get("principle") not in principle_ids:
+            errors.append(f"{where}: principle '{q.get('principle')}' does not exist")
+        need(q, "question", where)
+        need(q, "why", where)
+        if len(q.get("answers") or []) != 3:
+            errors.append(f"{where}: 'answers' must have exactly 3 entries, one per level")
+        fixes = q.get("fixes") or []
+        if len(fixes) != 2:
+            errors.append(f"{where}: 'fixes' must have 2 entries, for Not yet and Partly")
+        for f in fixes:
+            need(f, "title", f"{where} fix")
+            need(f, "ideas", f"{where} fix", list)
+        for ref in need(q, "patterns", where, list) or []:
+            if ref not in pattern_ids:
+                errors.append(f"{where}: links to pattern '{ref}', which does not exist")
+    for dm in need(a, "domains", "assessment", list) or []:
+        did = need(dm, "id", "assessment domain") or "?"
+        for key in ("name", "label", "note"):
+            need(dm, key, f"assessment domain '{did}'")
+        for k, w in (dm.get("weights") or {}).items():
+            if k not in question_ids:
+                errors.append(f"assessment domain '{did}': weight for question '{k}', which does not exist")
+            if not isinstance(w, (int, float)) or w <= 0:
+                errors.append(f"assessment domain '{did}': weight for '{k}' must be a positive number")
+    verdicts = need(a, "verdicts", "assessment", list) or []
+    if verdicts and verdicts[0].get("from") != 0:
+        errors.append("assessment: the first verdict must start 'from' 0")
     return errors
 
 
@@ -167,6 +206,37 @@ def render(d):
                     + ", ".join(f"`{x['id']}`" for x in used_by[p["id"]]),
                     "",
                 ]
+
+    a = d["assessment"]
+    names = {x["id"]: x["name"] for x in d["principles"]}
+    lv = a["levels"]
+    out += [
+        "## Assess your agent",
+        "",
+        f"One question per principle. Answer each with a level: 0 {lv[0]}, 1 {lv[1]}, 2 {lv[2]}. "
+        f"Page: {site}#assess",
+        "",
+    ]
+    for i, q in enumerate(a["questions"], 1):
+        out += [
+            f"### Q{i}. {q['question']}",
+            f"id: `{q['id']}` · principle: `{q['principle']}` ({names[q['principle']]})",
+            "",
+            *[f"- {n} {lv[n]}: {t}" for n, t in enumerate(q["answers"])],
+            "",
+            f"Why it matters: {q['why']}",
+            "",
+        ]
+        for n, f in enumerate(q["fixes"]):
+            out += [f"If {lv[n]}: {f['title']}", *[f"- {t}" for t in f["ideas"]], ""]
+        out += ["Patterns to use: " + ", ".join(f"`{ref}`" for ref in q["patterns"]), ""]
+    out += ["### Weights per domain", "", "Every question has weight 1 unless the domain raises it.", ""]
+    for dm in a["domains"]:
+        w = ", ".join(f"`{k}` ×{v}" for k, v in dm["weights"].items())
+        out.append(f"- {dm['name']}: {w}. {dm['note']}")
+    out += ["", "Score = round(100 × Σ(weight × level ÷ 2) ÷ Σ(weight)), over the answered questions.", ""]
+    for v in a["verdicts"]:
+        out.append(f"- From {v['from']}: {v['name']}. {v['meaning']}")
     return "\n".join(line for line in out).rstrip() + "\n"
 
 

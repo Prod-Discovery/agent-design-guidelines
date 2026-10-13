@@ -4,6 +4,9 @@ Principles and patterns for designing AI agents in Visma products, with three in
 
 **Live site:** https://prod-discovery.github.io/agent-design-guidelines/
 **AI-readable version:** https://prod-discovery.github.io/agent-design-guidelines/patterns.md
+**With the Claude review (Cloud Run, private until login is added):** the `agent-design-guidelines` service in GCP project `prod-vpepf-cm`
+
+The site is published to both places from the same push. The GitHub Pages copy has everything except the Claude review on "Assess your agent"; people answer the six questions themselves there. Once login is added on Cloud Run, GitHub Pages will be turned off.
 
 ## Credits
 
@@ -13,9 +16,10 @@ The guidelines, patterns and demos were created by **Amanda Lundius, Nicolae Soc
 
 All pattern and principle content lives in **`patterns.json`**. Everything else reads from it:
 
-- **The website** (`index.html`) loads it when the page opens: the overview, the sidebar, every pattern page (rule, intro, what to look for, do, avoid, example captions) and every principle page.
+- **The website** (`index.html`) loads it when the page opens: the overview, the sidebar, every pattern page (rule, intro, what to look for, do, avoid, example captions), every principle page, and the "Assess your agent" questions.
+- **The Claude review** on "Assess your agent" (`review.py`) builds its prompts from it, so Claude always checks against the current names and rules.
 - **`patterns.md`**, the AI-readable version, is generated from it on every publish. Never edit it by hand, it isn't even in the repo.
-- **The Discovery Engine plugin** bundles a copy of `patterns.md` at each plugin release.
+- **The Discovery Engine plugin** and its Agentic Patterns add-on bundle a copy of `patterns.md` at each plugin release. Anyone can also give `patterns.md` to their own AI tool.
 
 So to change a pattern, you edit `patterns.json` and nothing else.
 
@@ -35,6 +39,9 @@ Some ids are older than the current names (`say-its-an-agent` is Agent disclosur
 | `patterns[].look_for`, `do`, `avoid` | The "What to look for" list and the Do / Avoid boxes |
 | `patterns[].examples` | The captions of the live examples. The `id` of each example connects it to its interactive code in `index.html`, so don't change example ids |
 | `principles` | The principle pages: statement, "In practice" cards (`pita: true` shows the PITA badge) and the patterns it links to |
+| `assessment.questions` | "Assess your agent": one question per principle, its three answers (Not yet, Partly, Yes), why it matters, the fix and three ideas for Not yet and for Partly, and the patterns to use. The Claude review reads these too |
+| `assessment.domains` | The "What does the agent do?" choices, and which questions count more for each |
+| `assessment.verdicts` | The verdict for each score range |
 
 The live, interactive examples themselves (their code) stay in `index.html`.
 
@@ -48,10 +55,27 @@ The live, interactive examples themselves (their code) stay in `index.html`.
 | `demo/accounting.html` | October Close demo |
 | `demo/front-door.html` | Berg Bygg Overview, the front door that links to the other two demos |
 | `scripts/build_patterns.py` | Checks `patterns.json` for mistakes and generates `patterns.md` |
-| `.github/workflows/pages.yml` | Publishes the site on every push to `main` |
+| `app.py`, `review.py` | The Cloud Run server: serves the site and runs the Claude review through Vertex AI. See [CLAUDE.md](CLAUDE.md) |
+| `scripts/run_test_pack.py`, `test-pack/` | Checks the Claude review against six test agents with known answers |
+| `.github/workflows/pages.yml` | Publishes the site to GitHub Pages on every push to `main` |
+| `.github/workflows/deploy.yml` | Deploys the site and the Claude review to Cloud Run on every push to `main` |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. Keep it. |
 
-## How to make a change
+## Changing a pattern in the browser (no Python, no terminal)
+
+This is all you need to edit content. The checks and publishing run by themselves.
+
+1. Open [patterns.json on GitHub](https://github.com/Prod-Discovery/agent-design-guidelines/blob/main/patterns.json) and click the pencil icon (Edit this file).
+2. Make the change. Keep the quotes, commas and brackets as they are; only change the text between the quotes. Use `Cmd+F` to find the pattern by its name.
+3. Click **Commit changes**, write one line about what you changed, and commit to `main`.
+4. Open the **Actions** tab. Two runs start: **Publish site** (GitHub Pages) and **Deploy to Cloud Run**. Wait for both to turn green, about 1 and 4 minutes.
+5. If one turns red, nothing was published and the live sites still show the last good version. Open the run: the **Check patterns.json** step says exactly what's wrong, for example "missing comma" or "links to pattern 'x', which does not exist". Fix it the same way and commit again.
+
+**Adding a pattern:** copy an existing pattern block in `patterns.json`, from its `{` to its `},`, paste it where the new one should go, give it a new `id` (lowercase words joined by hyphens, never reused) and change the text. The new pattern gets a page and a number automatically. A live example for it needs code in `index.html`, so ask someone who knows HTML, or leave `examples.items` empty for now.
+
+**Not sure how to write the change?** Paste the request and the part of `patterns.json` into Claude and ask for the edited version, then paste that back.
+
+## How to make a change on your computer
 
 1. Edit `patterns.json` (content) or an HTML file (layout, live examples, demos).
 2. Check for mistakes and build `patterns.md`:
@@ -75,14 +99,21 @@ Links between pages must be relative (`demo/payroll.html`), never `claude.ai/art
 
 ## How to check a change is live
 
-Every push to `main` runs the **Publish site** workflow (Actions tab). It checks `patterns.json`, generates `patterns.md` and publishes. It takes about a minute.
+Every push to `main` runs two workflows (Actions tab), both of which check `patterns.json` first:
+
+- **Publish site** publishes to GitHub Pages in about a minute.
+- **Deploy to Cloud Run** deploys the site and the Claude review in about 4 minutes.
 
 - **Green:** live. Hard-refresh the page (Cmd+Shift+R), the CDN can cache the old version for a few minutes.
-- **Red:** nothing was published and the live site still shows the last good version. Open the failed run, the "Validate patterns.json" step says what to fix.
+- **Red:** nothing was published and the live site still shows the last good version. Open the failed run, the check step says what to fix.
+
+A run that failed for another reason (for example Google Cloud was briefly unavailable) can be retried from the run page with **Re-run jobs**, or started again with **Run workflow** on the workflow's page.
 
 ## Visibility
 
-The repo and site are public: anyone with the link can open them. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
+The repo and the GitHub Pages site are public: anyone with the link can open them. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
+
+The Cloud Run copy is private. Once login for Visma accounts is added there, GitHub Pages will be turned off and the repo made internal.
 
 ## Related
 
