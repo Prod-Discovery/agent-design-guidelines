@@ -66,7 +66,7 @@ jobs:
             --timeout=120 \
             --concurrency=8 \
             --max-instances=3 \
-            "--set-env-vars=^:^GCP_PROJECT_ID=prod-vpepf-cm:VERTEX_REGION=eu:REVIEW_MODEL=claude-opus-5-5:IDEAS_MODEL=claude-sonnet-5-5:DAILY_BUDGET_USD=15:STATS_VIEWERS=cristina.iftode@visma.com,amanda.lundius.morck@visma.com,diana.almeida@visma.com" \
+            "--set-env-vars=^:^GCP_PROJECT_ID=prod-vpepf-cm:VERTEX_REGION=eu:REVIEW_MODEL=claude-opus-5-5:IDEAS_MODEL=claude-sonnet-5-5:DAILY_BUDGET_USD=15:STATS_VIEWERS=cristina.iftode@visma.com,amanda.lundius.morck@visma.com,diana.almeida@visma.com,nicolae.socaciu@visma.com" \
             --quiet
 
       - name: Show the live address
