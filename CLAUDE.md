@@ -16,10 +16,10 @@ Every push to `main` publishes to two places:
 
 | Where | Workflow | What people get |
 |---|---|---|
-| GitHub Pages, public | `.github/workflows/pages.yml` | The whole site. "Assess your agent" works as a questionnaire only: the page calls `health`, gets no answer, and hides the Claude review. |
+| GitHub Pages, public | `.github/workflows/pages.yml` | **Only the three demos** (since 2026-10-13). `index.html` and `404.html` there are `pages/redirect.html`, which forwards every old guidelines link to the same path and `#anchor` on Cloud Run. |
 | Cloud Run service `agent-design-guidelines`, **public until about 2026-10-27** (see below) | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
 
-Pages can be turned off once everyone who needs the site can sign in on Cloud Run (see "Who can open the site").
+The guidelines are on Cloud Run only, so they can go behind sign-in. The demos stay on Pages. If the Cloud Run address changes, update `site` in `patterns.json` and `SITE` in `pages/redirect.html`.
 
 ## Where things live
 
@@ -56,7 +56,7 @@ Pages can be turned off once everyone who needs the site can sign in on Cloud Ru
 
 **Public since 2026-10-13, on purpose, while Cristina is away (back about 2026-10-27).**
 Anyone with the link can open the Cloud Run site and run the Claude review. The
-content is public on GitHub Pages anyway; the daily budget below caps what strangers
+content is in the public repo anyway; the daily budget below caps what strangers
 can spend. Deploys don't change this setting: `deploy.yml` has no
 `--allow-unauthenticated` / `--no-allow-unauthenticated` flag on purpose, so the
 service keeps whatever is set here.
@@ -120,6 +120,6 @@ Run it after changing `review.py`, the questions in `patterns.json`, or the mode
 
 ## Not done yet
 
-- **Sign-in**: the site is public until Cristina is back. Then put the Visma sign-in back, ideally with Entra ID (see "Who can open the site"), turn off `pages.yml` and make the repo internal.
+- **Sign-in**: the site is public until Cristina is back. Then put the Visma sign-in back, ideally with Entra ID (see "Who can open the site"), and make the repo internal. Keep `pages.yml`: it only serves the demos now.
 - **Billing budget alert**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. The daily budget above is the hard stop meanwhile.
 - **Per-user daily limit**: once sign-in is back, IAP passes the email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.
