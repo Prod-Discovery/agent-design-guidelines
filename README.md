@@ -57,15 +57,32 @@ The live, interactive examples themselves (their code) stay in `index.html`.
 | `scripts/build_patterns.py` | Checks `patterns.json` for mistakes and generates `patterns.md` |
 | `app.py`, `review.py` | The Cloud Run server: serves the site and runs the Claude review through Vertex AI. See [CLAUDE.md](CLAUDE.md) |
 | `usage.py`, `stats_page.py` | Anonymous usage tracking, the Assess feedback card's storage, and the `/stats` page |
+| `scripts/check_site.py` | Checks the pages and demos before publishing (scripts run, noindex tag, no artifact-only links or code) |
+| `scripts/find_changes.py` | Lists what an artifact changed compared with the site or a demo |
 | `scripts/run_test_pack.py`, `test-pack/` | Checks the Claude review against six test agents with known answers |
 | `.github/workflows/pages.yml` | Publishes the demos to GitHub Pages on every push to `main`, plus the redirect for old links |
 | `pages/redirect.html` | The redirect GitHub Pages shows for every old guidelines link. Holds the Cloud Run address, like `site` in `patterns.json` |
 | `.github/workflows/deploy.yml` | Deploys the site and the Claude review to Cloud Run on every push to `main` |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. Keep it. |
 
-## Changing a pattern
+## Making changes
 
-**With Claude Code (recommended):** open this repo in Claude Code and say what to change, for example *"Amanda wants the Undo rule to say … Make the change, check it, and publish it."* Claude follows the rules in [CLAUDE.md](CLAUDE.md): it only edits `patterns.json`, never changes ids, checks the file, shows you the change, and publishes.
+**With Claude Code (recommended).** Open this repo in Claude Code. Claude follows the rules in [CLAUDE.md](CLAUDE.md): it brings over only the changes, keeps the ids, runs the checks, shows you what changed, and publishes through a pull request once you confirm. It can change the text (`patterns.json`), the pages (`index.html`) and the demos (`demo/`), including adding new demos. The server, the workflows and the rules are out of its reach.
+
+Prompts to copy and fill in:
+
+- **Changes from an artifact (the site):**
+  > *"Amanda sent her updated artifact: [link or path to the downloaded HTML]. Find what she changed compared with the site, bring over only those changes, check them, show me the list of changes, and publish when I confirm."*
+- **Changes to a demo from an artifact:**
+  > *"Nicolae updated the Payroll demo in this artifact: [link or path]. Bring his changes into demo/payroll.html, check, show me, and publish when I confirm."*
+- **A new demo:**
+  > *"Nicolae made a new demo: [link or path]. Add it as a new demo called '[name]', link it from the Demo menu, check, show me, and publish when I confirm."*
+- **A text change described in a message:**
+  > *"Amanda asked: [paste her message]. Make this change, check it, show me the change, and publish it when I confirm."*
+- **If something went red:**
+  > *"The last publish failed. Find out why, explain it simply, fix it, and publish again."*
+
+If Claude can't open an artifact link, ask its author to share the artifact with you, or to download it and send you the HTML file.
 
 **In the browser (no Python, no terminal):** the checks and publishing run by themselves.
 

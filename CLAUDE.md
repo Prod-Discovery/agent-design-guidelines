@@ -1,65 +1,96 @@
 # Agent Design Guidelines
 
-## Rules for content changes: read these first
+## Rules for changes to the site: read these first
 
-Most people working in this repo only change content. Until Cristina is back (about
-2026-10-27), Daniel makes those changes for Amanda, Diana and Nico. The person asking
-is usually not technical: explain in plain words, and never ask them to edit files,
-run commands or fix git themselves.
+Until Cristina is back (about 2026-10-27), **Daniel** makes the changes Amanda, Diana
+and Nico ask for. They usually work in **Claude artifacts** (a copy of the site, or a
+demo) and send Daniel the artifact when it's ready. The person asking is not
+technical: explain in plain words, and never ask them to edit files, run commands or
+fix git themselves.
 
 **Before you start**, run `git pull` so you work on the latest version.
 
-**What you may change:** only `patterns.json`. All other files are blocked in
-`.claude/settings.json`, and the publish check refuses anything else, so the site
-would not update.
+### What you may change
 
-1. **Only edit `patterns.json`.** If a request needs another file (layout, colours,
-   the demos, the live examples, the Claude review, the workflows, README or this
-   file), don't do it. Tell the person it has to wait for Cristina, and suggest they
-   write it down.
-2. **Never change, reuse or delete an `"id"`.** That includes pattern, principle and
-   group ids, example ids, and the assessment question and domain ids. Ids are used in
-   links, the Discovery Engine plugin and PRDs. To rename something, change its
-   `"name"` and keep the id. `scripts/ids.json` lists the ids that must stay; never
-   edit it.
-3. **Never delete anything**: no pattern, principle, group, example, question, domain
-   or verdict. If someone asks to remove one, explain it waits for Cristina.
-4. **Change only what was asked.** Don't reword, reorder, shorten or "improve" any
-   other text, and don't fix things nobody mentioned.
-5. **Keep the style:** plain British English, sentence case, short sentences, the
-   same tone as the entries around it. Use curly quotes and apostrophes (’ “ ”) in
-   text, as the file does.
-6. **A new pattern:** copy the shape of an existing pattern in the same group. Give it
-   a new id (lowercase words joined by hyphens, not used before). Set
-   `"examples": {"intro": "", "items": []}`: live examples need code in `index.html`,
-   which waits for Cristina. Add it to a principle's `"patterns"` list or to an
-   assessment question only if the person asks.
-7. **Assess your agent questions** (`assessment`): every question keeps exactly 3
-   `answers` (Not yet, Partly, Yes) and 2 `fixes` (for Not yet and Partly), each fix
-   with a `title` and its `ideas`. The Claude review reads these too, so a change here
-   changes what Claude checks.
-8. **Check before committing**, and only commit when both pass:
-   `python3 scripts/build_patterns.py --check` and `python3 scripts/check_protected.py`.
-   Then show the person what changed, as a short before and after in plain words, and
-   ask them to confirm.
-9. **Publish** by committing with a clear one-line message (for example "Reword the
-   Undo rule, asked by Amanda") and running `git push origin main`. Publishing is
-   automatic: two workflows run, "Deploy to Cloud Run" (the guidelines) and "Publish demos" (the demos on GitHub Pages). Wait with
-   `gh run watch` until both are green (about 4 minutes), then give the person the link:
-   https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app (refresh with Cmd+Shift+R).
-10. **If a run is red,** nothing was published and the site and the demos still show the last
-    good version. Read the error with `gh run view <id> --log-failed`, explain it in one
-    plain sentence, fix it in `patterns.json` only, and push again.
-11. **Never** run `gcloud`, change GitHub settings or variables, force-push, rebase,
-    reset or rewrite history, and never run `scripts/check_protected.py --update`.
-    If `git push` is rejected because someone else pushed first, run `git pull` (a
-    normal merge) and push again.
+| File | What's in it |
+|---|---|
+| `patterns.json` | All text of patterns, principles, groups and Assess your agent (questions, answers, fixes, domains, verdicts). **Text goes here, not into index.html.** |
+| `index.html` | The site's pages: home page, layout, Demo menu, the live examples' code, the Assess page's layout and intro text. |
+| `demo/*.html` | The demos. Editing them and **adding new demo files** is fine. |
+
+Everything else is blocked in `.claude/settings.json` and refused by the publish
+check: the server, the Claude review, usage tracking, workflows, scripts, README and
+this file. If a request needs one of those, say it waits for Cristina.
+
+### Bringing over changes from an artifact
+
+1. **Get the artifact's HTML.** If you can read the claude.ai link (it must be shared
+   with Daniel), read it. Otherwise ask the person to download it or send the file,
+   and save it **outside the repo** (for example in `~/Downloads`). Never commit it.
+2. **Find what changed:** `python3 scripts/find_changes.py <artifact.html>` for a copy
+   of the site, or `python3 scripts/find_changes.py <artifact.html> demo/<name>.html`
+   for a demo. It lists text that is NEW in the artifact (with where the old version
+   lives) and text that is GONE. Some GONE lines exist only in the repo on purpose
+   (error messages, the feedback card, the "review isn't available" note): keep those.
+   Also read the HTML side by side for layout or example-code changes, which the
+   script doesn't show.
+3. **Bring over only the changes, never the whole file.** The artifact's copy of the
+   site has the text written into the HTML; the real `index.html` reads it from
+   `patterns.json` and has extra parts the artifact doesn't (the Claude review calls,
+   usage tracking, the feedback card, the role picker). Pasting the artifact over
+   `index.html` breaks all of that, and the publish check refuses it.
+   - Pattern, principle and Assess text: edit it in `patterns.json`.
+   - Home page, layout, Demo menu, live examples: edit `index.html`.
+   - A demo: edit `demo/<name>.html`. For a new demo, save it as `demo/<short-name>.html`
+     (lowercase, hyphens), and add it to the Demo menu in `index.html`.
+4. **Fix what artifacts usually bring with them:**
+   - Links to other pages are relative (`demo/payroll.html`, `#patterns-undo`),
+     never `claude.ai/artifact/...` links (only people they're shared with can open them).
+   - No `window.claude` code: it only works inside claude.ai.
+   - Every page keeps `<html lang="en">` and, in `<head>`,
+     `<meta name="robots" content="noindex, nofollow">`.
+   - A new live example in `index.html` needs a matching entry in that pattern's
+     `examples.items` in `patterns.json` (same `id`), and the other way round.
+5. **Ids:** never change or reuse a pattern, principle, group, assessment question or
+   domain id, and never delete a pattern, principle, group, question or domain (the
+   plugin, links and PRDs use them; `scripts/ids.json` lists them). Rename by changing
+   `"name"`. Examples may be added, changed or removed. A new pattern gets a new id
+   (lowercase words joined by hyphens).
+6. **Change only what was asked**, and keep the style: plain British English,
+   sentence case, short sentences, curly quotes and apostrophes (’ “ ”) in text.
+
+### Check, show, publish
+
+7. **Run all three checks**; only continue when they pass:
+   `python3 scripts/build_patterns.py --check`,
+   `python3 scripts/check_protected.py` and `python3 scripts/check_site.py`.
+8. **Look at it:** run `python3 -m http.server 8765` and open http://localhost:8765
+   (the Claude review shows as unavailable there; that's expected). Check the pages you
+   changed. Then show the person a short list of what changed, in plain words, and ask
+   them to confirm.
+9. **Publish through a pull request:** create a branch, commit with a clear message
+   ("Bring over Amanda's example clean-up from her artifact"), push the branch, and
+   open a pull request with `gh pr create`. Wait for its check with `gh pr checks`.
+   When it's green and the person has confirmed, merge it with
+   `gh pr merge --merge --delete-branch`.
+10. **After merging,** two workflows run: "Deploy to Cloud Run" (the site) and
+    "Publish demos" (GitHub Pages). Wait with `gh run watch` until both are green
+    (about 4 minutes), then send the person the link to what changed:
+    https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app (it needs a Visma sign-in;
+    refresh with Cmd+Shift+R).
+11. **If a check or run is red,** nothing was published. Read the error
+    (`gh run view <id> --log-failed`), explain it in one plain sentence, fix it in the
+    files above, and push again.
+12. **Never** run `gcloud`, change GitHub settings or variables, force-push, rebase,
+    reset or rewrite history, and never run `scripts/check_protected.py --update`. If a
+    push is rejected because someone else pushed first, run `git pull` and push again.
+    Who can open the site and `/stats` is for Cristina.
 
 Everything below is for maintainers (Cristina) and explains how the site works.
 
 ## Maintainers: changing code
 
-The rules above block code changes on purpose. To change code, a maintainer:
+The rules above keep the server, workflows and scripts out of reach on purpose. To change code, a maintainer:
 
 1. Temporarily moves `.claude/settings.json` aside, or edits files outside Claude Code.
 2. After the change, runs `python3 scripts/check_protected.py --update` and commits
@@ -72,9 +103,9 @@ The rules above block code changes on purpose. To change code, a maintainer:
 
 ## The one rule
 
-**`patterns.json` is the single source.** The site, the Claude review prompts,
-`patterns.md` and the Discovery Engine plugin all read from it. Content changes go
-there and nowhere else. Ids never change (see README).
+**`patterns.json` is the single source for text.** The site, the Claude review
+prompts, `patterns.md` and the Discovery Engine plugin all read from it. Pattern,
+principle and Assess text goes there, never into `index.html`. Ids never change.
 
 ## Where it is published
 
@@ -97,6 +128,8 @@ The guidelines are on Cloud Run only, so they can go behind sign-in. The demos s
 | `app.py` | Flask: serves `/`, `/patterns.json`, `/patterns.md`, `/demo/*.html`, `POST /api/review`, `POST /api/ideas`, `GET /health`. Only those files are served, never the code. |
 | `review.py` | Builds both prompts from `patterns.json`, parses Claude's JSON. Prompt wording is Diana's. |
 | `scripts/build_patterns.py` | Validates `patterns.json` (including `assessment`), writes `patterns.md`. Runs in both workflows and in the Docker build. |
+| `scripts/check_site.py` | Publish check for `index.html` and `demo/*.html`: JavaScript runs, noindex and lang present, no `window.claude` or artifact links, and `index.html` still has the patterns.json, Claude review, tracking and feedback hooks. |
+| `scripts/find_changes.py` | Lists text an artifact added or removed compared with the site or a demo, and where each text lives. |
 | `scripts/run_test_pack.py`, `test-pack/` | Six test agents with expected answers. |
 | `scripts/setup_github_deploy.sh` | One-time GCP setup for keyless deploys from GitHub. Already run on 2026-10-13. |
 
