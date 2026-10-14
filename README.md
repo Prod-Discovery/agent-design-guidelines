@@ -4,9 +4,9 @@ Principles and patterns for designing AI agents in Visma products, with three in
 
 **Live site, with the Claude review (sign in with your Visma account):** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app
 **AI-readable version:** https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app/patterns.md
-**Demos (GitHub Pages):** https://prod-discovery.github.io/agent-design-guidelines/demo/front-door.html
+**Demos:** in the Demo menu of the site, behind the same sign-in. Old links such as https://prod-discovery.github.io/agent-design-guidelines/demo/front-door.html forward there.
 
-The guidelines live on Cloud Run only, so they can go behind Visma sign-in. GitHub Pages serves just the three demos; any old guidelines link there (the home page, `#patterns-…`, `patterns.md`) forwards to the same place on Cloud Run.
+Everything, demos included, lives on Cloud Run behind Visma sign-in. GitHub Pages only forwards: any old link there (the home page, `#patterns-…`, `patterns.md`) forwards to the same place on Cloud Run.
 
 ## Credits
 
@@ -60,8 +60,8 @@ The live, interactive examples themselves (their code) stay in `index.html`.
 | `scripts/check_site.py` | Checks the pages and demos before publishing (scripts run, noindex tag, no artifact-only links or code) |
 | `scripts/find_changes.py` | Lists what an artifact changed compared with the site or a demo |
 | `scripts/run_test_pack.py`, `test-pack/` | Checks the Claude review against six test agents with known answers |
-| `.github/workflows/pages.yml` | Publishes the demos to GitHub Pages on every push to `main`, plus the redirect for old links |
-| `pages/redirect.html` | The redirect GitHub Pages shows for every old guidelines link. Holds the Cloud Run address, like `site` in `patterns.json` |
+| `.github/workflows/pages.yml` | "Forward old links": publishes only redirects to GitHub Pages, so old links (guidelines and demos) lead to Cloud Run |
+| `pages/redirect.html` | The redirect GitHub Pages shows for every old link, demos included. Holds the Cloud Run address, like `site` in `patterns.json` |
 | `.github/workflows/deploy.yml` | Deploys the site and the Claude review to Cloud Run on every push to `main` |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. Keep it. |
 
@@ -89,7 +89,7 @@ If Claude can't open an artifact link, ask its author to share the artifact with
 1. Open [patterns.json on GitHub](https://github.com/Prod-Discovery/agent-design-guidelines/blob/main/patterns.json) and click the pencil icon (Edit this file).
 2. Make the change. Keep the quotes, commas and brackets as they are; only change the text between the quotes. Use `Cmd+F` to find the pattern by its name.
 3. Click **Commit changes**, write one line about what you changed, and commit to `main`.
-4. Open the **Actions** tab. Two runs start: **Deploy to Cloud Run** (the guidelines) and **Publish demos** (GitHub Pages). Wait for both to turn green, about 4 and 1 minutes.
+4. Open the **Actions** tab. Two runs start: **Deploy to Cloud Run** (the site) and **Forward old links** (GitHub Pages). Wait for both to turn green, about 4 and 1 minutes.
 5. If one turns red, nothing was published and the live sites still show the last good version. Open the run: the **Check patterns.json** step says exactly what's wrong, for example "missing comma" or "links to pattern 'x', which does not exist". Fix it the same way and commit again.
 
 **Adding a pattern:** copy an existing pattern block in `patterns.json`, from its `{` to its `},`, paste it where the new one should go, give it a new `id` (lowercase words joined by hyphens, never reused) and change the text. The new pattern gets a page and a number automatically. A live example for it needs code in `index.html`, so ask someone who knows HTML, or leave `examples.items` empty for now.
@@ -123,7 +123,7 @@ Links between pages must be relative (`demo/payroll.html`), never `claude.ai/art
 Every push to `main` runs two workflows (Actions tab), both of which check `patterns.json` first:
 
 - **Deploy to Cloud Run** deploys the guidelines and the Claude review in about 4 minutes. This is the one that matters for pattern changes.
-- **Publish demos** publishes the demos and the redirect to GitHub Pages in about a minute.
+- **Forward old links** updates the redirects on GitHub Pages in about a minute.
 
 - **Green:** live. Hard-refresh the page (Cmd+Shift+R), the CDN can cache the old version for a few minutes.
 - **Red:** nothing was published and the live site still shows the last good version. Open the failed run, the check step says what to fix.
@@ -132,9 +132,9 @@ A run that failed for another reason (for example Google Cloud was briefly unava
 
 ## Visibility
 
-The repo and the GitHub Pages demos are public: anyone with the link can open them. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
+The repo is public: anyone can read it on GitHub. The noindex tag keeps the pages out of search results, but it does not restrict access, so don't put anything confidential here. `patterns.md` is a plain text file and can't carry a noindex tag. It is only linked from noindex pages, but the repo itself is public on GitHub.
 
-The site on Cloud Run needs a Visma sign-in. The Claude review there stops for the day once it has cost $15. GitHub Pages serves only the demos, and its redirect for old links leads to the sign-in.
+The site on Cloud Run needs a Visma sign-in. The Claude review there stops for the day once it has cost $15. The demos are behind the same sign-in. GitHub Pages only forwards old links to it.
 
 ## Related
 

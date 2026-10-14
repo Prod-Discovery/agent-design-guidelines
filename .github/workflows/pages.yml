@@ -1,9 +1,9 @@
-# Publishes the demos to GitHub Pages on every push to main. The guidelines
-# themselves live on Cloud Run (deploy.yml); here, index.html and 404.html are
-# a redirect so old guidelines links keep working.
+# GitHub Pages only forwards old links. Everything, demos included, lives on
+# Cloud Run behind Visma sign-in (deploy.yml). Here, index.html, 404.html and
+# every demo/<name>.html are pages/redirect.html, so old links keep working.
 # patterns.json is still checked first: if it has a problem, the run fails and
 # nothing is published.
-name: Publish demos
+name: Forward old links
 
 on:
   push:
@@ -36,14 +36,15 @@ jobs:
       - name: Check patterns.json
         run: python3 scripts/build_patterns.py --check
 
-      # Only the demos live on GitHub Pages. The guidelines are on Cloud Run;
-      # the redirect page sends every old guidelines link there.
-      - name: Collect the demos and the redirect
+      # No content on GitHub Pages: every old address (guidelines and demos)
+      # gets the redirect page, which forwards to the same place on Cloud Run.
+      - name: Build the redirects
         run: |
-          mkdir -p _site
-          cp -R demo .nojekyll _site/
+          mkdir -p _site/demo
+          cp .nojekyll _site/
           cp pages/redirect.html _site/index.html
           cp pages/redirect.html _site/404.html
+          for f in demo/*.html; do cp pages/redirect.html "_site/$f"; done
 
       - uses: actions/configure-pages@v5
 
