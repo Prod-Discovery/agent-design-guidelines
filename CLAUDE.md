@@ -82,7 +82,7 @@ this file. If a request needs one of those, say it waits for Cristina.
    When it's green and the person has confirmed, merge it with
    `gh pr merge --merge --delete-branch`.
 10. **After merging,** two workflows run: "Deploy to Cloud Run" (the site) and
-    "Publish demos" (GitHub Pages). Wait with `gh run watch` until both are green
+    "Forward old links" (GitHub Pages). Wait with `gh run watch` until both are green
     (about 4 minutes), then send the person the link to what changed:
     https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app (it needs a Visma sign-in;
     refresh with Cmd+Shift+R).
@@ -123,8 +123,8 @@ Every push to `main` publishes to two places:
 
 | Where | Workflow | What people get |
 |---|---|---|
-| GitHub Pages, public | `.github/workflows/pages.yml` | **Only the three demos** (since 2026-10-13). `index.html` and `404.html` there are `pages/redirect.html`, which forwards every old guidelines link to the same path and `#anchor` on Cloud Run. |
-| Cloud Run service `agent-design-guidelines`, **behind Visma sign-in** (see below) | `.github/workflows/deploy.yml` | The whole site plus the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
+| GitHub Pages | `.github/workflows/pages.yml` ("Forward old links") | **No content** since 2026-10-14: `index.html`, `404.html` and every `demo/<name>.html` there are `pages/redirect.html`, which forwards every old link to the same path and `#anchor` on Cloud Run. |
+| Cloud Run service `agent-design-guidelines`, **behind Visma sign-in** (see below) | `.github/workflows/deploy.yml` | The whole site, the demos and the Claude review. https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app |
 
 The guidelines are on Cloud Run only, so they can go behind sign-in. The demos stay on Pages. If the Cloud Run address changes, update `site` in `patterns.json` and `SITE` in `pages/redirect.html`.
 
@@ -166,7 +166,7 @@ The guidelines are on Cloud Run only, so they can go behind sign-in. The demos s
 **Only people signed in with a Visma Google account** (Identity-Aware Proxy), since
 2026-10-13, agreed with Amanda and Diana. `domain:visma.com` is allowed; Cristina is
 adding the other Visma companies' domains. Anyone else is sent to Google sign-in. The
-demos on GitHub Pages stay public. Deploys don't change this setting: `deploy.yml`
+demos are behind the same sign-in (old GitHub Pages demo links forward here). Deploys don't change this setting: `deploy.yml`
 has no `--allow-unauthenticated` / `--no-allow-unauthenticated` flag on purpose.
 
 If someone can't get in, they're probably on a domain that isn't allowed yet. Don't
@@ -264,6 +264,6 @@ Run it after changing `review.py`, the questions in `patterns.json`, or the mode
 
 ## Not done yet
 
-- **Sign-in for every Visma company**: add their domains (see "Who can open the site"). Then consider making the repo internal. Keep `pages.yml`: it serves the demos.
+- **Sign-in for every Visma company**: add their domains (see "Who can open the site"). Then consider making the repo internal. Keep `pages.yml`: it forwards old links.
 - **Billing budget alert**: Cristina has no access to billing account `01C3B7-C9B9D8-A97125`; a billing admin has to create it. The daily budget above is the hard stop meanwhile.
 - **Per-user daily limit**: IAP passes the email in the `X-Goog-Authenticated-User-Email` header, so it can be added to `check_budget`.
