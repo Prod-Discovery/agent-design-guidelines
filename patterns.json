@@ -35,37 +35,43 @@
       "id": "say-its-an-agent",
       "name": "Agent disclosure",
       "group": "before",
-      "rule": "Always clear what an agent did, from the very first interaction.",
+      "rule": "Clear from the first interaction which agent is doing the work, on every task, proposal and message.",
       "intro": [
-        "We are required by law (AI Act, article 50) to clearly show when something is done by AI and agents. This needs to be done at the very first interaction, and not only in e.g. terms and conditions.",
-        "This can be done in many different ways depending on the context. Keep the marker consistent, and avoid human names and faces for agents."
+        "Show that the user is working with an agent from the first interaction, and on everything the agent does. The AI Act (article 50) requires this, and a note in the terms and conditions isn’t enough.",
+        "Use the same marker everywhere, and a role name instead of a person’s name or face."
       ],
       "look_for": [
-        "A plain “Agent” label on every action",
-        "A marker that stays on each field it filled",
-        "A role name, never a person’s name or face",
-        "The same label in the log"
+        "The agent named at the start of the work",
+        "A plain role name, like “Payroll agent”, never a person’s name or face",
+        "The agent named on every task, proposal and message",
+        "A way to see what the agent does and what it’s based on"
       ],
-      "do": "The marker stays on the field, and the log says “Payroll agent”.",
-      "avoid": "A one-time “AI filled this” banner.",
+      "do": "A banner says the user is working with the Payroll agent, and the badge explains what it does. Every proposal says who proposed it.",
+      "avoid": "A one-time “AI filled this” banner, or AI mentioned only in the terms and conditions.",
       "examples": {
         "intro": "How the pattern can be applied in practice, including suggestions, answers and work status.",
         "items": [
           {
-            "id": "propose",
-            "marker": "Proposals by agents",
-            "what": "Every proposal names the agent that made it, right next to the decision buttons. Try accepting or rejecting it."
-          },
-          {
-            "id": "client",
-            "marker": "Drafted by agent, sent by you",
-            "what": "Messages that reach clients say they were drafted by an agent, and which person sent them."
+            "id": "pyban",
+            "marker": "A banner names the agent, and the badge explains it",
+            "what": "At the top of the payroll run, a banner tells the user they are working with the Payroll agent and that money never moves without their approval. When clicked, the badge reveals what the agent does and what data it uses.",
+            "demo": "Payroll"
           },
           {
             "id": "feed",
-            "marker": "Work in progress",
-            "what": "Ongoing work is listed per agent, with a spinner while it runs, so it is always clear what the agents are doing.",
+            "marker": "Each running task names its agent",
+            "what": "A list of current work, with each line starting with the agent doing it. A spinner shows what’s running now, and finished tasks move down with a tick and when they finished. The agent is named at all stages.",
             "narrow": true
+          },
+          {
+            "id": "propose",
+            "marker": "The proposing agent is named next to the decision",
+            "what": "The Absence agent proposes changing an employee payslip under the Sick Pay Act. ‘Proposed by Absence agent’ stays next to Accept, Edit and Reject, and is still there after the user decides."
+          },
+          {
+            "id": "client",
+            "marker": "Messages show who drafted it and who sent it",
+            "what": "A question to a client about a purchase is marked ‘Drafted by Client agent, sent by you’. When the client replies, the Bookkeeping agent proposes how to book it, and that proposal is labelled as the agent’s too."
           }
         ]
       }
@@ -74,32 +80,37 @@
       "id": "autonomy-levels",
       "name": "Autonomy levels",
       "group": "before",
-      "rule": "A level per task, from Assistant to Autopilot, chosen by the person responsible.",
+      "rule": "A level per task, from Off to Auto, set by the user. Pay never runs on Auto.",
       "intro": [
-        "A named setting, such as Assistant, Copilot or Autopilot, chosen separately for each task, so low-risk work can run alone while high-risk work waits for approval."
+        "A named setting, such as Off, Suggest, Ask first or Auto, chosen separately for each task, so low-risk work can run alone while high-risk work waits for approval."
       ],
       "look_for": [
-        "The current level, visible per task"
+        "A level per task: Off, Suggest, Ask first or Auto",
+        "The current level visible, with what the agent will do",
+        "Different levels for different areas of the same agent",
+        "The level shown on each action in the log",
+        "Pay, filings and salary changes never run on Auto"
       ],
-      "do": "Reconciliation on Autopilot, payroll on Copilot, salary changes by a person only, each visible on screen.",
+      "do": "Collecting time on Auto, exception checks on Ask first, and the payment file to the bank never on Auto, each visible on screen.",
       "avoid": "One on/off switch for the whole product.",
       "examples": {
         "intro": "How the pattern can be applied in practice, including levels per task, permissions per area and the level behind each action.",
         "items": [
           {
-            "id": "lvl",
-            "marker": "Agent level per task",
-            "what": "Each task has its own level, chosen by the person responsible. Change a level and see what the agent would do with the same work."
+            "id": "pylvl",
+            "marker": "Each task has its own level, and pay never runs on Auto",
+            "what": "Payroll tasks, each set to Off, Suggest, Ask first or Auto, with a line saying what the agent will do at that level. The user can change each level, but Auto can’t be chosen for the payment file to the bank.",
+            "demo": "Payroll"
           },
           {
             "id": "perm",
-            "marker": "Permissions per area",
-            "what": "Within one agent, each area has its own permission. The agent acts where it is allowed, asks where it must, and stays out of the rest. Click a permission to change it."
+            "marker": "One agent, a different permission per area",
+            "what": "The Bookkeeping agent is allowed to work in the ledger, must ask before emailing customers, and is kept out of bank payments and payroll. When it tries to send overdue reminders, it stops and asks first. The user can change each permission, or switch the whole agent between Ask, Plan and Agent mode."
           },
           {
             "id": "levlog",
-            "marker": "Level shown on every action",
-            "what": "Every action carries the level it ran at, so it is clear afterwards what the agent did alone and what a person approved."
+            "marker": "The log shows the level behind each action",
+            "what": "Each line in the activity log names the agent, what it did and the level it ran at. Actions that needed approval also show who approved them, so it’s clear afterwards what the agent did on its own."
           }
         ]
       }
@@ -108,35 +119,36 @@
       "id": "triggers",
       "name": "Triggers",
       "group": "before",
-      "rule": "Starts on its own when a date arrives or something happens, and says what started it.",
+      "rule": "Starts on its own on a date or an event, says what started it, and shows what’s next.",
       "intro": [
-        "The agent starts on its own when a date arrives or something happens, such as a client replying, and reports what it did."
+        "The agent starts on its own when a date arrives or something happens, such as a client replying, and reports what it did. The user can see what will run next, and pause it."
       ],
       "look_for": [
-        "The trigger in words: “when time reporting closes”",
-        "What it did, reported where people already look",
-        "A way to pause the trigger",
-        "The next run date"
+        "The trigger in plain words: “when time reporting closes”",
+        "What started the run, shown at the top",
+        "A way to pause a trigger, or a single task, before it runs",
+        "What runs next, and when"
       ],
-      "do": "It starts when time reporting closes, and says so: “Started on its own at 06:00.”",
-      "avoid": "A “Run agent” button. Nothing happens until someone remembers.",
+      "do": "The run starts when time reporting closes and says so at the top. The next tasks are listed by date, each with a way to pause it.",
+      "avoid": "Work that only starts when someone remembers to press “Run agent”.",
       "examples": {
         "intro": "How the pattern can be applied in practice, including schedules, events and the start of a run.",
         "items": [
           {
             "id": "sched",
-            "marker": "Running on its own",
-            "what": "Each trigger is written in plain words, with what it did last and when it runs next. A switch pauses a trigger without deleting it."
-          },
-          {
-            "id": "cal",
-            "marker": "Agents in the calendar",
-            "what": "Scheduled agents sit next to the meetings they belong to. Agents that start on an event, like a new invoice, have no time slot, so they are listed beside the calendar."
+            "marker": "Each trigger says when it runs, and can be paused",
+            "what": "Agents start on their own: on a date, every month, or when a client replies. Each line names the agent and shows what it did last and when it runs next. The user can pause a trigger with the switch without deleting it."
           },
           {
             "id": "start",
-            "marker": "Says what started it",
-            "what": "When the agent starts on its own, the work opens with what started it and when, and ends with the next run date."
+            "marker": "The run opens with what started it",
+            "what": "The Payroll agent started on its own when time reporting closed, and says so at the top, with the time and date. It then collects from each source one by one, and ends with the date of the next run."
+          },
+          {
+            "id": "pyup",
+            "marker": "What the agent does next, with a pause on each task",
+            "what": "The list opens with what started the run, then shows the agent’s next tasks by date. The user can pause any task the agent does on its own before it runs. The payment file is marked ‘Waits for you’ because it never goes without approval.",
+            "demo": "Payroll"
           }
         ]
       }
@@ -145,33 +157,41 @@
       "id": "suggestions",
       "name": "Suggestions",
       "group": "before",
-      "rule": "Prepares the change and offers it as a button. Nothing happens before the tap.",
+      "rule": "Prepares the change and offers it. Nothing happens until the user confirms.",
       "intro": [
-        "The agent prepares the change, or suggests the next step from what is in the books, and offers it as a button. It carries it out only when the person taps, instead of acting on their behalf unasked."
+        "The agent prepares a change, or suggests the next step based on what is in the books. Nothing happens until the user confirms."
       ],
       "look_for": [
-        "One clear confirm action",
-        "The offer says what it will do, and nothing happens until the tap"
+        "The change prepared, with what it will do",
+        "One clear way to confirm, and a way to say not now",
+        "Nothing happens until the user confirms",
+        "A preview of anything that will be sent"
       ],
-      "do": "The agent prepares the change and offers it as a button. Nothing is sent until the person taps.",
-      "avoid": "The agent acts first and tells you after.",
+      "do": "The agent proposes adding vacation pay to a final salary, shows the salary now next to the proposal, and changes nothing until the user confirms.",
+      "avoid": "The agent acts first and tells the user afterwards.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including offers, a side-by-side comparison and next steps.",
+        "intro": "How the pattern can be applied in practice, from a single change to a whole payroll run prepared for approval.",
         "items": [
           {
-            "id": "offer",
-            "marker": "One clear confirm action",
-            "what": "The offer says what will happen and who checks the result. Nothing is matched until the person taps."
+            "id": "versus",
+            "marker": "Offered, awaiting confirmation",
+            "what": "An employee is leaving with unused vacation days, so the Payroll agent proposes adding vacation pay to the final salary. It shows the salary now next to the proposal, and nothing changes until the user confirms. The user can undo it afterwards."
           },
           {
-            "id": "versus",
-            "marker": "Offered, not done to you",
-            "what": "The same change, offered as a button or made without asking. Switch between them to compare."
+            "id": "offer",
+            "marker": "The agent offers to match receipts, and the user confirms",
+            "what": "The agent finds receipts in the inbox for card payments that are missing one, and offers to match them. Nothing happens until the user confirms. After matching, the user checks the matches and books them, or undoes the matching."
           },
           {
             "id": "next",
-            "marker": "Next step from the books",
-            "what": "The agent suggests the next step where the work already is, with a preview of exactly what will be sent."
+            "marker": "The next step is suggested where the work is",
+            "what": "An invoice is late, and the Invoice agent suggests sending a friendly reminder, as this client usually pays soon after one. The user can preview the exact email before sending it, and it’s marked as drafted by the agent and sent by the user."
+          },
+          {
+            "id": "pystage",
+            "marker": "Prepared, not sent",
+            "what": "The Payroll agent prepares the bank file, payslips, journal and employer declaration, and sends nothing until the user approves. Each action then ticks off as it goes out.",
+            "demo": "Payroll"
           }
         ]
       }
@@ -180,36 +200,42 @@
       "id": "live-progress",
       "name": "Live progress",
       "group": "while",
-      "rule": "A count of the work and a running feed, with the rule behind each step.",
+      "rule": "Progress per source or step, with what was found and the rule behind it.",
       "intro": [
-        "A progress indicator and running feed while the agent works, with the rule or confidence behind each step.",
-        "Announcing each step lets people who use a screen reader follow the run, pause it and take over."
+        "A progress indicator and running feed while the agent works, with the rule or confidence behind each step and links to its sources. The user can pause the run at any time."
       ],
       "look_for": [
-        "A progress count: “48 of 64”",
-        "The rule or source behind each step",
+        "Progress per source or step",
+        "What was found, and the rule or confidence behind each step",
         "Named states: working, waiting, paused, done",
-        "A status message for every state change, and pause reachable by keyboard"
+        "A way to pause the run",
+        "Answers that link to their sources"
       ],
-      "do": "“Collecting for 48 of 64 employees”, each finished check listed with the rule it used, and announced as “Step 3 of 5. Calculate depreciation. Agent working.”",
-      "avoid": "A spinner, then a result. Or a bare 94%. Or progress shown only on screen.",
+      "do": "Each source is marked as collecting, then done, with a short note on what was found. The user can pause the run at any time.",
+      "avoid": "A spinner, then a result. Or a bare percentage.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a running feed, sources for every claim and announced steps.",
+        "intro": "How the pattern can be applied in practice, from progress per source to named steps that can be paused.",
         "items": [
           {
-            "id": "rec",
-            "marker": "Running feed with reasons",
-            "what": "A count of the work, and a feed of finished checks, each with the rule or confidence behind it. Click a tag to see the reason."
+            "id": "pycoll",
+            "marker": "Progress per source, with what was found",
+            "what": "The Payroll agent collects time, absence, employee changes, tax and advances one source at a time. Each one is marked as collecting, then done, with a short note on what it found, such as a question to answer or a change to review.",
+            "demo": "Payroll"
           },
           {
-            "id": "src",
-            "marker": "Every claim points to its source",
-            "what": "Answers link each number to the document it came from. Click a source marker to see it."
+            "id": "rec",
+            "marker": "A running count, with the reason behind each step",
+            "what": "While the Reconciliation agent matches bank lines, a progress bar and count show how far it has come, and finished steps appear in a feed. Each step has a tag with the rule or confidence it used. Clicking the tag shows the reason."
           },
           {
             "id": "states",
-            "marker": "Named states, also announced",
-            "what": "Each step has a number and a named state. Every change is also sent to screen readers as a status message, and the run can be paused from the keyboard."
+            "marker": "Each step has a named state",
+            "what": "The Close agent works through the month-end close step by step, and each step is marked as working, waiting, paused or done. When it needs approval, it waits for the user, who can also pause the run at any time."
+          },
+          {
+            "id": "src",
+            "marker": "Answers link to sources",
+            "what": "The user asks whether a price on an invoice is right, and the Contract agent shows that it’s checking before it answers. The answer marks each number with a source, and clicking a marker shows the contract clause or invoice line it came from."
           }
         ]
       }
@@ -218,37 +244,43 @@
       "id": "failure-disclosure",
       "name": "Failure disclosure",
       "group": "while",
-      "rule": "What failed, why, what did not happen and what to do next.",
+      "rule": "What failed, why, what’s still on track and what to do next.",
       "intro": [
-        "When the agent can’t finish, it says so plainly: what failed, why, what did not happen and what you can do next. It never covers a failure with a confident summary.",
-        "Record the outcome in the log, whichever way forward is chosen."
+        "When the agent can’t finish, it says so plainly: what failed, why, what did not happen and what the user can do next, including when it found nothing. It never covers a failure with a confident summary."
       ],
       "look_for": [
-        "The failure named in the title, like “Bank file rejected”",
-        "The concrete cause, in the customer’s terms",
-        "What did not happen: “No payments were sent.”",
-        "A way forward: fix it, retry once, or hand it to a person",
-        "Empty results and low confidence said as such, not hidden"
+        "The failure named plainly, like “Bank file rejected”",
+        "The cause, in the user’s terms",
+        "What didn’t happen, and what is still on track",
+        "A way forward: fix it, retry, or hand it to a person",
+        "Empty results said as empty, with where the agent looked",
+        "The outcome recorded in the log, whichever way forward is chosen"
       ],
-      "do": "“Bank file rejected. The payment to Hamburg Stahl GmbH has no BIC code. No payments were sent.” Then: add the BIC and resend, send the other 2, or hand it to Anders.",
-      "avoid": "“Something went wrong.” A failure styled like a normal result, or a run that keeps retrying forever.",
+      "do": "“Bank file rejected. One payment is missing a bank code. No payments were sent.” Then: fix it and resend, send the other payments, or hand it to a colleague.",
+      "avoid": "“Something went wrong.” A failure that looks like a normal result, or a run that keeps retrying forever.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a rejected bank file, an empty search and a comparison with a cover-up.",
+        "intro": "How the pattern can be applied in practice, from a single failed payslip to a whole run that stops.",
         "items": [
           {
+            "id": "pyfail",
+            "marker": "One part fails, the rest stays on track",
+            "what": "One payslip couldn’t be delivered because the new employee hasn’t activated the app. The Payroll agent says why, confirms that salaries and the other payslips went out, and recommends a way forward. The user’s choice waits a few seconds so it can be undone, and the agent can learn from the failure.",
+            "demo": "Payroll"
+          },
+          {
             "id": "bfile",
-            "marker": "Named, explained and bounded",
-            "what": "The failure is named in the title, with the concrete cause and what did not happen, and the ways forward. The outcome is recorded either way."
+            "marker": "The failure is named, with what didn’t happen",
+            "what": "The bank rejects a payment file because one payment is missing a bank code. The agent names the failure, gives the cause and says no payments were sent. The user can fix it and resend, send the other payments, or hand it to a colleague."
           },
           {
             "id": "empty",
-            "marker": "Empty results, said as empty",
-            "what": "When the agent finds nothing, it says so, and lists where it looked and where it couldn’t look."
+            "marker": "Nothing found, and where it looked",
+            "what": "The user asks the Invoice agent for a delivery note, and it says plainly that none was found. It lists where it searched and where it couldn’t search, then offers to ask the supplier or a colleague."
           },
           {
             "id": "cover",
-            "marker": "Not covered by a confident summary",
-            "what": "The same failed payroll run, disclosed or covered up. Switch between them to compare."
+            "marker": "A stopped run, said plainly",
+            "what": "A payroll run can’t calculate tax, so the agent stops. It says where it stopped, why, what wasn’t done and what it will try next. The user can also choose to continue with last year’s tax tables for now."
           }
         ]
       }
@@ -259,33 +291,40 @@
       "group": "while",
       "rule": "Routine work in one line. Only what needs judgement is listed, with the reason.",
       "intro": [
-        "Routine items are handled automatically and summarised in one line. Only the items that need judgement are listed, each with the reason it was flagged."
+        "Routine items are handled automatically and summarised in one line. Only the items that need judgement are listed, each with the reason it was flagged and a proposal."
       ],
       "look_for": [
-        "A count: “3 need you”",
-        "A card per item: problem, proposal, reason",
+        "A count of what needs the user",
+        "One card per item: problem, proposal, reason",
+        "What the agent did on its own, with the rule that allowed it",
         "Bulk actions only for the easy ones",
-        "An empty state when nothing needs you"
+        "An empty state when nothing needs the user"
       ],
-      "do": "One card per exception: the problem, the proposal and the reason.",
+      "do": "Routine invoices summed up in one line, and only the ones that need judgement listed, each with the problem, the proposal and the reason.",
       "avoid": "Alerts for everything, and no proposal.",
       "examples": {
         "intro": "How the pattern can be applied in practice, including a queue with reasons, bulk actions and an agent inbox.",
         "items": [
           {
             "id": "queue",
-            "marker": "Only what needs you",
-            "what": "Routine invoices are summed up in one line. The two that need judgement are listed with the reason they were flagged. Open one to see the problem, the proposal and the reason."
+            "marker": "Routine work in one line, exceptions listed with the reason",
+            "what": "Most of today’s supplier invoices were approved by the Invoice agent, and that’s summed up in one line. The two that need judgement are listed separately. Opening one shows the problem, the agent’s proposal and the rule that flagged it, and the user decides."
+          },
+          {
+            "id": "pyneeds",
+            "marker": "What needs the user, and what the agent did alone",
+            "what": "The overview leads with what the agent couldn’t settle: a frozen payment after a bank account change, and a question about a sick day. Each has the reason and a way to decide. Below, what the agent did on its own is listed with the rule that allowed it.",
+            "demo": "Payroll"
           },
           {
             "id": "bulk",
-            "marker": "Bulk actions only for the easy ones",
-            "what": "Easy exceptions with the same fix can be handled together. The risky one, a new bank account, is left out of the bulk action and must be checked on its own."
+            "marker": "Easy exceptions together, risky ones on their own",
+            "what": "Card payments missing a receipt can all be matched in one go, because the agent found receipts with the same amount and date. A payment to a new bank account is left out of the bulk action, and the user has to check it separately."
           },
           {
             "id": "inbox",
-            "marker": "One inbox for all agents",
-            "what": "Each agent posts what it needs from you, newest first, like email. The count goes down as you finish items, and an empty state says when nothing needs you.",
+            "marker": "One inbox for what every agent needs",
+            "what": "Each agent posts what it needs from the user, newest first, like email. The list gets shorter as the user marks items done, and says so when nothing needs them.",
             "narrow": true
           }
         ]
@@ -295,33 +334,43 @@
       "id": "actions",
       "name": "Review and approve",
       "group": "while",
-      "rule": "A before-and-after for every change, with accept, edit or reject.",
+      "rule": "Each change shown as before and after, to accept, edit, reject or hand over.",
       "intro": [
-        "Each suggested change is shown as a before-and-after with its reason and three actions: accept, edit or reject. Taking over is always one tap away.",
-        "Show the reason and the rule with each change, and keep changes pending until a person saves. In our first sprint, “Accept all” hid what the agent changed."
+        "Each suggested change is shown as a before-and-after, with its reason and rule, and three actions: accept, edit or reject. The user can always edit the change themselves.",
+        "Nothing is saved until every change is decided."
       ],
       "look_for": [
-        "Before and after, as a diff, with Accept, Edit and Reject"
+        "Before and after, with the reason and rule",
+        "Accept, edit and reject on each change",
+        "High-stakes fields, like a bank account, marked",
+        "Nothing saved until every change is decided",
+        "A choice whether the agent learns from an edit"
       ],
-      "do": "Accept or reject per change, with a diff on high-stakes fields.",
+      "do": "A different VAT code is suggested for a foreign supplier’s invoice, with the current booking next to the proposal and the rule behind it. The user accepts, rejects or edits it before anything is booked.",
       "avoid": "“Accept all” on the whole form.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a diff with its reason, decisions per field and editing a draft.",
+        "intro": "How the pattern can be applied in practice, from a single change to a draft the user edits before sending.",
         "items": [
           {
             "id": "vat",
-            "marker": "Before and after, with the reason",
-            "what": "The change is shown as a diff, with the reason and the rule beside it. Accept, edit or reject it. Edit lets you pick another account before anything is booked."
+            "marker": "A suggested change, shown as before and after",
+            "what": "The Bookkeeping agent suggests a different VAT code for an invoice from a foreign supplier, showing the current booking next to the proposal, with the reason and rule. The user can accept, reject, or edit it by picking another account before anything is booked."
+          },
+          {
+            "id": "pycase",
+            "marker": "Accept, edit, reject or hand over",
+            "what": "A payment was frozen after an employee’s bank account changed. The case shows what happened, which rule matched, and the agent’s proposal next to what happens now. If the user edits the proposal, they choose whether the agent learns from the change.",
+            "demo": "Payroll"
           },
           {
             "id": "chg",
-            "marker": "One decision per change",
-            "what": "Each field the agent wants to change gets its own decision, with high-stakes fields like the bank account marked. Nothing is saved until every change is decided and you press Save."
+            "marker": "Each change gets its own decision",
+            "what": "The Supplier agent proposes updating a supplier’s bank account, payment terms and address. Each change is accepted or rejected on its own, and the bank account is marked as high stakes. Nothing is saved until every change is decided and the user saves."
           },
           {
             "id": "draft",
-            "marker": "Edit the draft, then send",
-            "what": "Taking over is one tap away. Edit the drafted reminder in place, go back to the agent draft, or send it as it is."
+            "marker": "The user can edit the draft before sending",
+            "what": "The Invoice agent drafts a payment reminder. The user can send it as it is, edit the text in place, or go back to the agent’s draft. Once sent, it shows that the agent drafted it and the user sent it."
           }
         ]
       }
@@ -330,35 +379,37 @@
       "id": "uncertainty",
       "name": "Clarifying questions",
       "group": "while",
-      "rule": "One specific question with a best guess, instead of guessing.",
+      "rule": "One specific question with a best guess, while the rest of the work carries on.",
       "intro": [
-        "The agent recognises when it’s uncertain and asks a specific question instead of guessing or flagging the whole item. The question comes with its best guess, the alternatives and what it will do with your answer."
+        "The agent recognises when it’s uncertain and asks a specific question instead of guessing or flagging the whole item. The question comes with its best guess, the alternatives and what it will do with the user’s answer."
       ],
       "look_for": [
         "One specific question, about the part the agent doesn’t know",
         "Its best guess, and why",
-        "The alternatives, each with what it will do",
-        "The rest of the work carrying on while the question waits"
+        "What each answer will do",
+        "The rest of the work carrying on while the question waits",
+        "An option to remember the answer next time"
       ],
-      "do": "“Anna was off on Monday, but there’s no absence reason. Sick leave, vacation or unpaid leave? It affects her sick pay.” With sick leave marked as the best guess.",
+      "do": "“An employee was off with no absence reason. Sick leave, vacation or unpaid leave? It affects sick pay.” With sick leave marked as the best guess.",
       "avoid": "Booking unpaid leave straight away, or flagging the whole payslip for review.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a question with a best guess, a question that doesn’t hold up the rest and a comparison with guessing.",
+        "intro": "How the pattern can be applied in practice, from a single question with a best guess to a question that doesn’t hold up the rest of the run.",
         "items": [
           {
             "id": "q",
-            "marker": "One question, with a best guess",
-            "what": "The agent asks about the one thing it doesn’t know, leads with its best guess and why, and shows what each answer will do before you choose."
+            "marker": "One question, with a best guess and what each answer does",
+            "what": "An employee was off for a day with no absence reason. The Absence agent asks whether it was sick leave, vacation or unpaid leave, marks its best guess and why, and shows what each answer will do to pay. The user can answer, or ask the employee instead."
+          },
+          {
+            "id": "pyq",
+            "marker": "A question about pay, with a guess the agent can learn from",
+            "what": "A sick day overlaps a booked vacation day, and the manager’s note is unclear. The Payroll agent asks because the answer changes pay, and adds its guess. If the user answers differently, they can let the agent learn from it, and it still asks next time.",
+            "demo": "Payroll"
           },
           {
             "id": "part",
-            "marker": "Ask about the part, not the whole",
-            "what": "Payroll keeps running for everyone else while one question waits. Answer it, and the last payslip is finished."
-          },
-          {
-            "id": "guess",
-            "marker": "Asked, not guessed",
-            "what": "The same missing absence reason, asked about or guessed. Switch between them to compare."
+            "marker": "One question doesn’t hold up the rest",
+            "what": "Payroll keeps running for everyone else while one question waits. Only one line on one payslip is missing. When the user answers, that payslip is finished too."
           }
         ]
       }
@@ -367,33 +418,37 @@
       "id": "hand-over",
       "name": "Escalation",
       "group": "while",
-      "rule": "Stops at the edge of the rules and hands the case to a named person.",
+      "rule": "Stops at the edge of the rules and hands the case to a named person, with what was checked.",
       "intro": [
         "When the agent reaches the edge of the rules, or something fails, it prepares what it can, stops, and hands the case to a named person with what it checked, what failed and why it’s theirs.",
-        "Show the edge of the rules that started the escalation. For judgement calls, such as asset or repair, the case goes to the accountant."
+        "Failure disclosure tells the user what went wrong. Escalation hands the case to the person who should decide, for example an accountant for whether a cost is an asset or a repair."
       ],
       "look_for": [
-        "A named person, not a queue, with what was checked and why it’s theirs"
+        "A named person, not a queue",
+        "What was checked, and why it’s their call",
+        "The case handed over with its data, rule and proposal",
+        "A way to take it back"
       ],
-      "do": "The excavator case handed to Anders with what was checked.",
-      "avoid": "The case lands in a suspense account, or the agent guesses.",
+      "do": "A judgement call handed to an accountant with what the agent checked and drafts for both options.",
+      "avoid": "The case parked in a suspense account, or the agent guessing.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a hand-over with context, a failure with ways forward and a comparison with a suspense account.",
+        "intro": "How the pattern can be applied in practice, from a hand-over with what was checked to a stop when something fails.",
         "items": [
           {
             "id": "case",
-            "marker": "Handed to a named person",
-            "what": "The agent prepares the case, stops, and hands it to Anders with what it checked and why it is his call. Open what was checked, or take the case."
+            "marker": "The case goes to a named person, with what was checked",
+            "what": "An invoice could be booked as an asset or as a repair, and the choice is a judgement call. The Close agent prepares drafts for both, stops, and hands the case to an accountant with what it checked and why it’s their call. The accountant takes the case and decides."
+          },
+          {
+            "id": "pyhand",
+            "marker": "Handed to a colleague or the client, with the full case",
+            "what": "When unsure about a frozen payment, the user hands the case to a colleague or to the client. It goes with its data, rule and the agent’s proposal, and the payment stays frozen in the meantime. The user can take it back.",
+            "demo": "Payroll"
           },
           {
             "id": "fail",
-            "marker": "Stops when something fails",
-            "what": "When the agent can’t read the attachment, it says what failed and offers the ways forward: enter it yourself, ask a colleague or upload a readable copy."
-          },
-          {
-            "id": "owner",
-            "marker": "An owner, not a suspense account",
-            "what": "The same case, handed to a person or parked in a suspense account. Switch between them to compare."
+            "marker": "It stops, and offers ways forward",
+            "what": "The Invoice agent can’t read an invoice attachment, so it can’t suggest a VAT code. It says what’s missing and offers three ways forward: enter the code yourself, ask a colleague, or upload a readable copy."
           }
         ]
       }
@@ -402,34 +457,43 @@
       "id": "undo",
       "name": "Undo",
       "group": "while",
-      "rule": "Undo right where the result shows up, and a warning before what can’t be undone.",
+      "rule": "Undo where the result shows up, changes until approval, and a warning before what can’t be undone.",
       "intro": [
         "Anything the agent did can be reversed right where it shows up, for as long as that is still possible, and the agent says before it acts what can’t be undone. An undo is logged like the action.",
         "Payments, for example, can’t be undone once they leave the bank, so the agent says so before they go."
       ],
       "look_for": [
         "Undo where the result shows up, and how long it’s possible",
-        "What can’t be undone, said before it acts"
+        "Changes possible until the user approves",
+        "What can’t be undone, said before it acts",
+        "A correction offered when something can’t be unsent",
+        "Every undo logged like the action"
       ],
-      "do": "“Sent 09:12. Undo for 10 minutes.”",
-      "avoid": "Undo only inside the log.",
+      "do": "“Sent 09:30. You can undo until 09:40.”",
+      "avoid": "Undo that’s only available in the log, far from where the change shows up.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including undo on the result, a warning before what can’t be undone and a log of changes.",
+        "intro": "How the pattern can be applied in practice, from undo on a single result to a log where every change can be undone.",
         "items": [
           {
             "id": "sent",
-            "marker": "Undo right on the result",
-            "what": "The undo sits on the reminder itself, with how long it is still possible. The undo is logged like the send."
+            "marker": "Undo sits on the result, with how long it’s possible",
+            "what": "The Reminder agent has sent a payment reminder, and the Undo button sits right on it, with how long it’s still possible. Undoing recalls the reminder before it reaches the client, and the undo is logged like the send."
+          },
+          {
+            "id": "pypay",
+            "marker": "Changeable until the user approves",
+            "what": "The agent sets payday by the client’s rule, and the user can move it for this month only, until they approve. The change can also be suggested to the client as a new rule. Once approved, payday is locked.",
+            "demo": "Payroll"
           },
           {
             "id": "warn",
-            "marker": "Says first what can’t be undone",
-            "what": "Before the payments go, the agent says what can’t be reversed and until when they can still be stopped."
+            "marker": "It says what can’t be undone before it acts",
+            "what": "Before scheduling supplier payments, the Close agent says they can’t be undone once they leave the bank, and until when they can still be stopped. The user schedules them and can stop them until the bank file is sent. After that, the only way back is a refund."
           },
           {
             "id": "ulog",
-            "marker": "The undo is logged, like the action",
-            "what": "Every change has its undo where it is listed. A reminder is held for a few seconds before it sends, what can’t be unsent offers a correction instead, and each undo becomes a row of its own."
+            "marker": "Every change can be undone where it’s listed",
+            "what": "A reminder is held for a few seconds before it sends, with Undo on it. In the list of today’s changes, each one can be undone right there. What can’t be unsent offers a correction instead, and every undo becomes a line of its own."
           }
         ]
       }
@@ -438,36 +502,38 @@
       "id": "activity-log",
       "name": "Audit trail",
       "group": "after",
-      "rule": "A plain-language record of every run: what was read, changed and reviewed.",
+      "rule": "A plain-language record of every step, with who did it: the agent or the user.",
       "intro": [
         "A time-stamped record of every run: what the agent read, what it changed, which rules it used and who reviewed the result.",
-        "It should be a log an auditor or the tax authority could follow."
+        "Write it so an auditor or the tax authority could follow it."
       ],
       "look_for": [
-        "A timeline of steps",
-        "Who did each step: agent or person",
-        "Entries written as plain sentences",
+        "Every step, in order, in plain sentences",
+        "Who did each step: the agent or the user",
+        "Why the agent acted, one click away",
+        "A filter by who did it",
         "Undo from the log"
       ],
-      "do": "Plain sentences, who approved what, and undo from the log.",
+      "do": "A run logged step by step: what started it, what it read, what it posted and with which rules, and who reviewed it.",
       "avoid": "Raw system logs, and no undo.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a run step by step, a shared timeline with undo and a comparison with a raw log.",
+        "intro": "How the pattern can be applied in practice, from a run logged step by step to a shared timeline the user can undo from.",
         "items": [
           {
             "id": "run",
-            "marker": "Every step of the run",
-            "what": "Each run is logged step by step: what the agent read, what it changed, which rules it used and who reviewed the result. Click an entry to see the details."
+            "marker": "Each step of the run, in order",
+            "what": "The Reconciliation agent’s run is logged step by step: what started it, what it read, what it posted and with which rules, what it sent for review, and who reviewed it. Clicking an entry shows the details."
+          },
+          {
+            "id": "pylog",
+            "marker": "Every step in plain language, with who did it",
+            "what": "The run log lists every step, newest first, and says whether the agent or the user did it. The user can filter by either, and open an agent step to see why it acted.",
+            "demo": "Payroll"
           },
           {
             "id": "event",
-            "marker": "Who did each step",
-            "what": "Agent steps and your own steps sit in one timeline, newest at the bottom. Your own actions carry your initials. Filter by who did it, and undo straight from the log."
-          },
-          {
-            "id": "plain",
-            "marker": "Plain sentences, not system logs",
-            "what": "The same three steps written for people, or as a raw system log. Switch between them to compare."
+            "marker": "Agent and user steps in one timeline",
+            "what": "The agent’s steps and the user’s own steps sit in one timeline, and the user’s steps carry their initials. The user can filter by who did it, and undo the bank file straight from the log."
           }
         ]
       }
@@ -476,35 +542,41 @@
       "id": "recap",
       "name": "Recap",
       "group": "after",
-      "rule": "A short summary with real numbers, and a brief when you come back.",
+      "rule": "The outcome and what’s left, a regular summary, and a brief when the user comes back.",
       "intro": [
-        "A regular summary with concrete numbers, such as time saved, issues caught and items handled without edits. When someone comes back to a long-running job, the agent first tells them what happened while they were away and what needs them now."
+        "A regular summary with concrete numbers, such as time saved, issues caught and items handled without edits. When the user comes back to a long-running job, the agent first tells them what happened while they were away and what needs them now."
       ],
       "look_for": [
-        "What it handled without asking, and what it caught",
-        "Your decision time, and where it was weaker",
-        "What needs you now, first",
-        "The details, one click later"
+        "The outcome first, then what still needs the user",
+        "What the agent handled on its own, and what it caught",
+        "What it got wrong or wasn’t sure about",
+        "The details, one click away"
       ],
-      "do": "How much was accepted without checking, how long decisions took, and what was caught. “Since Friday, 38 of 41 clients reconciled on their own. 3 need you.”",
-      "avoid": "A count of messages sent. A list of every notification since Friday.",
+      "do": "“October payroll is done.” Then what still needs the user, the month in numbers, and the reports the agent sends on its own.",
+      "avoid": "A count of messages sent, or a list of every notification since the user was last in.",
       "examples": {
-        "intro": "How the pattern can be applied in practice, including a weekly recap, a thread summary and a brief when you come back.",
+        "intro": "How the pattern can be applied in practice, from the end of a payroll run to a brief when the user comes back.",
         "items": [
           {
-            "id": "week",
-            "marker": "This week with your agent",
-            "what": "A weekly card with concrete numbers: time saved, issues caught and how much was accepted without edits, and where the agent was weaker. Switch week, or click a number to see what is behind it."
+            "id": "pyrecap",
+            "marker": "The run ends with the outcome, and what’s left",
+            "what": "The recap leads with the outcome, then what still needs the user, the month in numbers, and the reports the agent sends on its own. Releasing a held payment asks the user to confirm first, because it can’t be stopped once it’s sent.",
+            "demo": "Payroll"
           },
           {
-            "id": "thread",
-            "marker": "Summary before the thread",
-            "what": "A long thread opens with a short summary, and each point links to the message it came from. Click a number to see the message."
+            "id": "week",
+            "marker": "A weekly recap with what the agents did",
+            "what": "A weekly card shows time saved, issues caught, how much was accepted without edits, and where the agents were weaker. The user can switch week, or click a figure to see what’s behind it."
           },
           {
             "id": "back",
-            "marker": "Brief me when I’m back",
-            "what": "After a weekend away, the first thing you see is one line about what happened and what needs you. The details are one click away."
+            "marker": "A brief on what happened while the user was away",
+            "what": "After a weekend away, the user first sees one line about what was handled and what needs them. The details, what needs them and what’s done, are one click away, and each item can be handled from there."
+          },
+          {
+            "id": "thread",
+            "marker": "A long thread opens with a short summary",
+            "what": "The Invoice agent sums up a long thread with a supplier in a few points. Each point links to the message it came from, and clicking it highlights that message."
           }
         ]
       }
@@ -513,36 +585,43 @@
       "id": "autonomy-evolution",
       "name": "Earned autonomy",
       "group": "over-time",
-      "rule": "Offers to do more after approvals without changes, and steps back after corrections.",
+      "rule": "Offers to do more after a track record, and steps back after corrections.",
       "intro": [
         "After several approvals without changes, the agent offers to do that action on its own. After corrections or reversals, it steps back and asks again.",
-        "Reminders, matching and coding can earn their way to Autopilot. Pay, filings and salary changes never do."
+        "Reminders, matching and coding can earn their way to Auto. Pay, filings and salary changes never do."
       ],
       "look_for": [
-        "A track of approvals without changes",
-        "An offer to do more at a threshold",
-        "A step back after corrections",
-        "Things that never graduate: pay, filings, salary changes"
+        "A track record of approvals without changes",
+        "An offer to do more after a set number of approvals without changes, with a way to say no",
+        "A step back after corrections, with the reason",
+        "Levels stepped through one at a time",
+        "Things that never move up: pay, filings, salary changes"
       ],
-      "do": "After 10 approvals at 85% unchanged it offers more, and it steps back after two corrections.",
+      "do": "After enough approvals without changes the agent offers to do more, and after corrections it steps back and says why.",
       "avoid": "It always asks, or it runs fully automatic from day one.",
       "examples": {
         "intro": "How the pattern can be applied in practice, including an offer at a threshold, a step back after corrections and levels that can be stepped through.",
         "items": [
           {
             "id": "earn",
-            "marker": "Offers more at a threshold",
-            "what": "Each approval is tracked. After 10 approvals with at least 85% unchanged, the agent offers to send reminders on its own, and says how to switch it back."
+            "marker": "It offers to do more after a track record",
+            "what": "Each approved reminder is tracked. Once enough have been approved without changes, the Reminder agent offers to send reminders on its own, and says how to switch it back. The user can accept or keep it asking."
           },
           {
             "id": "stepback",
-            "marker": "Steps back after corrections",
-            "what": "When you correct the agent twice, it moves itself back a level and says why, and what it takes to earn the level again."
+            "marker": "It steps back after corrections",
+            "what": "The Account agent codes invoices on its own. When the user corrects it twice, it moves itself back to Suggest, says why, and says what it takes to earn the level back."
+          },
+          {
+            "id": "pyearn",
+            "marker": "More autonomy offered, based on months of work",
+            "what": "The user’s time per run falls month by month as the agent takes on more. Based on its record, the agent offers to decide routine exceptions on its own. The level per task also shows where it stepped back after being corrected.",
+            "demo": "Payroll"
           },
           {
             "id": "ladder",
-            "marker": "Levels you can step through",
-            "what": "Everyone starts with no automation. Step up when the agent has earned it, or step down at any time. Pay, filings and salary changes never graduate."
+            "marker": "Levels the user can step through",
+            "what": "Everyone starts at Off. The user steps up one level at a time, through Suggest and Ask first to Auto, when the agent has earned it, and can step down at any time. Pay, filings and salary changes never move up."
           }
         ]
       }
@@ -557,30 +636,96 @@
         {
           "product": "Netflix",
           "text": "The home screen is the recommendation. Most viewing starts there, not in search.",
-          "source": "Gomez-Uribe and Hunt, 2015"
+          "source": "Netflix Help Center",
+          "link": "https://help.netflix.com/en/node/100639"
         },
         {
-          "product": "Spotify Discover Weekly",
-          "text": "A new playlist for you every Monday. Nobody has to ask.",
-          "source": "Music Business Worldwide"
+          "product": "Apple Calendar",
+          "text": "Add a location to an event and it tells you when it’s time to leave, based on traffic. Nobody has to ask.",
+          "source": "Apple Support",
+          "link": "https://support.apple.com/guide/calendar/icl43600/mac"
+        },
+        {
+          "product": "Apple Screen Time",
+          "text": "A weekly report arrives on its own, summarising how you used your device over the past seven days.",
+          "source": "Apple Support",
+          "link": "https://support.apple.com/en-au/guide/ipad/ipad1a175601/ios"
         },
         {
           "product": "Skatteverket",
           "text": "The tax return arrives pre-filled. If it’s right, you approve it by text message.",
           "source": "Skatteverket",
-          "pita": true
+          "pita": true,
+          "link": "https://skatteverket.se/servicelankar/otherlanguages/inenglish/individualsandemployees/declaringtaxesforindividuals/howtofileyourtaxreturn.4.7be5268414bea064694c620.html"
         },
         {
-          "product": "Sage Accounting",
-          "text": "Nudges well ahead of VAT deadlines, and lists what still needs doing.",
+          "product": "Sage",
+          "text": "Nudges you well ahead of VAT deadlines, and lists what still needs doing before you file.",
           "source": "Sage product tour",
-          "pita": true
+          "pita": true,
+          "link": "https://assets.sage.com/product-tour/dist/sbca/en-GB/index.html"
+        },
+        {
+          "product": "Pennylane",
+          "text": "Requests for missing receipts, and the reminders that follow, go out on their own.",
+          "source": "Pennylane",
+          "pita": true,
+          "link": "https://www.pennylane.com/fr/expert-comptable/ia"
         }
       ],
       "patterns": [
         "triggers",
         "exceptions",
         "recap"
+      ],
+      "details": [
+        {
+          "heading": "The work comes to the user",
+          "paragraphs": [
+            "An empty chat box asks the user to know what to do, what to ask and how to phrase it. A proactive agent turns that around. It watches the books, starts when something happens, and arrives with the work prepared: what changed, what it proposes and what needs a decision. The user reviews instead of starting from a blank page."
+          ],
+          "points": [
+            {
+              "term": "Less effort",
+              "text": "Recognising a good proposal is easier than describing what you want. One look and a confirm replaces several rounds of typing and refining."
+            },
+            {
+              "term": "Nothing slips through",
+              "text": "An agent that is watching notices the late invoice, the missing absence reason or the changed bank account, even when nobody thought to ask."
+            },
+            {
+              "term": "It fits the work the user already does",
+              "text": "Payroll, invoicing, VAT and closing follow a rhythm of dates, deadlines and events. The agent can follow that rhythm too, so the work is ready when the user needs it."
+            }
+          ]
+        },
+        {
+          "heading": "When a prompt is the better choice",
+          "paragraphs": [
+            "Chat is still the right tool when the user knows something the agent can’t predict:"
+          ],
+          "points": [
+            {
+              "term": "Unpredictable requests",
+              "text": "One-off analyses, unusual scenarios or “what if” questions that don’t follow a pattern."
+            },
+            {
+              "term": "Occasional users",
+              "text": "Someone who only logs in now and then, such as a manager looking up a figure. They have no routine for the agent to follow, so asking is quicker."
+            },
+            {
+              "term": "Questions and explanations",
+              "text": "“Why did this employee’s net pay drop?”, “What does this rule mean?” The user is looking for understanding, not a task done."
+            }
+          ]
+        },
+        {
+          "heading": "Many agents need both",
+          "paragraphs": [
+            "Lead with the work for routine tasks, and keep a prompt available for everything else. The principle is about where the user starts, not about removing chat."
+          ],
+          "ask": "If the user opened the product and typed nothing, would they still see what needs them today?"
+        }
       ]
     },
     {
@@ -591,24 +736,35 @@
         {
           "product": "Contactless payments",
           "text": "Tap freely for small amounts. Above €50, or after a few taps in a row, the PIN is required.",
-          "source": "Bird & Bird"
+          "source": "EU regulation 2018/389",
+          "link": "https://eur-lex.europa.eu/eli/reg_del/2018/389/oj"
         },
         {
           "product": "ChatGPT",
-          "text": "You choose: always ask, ask before changes, or only before important changes. Bank transfers are refused.",
-          "source": "OpenAI"
+          "text": "In agent mode, it asks for permission before any action of consequence.",
+          "source": "OpenAI",
+          "link": "https://openai.com/index/introducing-chatgpt-agent/"
         },
         {
           "product": "Xero",
           "text": "Automatic reconciliation is switched on per bank account, and acts only when highly confident.",
           "source": "Xero",
-          "pita": true
+          "pita": true,
+          "link": "https://www.xero.com/uk/campaign/auto-bank-reconciliation/"
         },
         {
-          "product": "Sage Accounting",
-          "text": "Copilot drafts the payment reminder; you stay in control of sending it.",
-          "source": "Sage product tour",
-          "pita": true
+          "product": "Skatteverket",
+          "text": "Filing waits for you. A text message can only approve the return as it is; any change goes through the online service.",
+          "source": "Skatteverket",
+          "pita": true,
+          "link": "https://skatteverket.se/servicelankar/otherlanguages/inenglish/individualsandemployees/declaringtaxesforindividuals/howtofileyourtaxreturn.4.7be5268414bea064694c620.html"
+        },
+        {
+          "product": "Pennylane",
+          "text": "Custom agents make proposals, but can’t change a client’s books on their own.",
+          "source": "Pennylane",
+          "pita": true,
+          "link": "https://www.pennylane.com/fr/expert-comptable/ia"
         }
       ],
       "patterns": [
@@ -617,6 +773,59 @@
         "actions",
         "undo",
         "hand-over"
+      ],
+      "details": [
+        {
+          "heading": "Match the control to what’s at stake",
+          "paragraphs": [
+            "One level of control for everything fails in one of two ways. If everything needs approval, the user spends their day confirming routine work and the agent saves no time. If nothing does, one wrong payment or filing can undo months of trust. Setting control by risk avoids both."
+          ],
+          "points": [
+            {
+              "term": "Time goes where it matters",
+              "text": "Routine work runs on its own, so the user’s attention goes to the decisions that need judgement."
+            },
+            {
+              "term": "Approvals keep their meaning",
+              "text": "When only a few things need a yes, the user reads them properly. Asking about everything trains the user to click without looking."
+            },
+            {
+              "term": "Mistakes stay small",
+              "text": "What the agent does alone can be undone. What can’t be undone waits for a person."
+            }
+          ]
+        },
+        {
+          "heading": "How to judge what’s at stake",
+          "paragraphs": [
+            "The same agent can do low-risk and high-risk work in one run. Judge each action on its own:"
+          ],
+          "points": [
+            {
+              "term": "Can it be undone?",
+              "text": "A booking can be corrected. A salary payment or a submitted tax return can’t."
+            },
+            {
+              "term": "Does it leave the company?",
+              "text": "Money to the bank, a message to a customer and a report to the tax authority all reach someone outside."
+            },
+            {
+              "term": "How much, and for how many?",
+              "text": "A large amount, or a change that affects every employee, needs more care than a single small correction."
+            },
+            {
+              "term": "Is it someone’s money or personal data?",
+              "text": "Salaries, bank account details and absence reasons affect real people directly."
+            }
+          ]
+        },
+        {
+          "heading": "Control is a scale, not a switch",
+          "paragraphs": [
+            "Between doing everything alone and asking about everything, there are levels: suggest, ask first, act and report. The same task can also use different levels depending on the case. Small, familiar invoices are matched automatically, while unusual or large ones wait for the user. When the agent is unsure, it moves to a tighter level on its own, never a looser one."
+          ],
+          "ask": "If the agent got this wrong, who would notice, and could it be fixed before it mattered?"
+        }
       ]
     },
     {
@@ -625,60 +834,216 @@
       "statement": "Always labelled as an agent, and always showing why.",
       "in_practice": [
         {
-          "product": "Gmail",
-          "text": "Every message in spam says why it’s there.",
-          "source": "Spam Resource"
+          "product": "Netflix",
+          "text": "Rows like “Because you watched…” say why each title is recommended.",
+          "source": "Microsoft HAX Toolkit",
+          "link": "https://www.microsoft.com/en-us/haxtoolkit/example/netflix-g11-e-map-user-behaviors-to-system-outputs/"
         },
         {
-          "product": "ChatGPT",
-          "text": "On longer tasks, you can follow its progress step by step as it works.",
-          "source": "OpenAI"
+          "product": "Amazon",
+          "text": "Review summaries are labelled as AI-generated, and each theme opens the reviews behind it.",
+          "source": "About Amazon",
+          "link": "https://www.aboutamazon.com/news/amazon-ai/amazon-ai-generated-review-highlights"
+        },
+        {
+          "product": "Gmail",
+          "text": "When an email can’t be delivered, Gmail tells you why and what you can do about it.",
+          "source": "Google Support",
+          "link": "https://support.google.com/mail/answer/6596"
         },
         {
           "product": "Xero",
           "text": "Each auto-reconciled line says how: rule, match, memory or prediction.",
-          "source": "Insightful Accountant",
-          "pita": true
+          "source": "Xero",
+          "pita": true,
+          "link": "https://www.xero.com/ie/accounting-software/bank-reconciliation/"
         },
         {
           "product": "QuickBooks",
-          "text": "A RULE badge shows when a bank rule categorised a transaction.",
-          "source": "Intuit",
-          "pita": true
+          "text": "A Rule label shows when a bank rule categorised a transaction.",
+          "source": "QuickBooks Community",
+          "pita": true,
+          "link": "https://quickbooks.intuit.com/community/account-management-7/how-do-i-make-a-rule-when-adding-an-entry-from-bank-ledger-71210"
+        },
+        {
+          "product": "Digits",
+          "text": "Every automated categorisation gets a confidence score, and each transaction’s activity log shows what changed, when and by whom.",
+          "source": "Digits Help Center",
+          "pita": true,
+          "link": "https://help.digits.com/firms-agentic-general-ledger/digits-ai"
         }
       ],
       "patterns": [
         "say-its-an-agent",
         "live-progress",
         "failure-disclosure"
+      ],
+      "details": [
+        {
+          "heading": "Trust starts with knowing who did what",
+          "paragraphs": [
+            "Users check work differently depending on who did it. When they can see that a booking, a message or a payslip change came from the agent, they know what to look at and how closely. When they find out afterwards, even a correct result feels like something was hidden from them."
+          ],
+          "points": [
+            {
+              "term": "It’s required",
+              "text": "The AI Act (article 50) requires that the user is told when they’re dealing with AI, from the first interaction."
+            },
+            {
+              "term": "It keeps accountability clear",
+              "text": "When an auditor, a client or a colleague asks who made a change, the answer is on the screen and in the log."
+            },
+            {
+              "term": "It sets the right expectations",
+              "text": "A plain role name like “Payroll agent”, never a person’s name or face, makes clear that this is software that follows rules and can be wrong."
+            }
+          ]
+        },
+        {
+          "heading": "A reason the user can check",
+          "paragraphs": [
+            "Saying that the agent did something is only half of it. The user also needs to see why, in terms they can verify:"
+          ],
+          "points": [
+            {
+              "term": "Point to the source",
+              "text": "The time report, contract clause or bank line the decision is based on, one click away."
+            },
+            {
+              "term": "Name the rule",
+              "text": "“Matched on amount and reference” or “Collective agreement, overtime rate” tells the user what to check if it looks wrong."
+            },
+            {
+              "term": "Say how sure it is",
+              "text": "A confident match and a best guess shouldn’t look the same."
+            },
+            {
+              "term": "Keep it short",
+              "text": "One line next to the result, with the details available on request."
+            }
+          ]
+        },
+        {
+          "heading": "Clear, not noisy",
+          "paragraphs": [
+            "Showing the agent doesn’t mean shouting about it. Use the same quiet marker everywhere, so users learn to recognise it without reading it. Keep the reason for routine items one click away, and show it upfront when something is unusual or high-stakes. A screen where everything is labelled and explained at full volume hides what matters just as well as one that explains nothing."
+          ],
+          "ask": "For any line in the books, could the user tell whether the agent did it, and why?"
+        }
       ]
     },
     {
       "id": "control-one-step-away",
       "name": "Control is always one step away",
-      "statement": "Accept, edit, undo or take over, in one tap.",
+      "statement": "Accept, edit, undo or take over, in one step.",
       "in_practice": [
         {
-          "product": "Gmail Undo send",
-          "text": "Every email waits 5 seconds by default, up to 30, with Undo right there.",
-          "source": "Google"
+          "product": "Gmail",
+          "text": "With Undo send, every email waits 5 seconds by default, up to 30, with Undo right there.",
+          "source": "Google",
+          "link": "https://blog.google/products/gmail/how-to-unsend-email-gmail/"
         },
         {
-          "product": "ChatGPT agent",
-          "text": "Interrupt, take over the browser, or stop the task at any point.",
-          "source": "OpenAI"
+          "product": "Microsoft Word",
+          "text": "Copilot’s drafts come with Keep it, Regenerate and Discard, so nothing is added without you.",
+          "source": "Microsoft Support",
+          "link": "https://support.microsoft.com/en-us/office/start-a-draft-with-copilot-in-word-069c91f0-9e42-4c9a-bbce-fddf5d581541"
+        },
+        {
+          "product": "ChatGPT",
+          "text": "In agent mode, you can interrupt, take over the browser, or stop the task at any point.",
+          "source": "OpenAI",
+          "link": "https://openai.com/index/introducing-chatgpt-agent/"
+        },
+        {
+          "product": "Intercom",
+          "text": "When its AI agent hands a chat to a person, the person gets a summary of the conversation, so the customer doesn’t have to start again.",
+          "source": "Intercom developer docs",
+          "link": "https://developers.intercom.com/docs/references/preview/rest-api/api.intercom.io/fin-agent/escalatefinconversation"
         },
         {
           "product": "Xero",
           "text": "Change an account code or tax rate right on the Reconciled page, or remove and redo a match.",
           "source": "Xero",
-          "pita": true
+          "pita": true,
+          "link": "https://www.xero.com/uk/campaign/auto-bank-reconciliation/"
+        },
+        {
+          "product": "QuickBooks",
+          "text": "Undo on a categorised bank transaction sends it back to For review, and automations can be paused or edited at any time.",
+          "source": "Intuit",
+          "pita": true,
+          "link": "https://quickbooks.intuit.com/learn-support/en-ca/help-article/bank-registers/unmatch-downloaded-bank-transactions-move-another/L71oaBb86_CA_en_CA"
+        },
+        {
+          "product": "Gusto",
+          "text": "A submitted payroll can be cancelled until the bank account is debited, with a Cancel button right in the pay history.",
+          "source": "Gusto Help Center",
+          "pita": true,
+          "link": "https://support.gusto.com/payroll/processing-payrolls/regular-payrolls/999754291/Cancel-a-payroll.htm"
         }
       ],
       "patterns": [
         "actions",
         "undo",
         "hand-over"
+      ],
+      "details": [
+        {
+          "heading": "Control is what makes letting go possible",
+          "paragraphs": [
+            "Users hand over work when they know they can step back in. If changing the agent’s work means hunting through settings, asking support or starting over, they hold on to everything themselves, and the agent saves no time. When control is always within reach, they can let the agent do more."
+          ],
+          "points": [
+            {
+              "term": "More gets delegated",
+              "text": "Users try Auto on more tasks when they know a mistake takes one step to fix."
+            },
+            {
+              "term": "Mistakes are cheap to catch",
+              "text": "A wrong proposal fixed in place costs seconds. One found after the payroll run costs a correction, an explanation and some trust."
+            },
+            {
+              "term": "The user stays the expert",
+              "text": "An edit to the agent’s proposal shows what the user knows that the agent doesn’t, and the agent can learn from it."
+            }
+          ]
+        },
+        {
+          "heading": "Five ways to step in",
+          "paragraphs": [
+            "Every piece of agent work should offer the controls that fit it:"
+          ],
+          "points": [
+            {
+              "term": "Accept",
+              "text": "One clear action, with what will happen once the user confirms."
+            },
+            {
+              "term": "Edit",
+              "text": "Change the proposal where it is, without starting over or rewriting it from scratch."
+            },
+            {
+              "term": "Undo",
+              "text": "Reverse it right where the result shows up, for as long as that is still possible."
+            },
+            {
+              "term": "Pause",
+              "text": "Stop the agent for now, and let it carry on from where it left off when the user is ready."
+            },
+            {
+              "term": "Take over",
+              "text": "Stop the agent and continue by hand, with everything it has done so far."
+            }
+          ]
+        },
+        {
+          "heading": "Close at hand, not in the way",
+          "paragraphs": [
+            "Controls belong next to the work they affect, not in a settings page or at the end of a log. They should be in the same place every time, so users find them without searching. Being close doesn’t mean interrupting, though: the controls wait quietly until they’re needed. And there should never be a point where the agent is running and the user can’t stop it."
+          ],
+          "ask": "Wherever the agent is working, how many steps would it take the user to stop it or change what it did?"
+        }
       ]
     },
     {
@@ -689,34 +1054,107 @@
         {
           "product": "Outlook",
           "text": "“You don’t often get email from…” appears when someone new writes.",
-          "source": "Cornell IT"
+          "source": "Microsoft Learn",
+          "link": "https://learn.microsoft.com/en-gb/defender-office-365/anti-phishing-policies-about"
         },
         {
-          "product": "Gmail",
-          "text": "“Be careful with this message” appears when a sender can’t be verified.",
-          "source": "Spam Resource"
+          "product": "EU banks",
+          "text": "Before a euro transfer, your bank checks the payee’s name against the account and tells you if it doesn’t match.",
+          "source": "EU regulation 2024/886",
+          "link": "https://eur-lex.europa.eu/eli/reg/2024/886/oj"
         },
         {
-          "product": "UK banks: Confirmation of Payee",
-          "text": "Adding a new payee triggers a name check, and shows the real name if it doesn’t match.",
-          "source": "Pay.UK"
+          "product": "ChatGPT",
+          "text": "Before deep research starts, it may ask a few questions to confirm your goals, and shows a plan you can change.",
+          "source": "OpenAI Help Center",
+          "link": "https://help.openai.com/en/articles/10500283-deepresearch-faq"
         },
         {
-          "product": "Sage Accounting",
-          "text": "Checks your data and flags common mistakes HMRC would care about, before you file.",
-          "source": "Sage product tour",
-          "pita": true
+          "product": "Sage",
+          "text": "In payroll, Copilot points out pay that looks different from usual, so you can check it before anyone is paid.",
+          "source": "Sage",
+          "pita": true,
+          "link": "https://www.sage.com/en-gb/cp/accounting/"
         },
         {
           "product": "QuickBooks",
           "text": "Bank transactions that match nothing are marked “Need your review” instead of being booked.",
           "source": "Intuit",
-          "pita": true
+          "pita": true,
+          "link": "https://community.intuit.com/oicms/L7m7kwjDP_US_en_US"
+        },
+        {
+          "product": "Pennylane",
+          "text": "Control Center sends the accounting firm only the exceptions that need their expertise.",
+          "source": "Pennylane",
+          "pita": true,
+          "link": "https://www.pennylane.com/fr/expert-comptable/ia"
+        },
+        {
+          "product": "Digits",
+          "text": "Low-confidence categorisations go to a checklist for review instead of being posted.",
+          "source": "Digits Help Center",
+          "pita": true,
+          "link": "https://help.digits.com/firms-agentic-general-ledger/digits-ai"
         }
       ],
       "patterns": [
         "exceptions",
-        "uncertainty"
+        "uncertainty",
+        "actions"
+      ],
+      "details": [
+        {
+          "heading": "Valid isn’t the same as normal",
+          "paragraphs": [
+            "Most checks look for errors: a missing field, a wrong format, a sum that doesn’t add up. But the cases that cost the most often pass every check. A supplier’s bank account changes, an invoice is much larger than usual, or a new employee is paid for the first time. Nothing is technically wrong, yet each one deserves a second look."
+          ],
+          "points": [
+            {
+              "term": "Fraud looks valid",
+              "text": "A changed bank account on a familiar supplier is one of the most common ways money goes missing, and it passes every format check."
+            },
+            {
+              "term": "First times hide mistakes",
+              "text": "A new employee, a new supplier or a new rule hasn’t been through a normal run yet, so nobody knows whether it works."
+            },
+            {
+              "term": "The rest can run quietly",
+              "text": "When what’s new is always flagged, users can trust everything that isn’t flagged, and spend less time checking it."
+            }
+          ]
+        },
+        {
+          "heading": "What counts as new",
+          "paragraphs": [
+            "The agent compares each item with what it has seen before:"
+          ],
+          "points": [
+            {
+              "term": "Changed details",
+              "text": "A new bank account, address or tax setting on someone the agent already knows."
+            },
+            {
+              "term": "First appearances",
+              "text": "The first invoice from a supplier, or the first payslip for an employee."
+            },
+            {
+              "term": "Out of pattern",
+              "text": "An amount, date or frequency that’s unusual for this supplier, employee or customer."
+            },
+            {
+              "term": "New rules",
+              "text": "New tax tables, a changed collective agreement or a new law that applies for the first time."
+            }
+          ]
+        },
+        {
+          "heading": "New isn’t wrong",
+          "paragraphs": [
+            "A flag should say what changed and what it’s compared with: the old bank account next to the new one, or the usual amount next to this one. It shouldn’t block the work or sound like an error. The user confirms it, and the agent remembers, so the same change isn’t flagged again next time. If everything is flagged as new, nothing stands out, so keep flags for what is new to this case."
+          ],
+          "ask": "If something in this run had never happened before, would the user know?"
+        }
       ]
     },
     {
@@ -725,32 +1163,97 @@
       "statement": "The agent proves itself run by run, and steps back when it’s wrong.",
       "in_practice": [
         {
-          "product": "Gmail",
-          "text": "Mark a message “Not spam” and the filter learns from it.",
-          "source": "University of Michigan"
+          "product": "iPhone",
+          "text": "Apps ask before using your location, you can allow it just once, and apps that use it in the background are checked again later, with a map of where.",
+          "source": "Apple Support",
+          "link": "https://support.apple.com/102515"
         },
         {
-          "product": "Claude Code",
-          "text": "“Yes, don’t ask again” turns one approval into a standing permission for that action. Everything else still asks.",
-          "source": "Spendesk MCP guide"
+          "product": "Pennylane",
+          "text": "Copilot helps with day-to-day work, and Autopilot takes over set processes under the team’s supervision. Firms switch automations on client by client.",
+          "source": "Pennylane",
+          "pita": true,
+          "link": "https://www.pennylane.com/fr/expert-comptable/ia"
         },
         {
           "product": "QuickBooks",
-          "text": "Bank rules suggest first. Booking automatically is a separate opt-in, per rule.",
+          "text": "Bank rules categorise transactions for you to review first. Booking them automatically is a separate choice, per rule.",
           "source": "Intuit",
-          "pita": true
+          "pita": true,
+          "link": "https://quickbooks.intuit.com/learn-support/en-us/banking/how-to-set-and-use-banking-rules-for-downloaded-transactions/00/239551"
         },
         {
           "product": "Xero",
-          "text": "Off by default and switched on per account; “memory” decisions learn from how you reconciled before.",
-          "source": "Insightful Accountant",
-          "pita": true
+          "text": "Switched on per bank account; “memory” decisions are based on how you reconciled similar transactions before.",
+          "source": "Xero",
+          "pita": true,
+          "link": "https://www.xero.com/ie/accounting-software/bank-reconciliation/"
+        },
+        {
+          "product": "Digits",
+          "text": "Each confirmation or correction applies right away to similar transactions, for that client, the firm and across Digits.",
+          "source": "Digits Help Center",
+          "pita": true,
+          "link": "https://help.digits.com/firms-agentic-general-ledger/digits-ai"
         }
       ],
       "patterns": [
         "autonomy-evolution",
         "activity-log",
         "recap"
+      ],
+      "details": [
+        {
+          "heading": "Trust is built, not switched on",
+          "paragraphs": [
+            "An agent that runs on Auto from the first day asks for blind trust. One that always asks never saves the user time. Earned autonomy sits between the two: the agent starts by suggesting, shows what it can do on the user’s own work, and takes on more as it proves itself."
+          ],
+          "points": [
+            {
+              "term": "Proof from the user’s own work",
+              "text": "The track record comes from their clients, rules and data, not from a demo or a promise."
+            },
+            {
+              "term": "No leap of faith",
+              "text": "Each step up is small, so the user never has to trust more than they’ve already seen."
+            },
+            {
+              "term": "The user sets the pace",
+              "text": "The agent can offer to do more, but the user decides when it happens."
+            }
+          ]
+        },
+        {
+          "heading": "How autonomy is earned",
+          "paragraphs": [
+            "Earning works the same way for every task:"
+          ],
+          "points": [
+            {
+              "term": "A track record per task",
+              "text": "Approvals without changes are counted for each task, so doing well on reminders says nothing about pay."
+            },
+            {
+              "term": "An offer, not a switch",
+              "text": "When the track record is good enough, the agent offers the next level and shows why. The user can say yes, not now, or never."
+            },
+            {
+              "term": "One level at a time",
+              "text": "From Suggest to Ask first, then to Auto, never skipping a step."
+            },
+            {
+              "term": "A step back after mistakes",
+              "text": "Corrections or reversals move the task back a level, and the agent says why."
+            }
+          ]
+        },
+        {
+          "heading": "Some things never earn Auto",
+          "paragraphs": [
+            "A track record doesn’t change what’s at stake. Pay, filings and salary changes always wait for a person, however many times the agent has got them right. Reminders, matching and coding can earn their way to Auto. Trust also takes longer to build than to lose: one serious mistake should count for more than many good runs."
+          ],
+          "ask": "Could the user see why the agent is allowed to do what it does today, and what would make it do less?"
+        }
       ]
     }
   ],
@@ -767,26 +1270,26 @@
         "principle": "lead-with-the-work",
         "question": "How does work with the agent start?",
         "answers": [
-          "People type into a prompt box or chat",
+          "The user types into a prompt box or chat",
           "There’s a summary or suggestions, but chat is the main way in",
           "The agent starts on its own at the right moment and brings what needs attention"
         ],
-        "why": "If people have to know what to ask, most of the agent’s value stays hidden.",
+        "why": "If the user has to know what to ask, most of the agent’s value stays hidden.",
         "fixes": [
           {
             "title": "Let the agent start the work",
             "ideas": [
-              "Start the agent on dates and events people already work to: time reporting closing, month-end, a client replying.",
-              "Open on a queue of what needs a person, each with the problem, the proposal and the reason.",
-              "Lead with a briefing: what happened and what needs you, before any list."
+              "Start the agent on the dates and events the user already works to, such as time reporting closing, month-end or a client replying.",
+              "Open on what needs the user, each item with the problem, the proposal and the reason.",
+              "Lead with a recap of what happened and what needs the user, before any list."
             ]
           },
           {
-            "title": "Make the queue the front door",
+            "title": "Make what needs attention the starting point",
             "ideas": [
-              "Make the queue the default view, not a tab next to chat.",
-              "Say when the agent started on its own and why: “Started at 06:00, when time reporting closed.”",
-              "Show the next run date, and a way to pause the trigger."
+              "Make what needs attention the default view, not a tab next to chat.",
+              "Say what started the run, at the top: “Started when time reporting closed.”",
+              "Show what runs next, and when, with a way to pause it."
             ]
           }
         ],
@@ -794,7 +1297,11 @@
           "triggers",
           "exceptions",
           "recap"
-        ]
+        ],
+        "keep": {
+          "title": "The agent starts the work",
+          "text": "Keep starting on the dates and events the user works to, and keep the starting point focused on what needs the user."
+        }
       },
       {
         "id": "stakes",
@@ -802,24 +1309,24 @@
         "question": "How is it decided what the agent may do on its own?",
         "answers": [
           "One on/off switch for everything",
-          "Some actions need approval, but people can’t see which or why",
-          "A visible level per task: routine work runs alone; money, pay and filings wait for a person, and it stops at the edge of its rules"
+          "Some actions need approval, but the user can’t see which or why",
+          "A visible level per task: routine work runs alone, pay and filings wait for a person, and it stops at the edge of its rules"
         ],
-        "why": "When autonomy isn’t predictable, people either check everything or trust too much.",
+        "why": "When autonomy isn’t predictable, the user either checks everything or trusts too much.",
         "fixes": [
           {
             "title": "Set a level per task",
             "ideas": [
-              "Give each task its own level, such as Assistant, Copilot or Autopilot, so reconciliation can run alone while payroll waits for approval.",
-              "Keep bank payments, payroll and filings on approval only, with a named sign-off.",
-              "Show the current level on screen, next to the task."
+              "Give each task its own level, Off, Suggest, Ask first or Auto, so routine work can run alone while pay waits for approval.",
+              "Keep payments, pay and filings off Auto, with a named person who approves them.",
+              "Show the current level on screen, next to the task, with what the agent will do at that level."
             ]
           },
           {
-            "title": "Make each level visible, and offer before acting",
+            "title": "Make each level visible, and prepare before acting",
             "ideas": [
               "Show the level on every task, and say why approval is needed.",
-              "For anything that leaves the company, let the agent prepare it and offer it as a button. Nothing is sent until the tap.",
+              "For anything that leaves the company, let the agent prepare it. Nothing is sent until the user confirms.",
               "When a case falls outside the rules, stop and hand it to a named person instead of guessing."
             ]
           }
@@ -828,33 +1335,37 @@
           "autonomy-levels",
           "suggestions",
           "hand-over"
-        ]
+        ],
+        "keep": {
+          "title": "Control matches what’s at stake",
+          "text": "Check the level of every new task before it goes live, and keep pay and filings off Auto."
+        }
       },
       {
         "id": "visible",
         "principle": "never-hide-the-agent",
-        "question": "When the agent acts, what do people see?",
+        "question": "When the agent acts, what does the user see?",
         "answers": [
           "Just the result",
           "A one-time “AI” banner or a confidence score",
-          "A lasting “Agent” label on everything it did, the reason behind each step, and an honest account when something fails"
+          "A lasting agent label on everything it did, the reason behind each step, and an honest account when something fails"
         ],
-        "why": "Without a label and a reason, people can’t tell what the agent did, so they check everything. Saying it’s AI is also a legal requirement in the EU.",
+        "why": "Without a label and a reason, the user can’t tell what the agent did, so they check everything. Saying it’s AI is also a legal requirement in the EU.",
         "fixes": [
           {
             "title": "Label the agent and show the reason",
             "ideas": [
-              "Put a plain role label, such as “Payroll agent”, on every action, on screen and in the log.",
-              "Show progress while it works: “48 of 64 employees”, each finished check with the rule it used.",
-              "Announce each step to screen readers: “Step 3 of 5. Calculate depreciation. Agent working.”"
+              "Put a plain role name, such as “Payroll agent”, on every task, proposal and message, on screen and in the log.",
+              "Show progress per source or step while it works, with what was found and the rule behind it.",
+              "Announce each step to screen readers, with the agent named and what it’s working on."
             ]
           },
           {
             "title": "Replace banners and scores with labels and reasons",
             "ideas": [
-              "Replace one-time banners with a marker that stays on each field the agent filled.",
+              "Replace one-time banners with a marker that stays on everything the agent filled in.",
               "Replace bare percentages with the rule or source behind each step.",
-              "When something fails, say what failed, why, what didn’t happen, and what to do next."
+              "When something fails, say what failed, why, what didn’t happen and what the user can do next."
             ]
           }
         ],
@@ -862,40 +1373,48 @@
           "say-its-an-agent",
           "live-progress",
           "failure-disclosure"
-        ]
+        ],
+        "keep": {
+          "title": "The agent and its reasons are visible",
+          "text": "Label every new feature the agent touches, and keep the reason one click away."
+        }
       },
       {
         "id": "control",
         "principle": "control-one-step-away",
-        "question": "Can people step in while and after the agent works?",
+        "question": "Can the user step in while and after the agent works?",
         "answers": [
           "No: once it acts, it’s done",
           "They can stop it, undo from a log, or correct it somewhere else",
-          "They can accept, edit or reject each proposal in one tap, undo right where the result shows, and take over a case at any point"
+          "They can accept, edit or reject each change in one step, undo where the result shows up, and take over at any point"
         ],
-        "why": "People trust an agent more when they know they can stop it, and know what can’t be reversed.",
+        "why": "The user trusts an agent more when they know they can stop it, and know what can’t be reversed.",
         "fixes": [
           {
             "title": "Add ways to step in",
             "ideas": [
-              "Show every proposal as a before-and-after, with Accept, Edit and Reject.",
-              "Add undo right where the result appears, with how long it’s still possible.",
-              "Say before acting what can’t be undone: “Payments can’t be undone once they leave the bank.”"
+              "Show each change as before and after, with accept, edit and reject.",
+              "Add undo where the result shows up, with how long it’s still possible.",
+              "Say before acting what can’t be undone, such as payments once they leave the bank."
             ]
           },
           {
             "title": "Bring control to where the work is",
             "ideas": [
-              "Move undo out of the log and onto the result: “Sent 09:12. Undo for 10 minutes.”",
-              "Replace “Accept all” with a decision per change, and a diff on high-stakes fields such as a bank account.",
-              "Make correcting one action, in place, not a form somewhere else."
+              "Move undo out of the log and onto the result: “Sent 09:30. You can undo until 09:40.”",
+              "Replace “Accept all” with a decision per change, and mark high-stakes fields such as a bank account.",
+              "Let the user correct one change in place, instead of in a form somewhere else."
             ]
           }
         ],
         "patterns": [
           "actions",
           "undo"
-        ]
+        ],
+        "keep": {
+          "title": "The user can step in at any point",
+          "text": "Give every new action a way to undo it, or say before acting what can’t be undone."
+        }
       },
       {
         "id": "unfamiliar",
@@ -904,23 +1423,23 @@
         "answers": [
           "It’s treated like everything else",
           "It’s flagged only when an anomaly rule fires",
-          "New and unusual items go to an exceptions queue with the reason, and when it’s unsure it asks one specific question with a best guess"
+          "New and unusual items are flagged with the reason, and when it’s unsure it asks one specific question with a best guess"
         ],
-        "why": "Agents drift towards the familiar. In finance, the new supplier or the new rate is where the risk is.",
+        "why": "Agents drift towards the familiar. In PITA, the new supplier or the changed bank account is where the risk is.",
         "fixes": [
           {
             "title": "Route the unusual to a person",
             "ideas": [
               "Summarise routine work in one line, and list only the items that need judgement.",
-              "Give each exception one card: the problem, the proposal and the reason.",
-              "Show a count, “3 need you”, and an empty state when nothing does."
+              "Give each item one card: the problem, the proposal and the reason.",
+              "Show how many items need the user, and an empty state when nothing does."
             ]
           },
           {
-            "title": "Raise what’s new, not just what’s wrong",
+            "title": "Flag what’s new, not just what’s wrong",
             "ideas": [
-              "Raise first occurrences too: a new supplier, a new VAT rate, a changed bank account.",
-              "When it’s unsure, ask one specific question with its best guess and one-tap answers, instead of guessing.",
+              "Flag first appearances too: a new supplier, a new tax rule, a changed bank account.",
+              "When it’s unsure, ask one specific question with its best guess, instead of guessing, while the rest of the work carries on.",
               "Check that flags don’t single out groups of employees, for example people on sick leave."
             ]
           }
@@ -928,33 +1447,37 @@
         "patterns": [
           "exceptions",
           "uncertainty"
-        ]
+        ],
+        "keep": {
+          "title": "What’s new gets flagged",
+          "text": "Review the flags now and then, so they stay about what is new to each case."
+        }
       },
       {
         "id": "earned",
         "principle": "autonomy-is-earned",
         "question": "How does the agent gain more autonomy over time?",
         "answers": [
-          "It’s fixed: it always asks, or it runs fully automatic from day one",
+          "It’s fixed: it always asks, or it runs on Auto from day one",
           "Someone changes the setting by hand, with no track record to go on",
-          "It offers more after a track record of unchanged approvals, steps back after corrections, and pay and filings never graduate"
+          "It offers more after approvals without changes, steps back after corrections, and pay and filings never move up"
         ],
         "why": "Autonomy granted all at once is either useless or reckless. A track record is what makes more autonomy safe.",
         "fixes": [
           {
             "title": "Let autonomy be earned",
             "ideas": [
-              "Keep a plain-language activity log: who did what, which rules were used, and undo from the log.",
-              "Track approvals without changes, per task.",
-              "Start everyone at “it suggests, you choose”."
+              "Keep an audit trail in plain language: who did each step, which rules were used, and undo from the log.",
+              "Count approvals without changes, for each task.",
+              "Start every task at Suggest, and move up one level at a time."
             ]
           },
           {
             "title": "Base autonomy on the track record",
             "ideas": [
-              "Offer more at a threshold, such as 85% unchanged over 10 approvals, and let people say “Keep asking”.",
-              "Step back after two corrections, and say so.",
-              "Recap what was accepted without checking, decision time, what was caught and where it was weaker. Never graduate pay, filings or salary changes."
+              "Offer the next level after a set number of approvals without changes, and let the user say no.",
+              "Step back a level after corrections or reversals, and say why.",
+              "Recap what was approved without changes, what was caught and where the agent was unsure. Pay, filings and salary changes never move up."
             ]
           }
         ],
@@ -962,7 +1485,11 @@
           "autonomy-evolution",
           "activity-log",
           "recap"
-        ]
+        ],
+        "keep": {
+          "title": "Autonomy grows with a track record",
+          "text": "Keep counting approvals per task, and keep stepping back after corrections."
+        }
       }
     ],
     "domains": [
@@ -974,7 +1501,7 @@
           "stakes": 1.6,
           "control": 1.3
         },
-        "note": "Weighted higher for payroll: mistakes land in people’s pay."
+        "note": "Weighted higher for payroll: mistakes land in employees’ pay."
       },
       {
         "id": "invoicing",
@@ -1024,12 +1551,12 @@
       {
         "from": 0,
         "name": "An assistant bolted on",
-        "meaning": "Expect people to check everything the agent does, or not use it at all."
+        "meaning": "Expect the user to check everything the agent does, or not use it at all."
       },
       {
         "from": 40,
         "name": "Useful, not yet trusted",
-        "meaning": "People will use it, but most of its work will still be checked by hand."
+        "meaning": "The user will use it, but still check most of its work by hand."
       },
       {
         "from": 65,
