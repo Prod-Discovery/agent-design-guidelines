@@ -1,7 +1,7 @@
 {
   "title": "Agent Design Guidelines",
   "about": "The core file for the Agent Design Guidelines. The website, patterns.md and the Discovery Engine plugin all read from this file. Edit patterns here only. Pattern and principle ids never change; names, text and order can.",
-  "updated": "2026-10-12",
+  "updated": "2026-10-16",
   "site": "https://agent-design-guidelines-dqrlkyvm4a-nw.a.run.app/",
   "authors": [
     "Amanda Lundius",
